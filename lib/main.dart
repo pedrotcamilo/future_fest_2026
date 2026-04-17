@@ -9,11 +9,27 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: MenuPrincipal(),
+    );
+  }
+}
+
+class MenuPrincipal extends StatefulWidget {
+  const MenuPrincipal({super.key});
+
+  @override
+  State<MenuPrincipal> createState() => _MenuPrincipalState();
+}
+
+class _MenuPrincipalState extends State<MenuPrincipal> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+        appBar: AppBar(),
       ),
     );
   }
