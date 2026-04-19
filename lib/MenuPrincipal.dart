@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'cores.dart';
+import 'backend/infoUsuario.dart';
 
 class MenuPrincipal extends StatefulWidget {
   const MenuPrincipal({super.key});
@@ -9,21 +10,30 @@ class MenuPrincipal extends StatefulWidget {
 }
 
 class _MenuPrincipalState extends State<MenuPrincipal> {
-  String nomeUsuario = "NOME";
+  String nomeUsuario = "CARREGANDO...";
 
   @override
+  void initState() {
+    super.initState();
+    carregarNome();
+  }
+
+  void carregarNome() async {
+    String nome = await receberNomeUsuario();
+    setState(() {
+      nomeUsuario = nome.toUpperCase(); // Carrega o nome do usuário usando minha função mal feita
+    });
+  }
+
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          toolbarHeight: 120.0, 
+          toolbarHeight: 120.0,
           backgroundColor: fgColorGlobal,
           centerTitle: true,
-          title: Image.asset(
-            "assets/logo_eurofarma.png",
-            height: 65.0,
-          ),
+          title: Image.asset("assets/logo_eurofarma.png", height: 65.0),
         ),
         body: Padding(
           padding: EdgeInsetsGeometry.all(25),
@@ -67,13 +77,25 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      buildCard(fgColor: fgColorGlobal, icon: Icons.alarm, text: "Lembretes"),
-                      buildCard(fgColor: fgColorGlobal, icon: Icons.image, text: "Escanear"),
+                      buildCard(
+                        fgColor: fgColorGlobal,
+                        icon: Icons.alarm,
+                        text: "Lembretes",
+                      ),
+                      buildCard(
+                        fgColor: fgColorGlobal,
+                        icon: Icons.image,
+                        text: "Escanear",
+                      ),
                     ],
                   ),
-                  buildExtendedCard(fgColor: fgColorGlobal, icon: Icons.inbox, text: "Ver bulas salvas")
+                  buildExtendedCard(
+                    fgColor: fgColorGlobal,
+                    icon: Icons.inbox,
+                    text: "Ver bulas salvas",
+                  ),
                 ],
-              )
+              ),
             ],
           ),
         ),
@@ -113,10 +135,7 @@ Widget buildCard({
             Icon(icon, color: Colors.white, size: 128),
             Text(
               text,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 24.0,
-              ),
+              style: const TextStyle(color: Colors.white, fontSize: 24.0),
             ),
           ],
         ),
@@ -148,10 +167,7 @@ Widget buildExtendedCard({
             SizedBox(width: 20),
             Text(
               text,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 24.0,
-              ),
+              style: const TextStyle(color: Colors.white, fontSize: 24.0),
             ),
           ],
         ),
