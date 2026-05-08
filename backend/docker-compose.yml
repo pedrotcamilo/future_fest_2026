@@ -1,0 +1,29 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DB_NAME: postgres
+      DB_USER: AxionPhareProd
+      DB_PASSWORD: AxionPhareProd
+      DB_HOST: "localhost"
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+
+  db:
+    image: postgres:18.3
+    restart: always
+    environment:
+      POSTGRES_USER: AxionPhareProd
+      POSTGRES_PASSWORD: AxionPhareProd
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
