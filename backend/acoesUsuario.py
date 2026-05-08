@@ -70,3 +70,30 @@ def apagar_usuario(id):
         return str(e)
     
 # ---------------------------------------
+
+def logar_usuario(email, senha):
+
+    if email == None or senha == None:
+        return 2
+    
+    db_cursor.execute("SELECT id FROM usuarios WHERE email = %s AND senha = %s",(email,senha))
+    row = db_cursor.fetchone()
+
+    if row:
+        return 0
+    else:
+        return 1
+    
+# ---------------------------------------
+
+def info_usuario(id, email):
+
+    if not id == None:
+        db_cursor.execute("SELECT * FROM usuarios WHERE id = %s",(id,))
+
+    if not email == None:
+        db_cursor.execute("SELECT * FROM usuarios WHERE email = %s",(email,))
+
+    row = db_cursor.fetchone()
+
+    return row
