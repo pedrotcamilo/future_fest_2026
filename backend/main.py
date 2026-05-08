@@ -66,3 +66,54 @@ async def apagar_usuario(id):
             content={"message": str(e)},
             status_code=500
         )
+    
+@app.post("/logarUsuario")
+async def logar_usuario(email, senha):
+
+    if email == None or senha == None:
+        return responses.JSONResponse(
+            content={
+                "autenticado": "false",
+                "motivo": "Campos nao preenchidos",
+                "nome": ""
+            },
+            status_code=400
+        )
+    
+    statusLogin = acoesUsuario.logar_usuario(
+        email=email,
+        senha=senha,
+    )
+
+    infoUsuario = acoesUsuario.info_usuario(email=email,id=None)
+
+    match statusLogin:
+        case 0:
+            return responses.JSONResponse(
+                content={
+                    "autenticado": "true",
+                    "motivo": "",
+                    "nome": infoUsuario["nome"],
+                },
+                status_code=200
+            )
+
+        case 1:
+            return responses.JSONResponse(
+                content={
+                    "autenticado": "false",
+                    "motivo": "Login incorreto",
+                    "nome": ""
+                },
+                status_code=401
+            )
+        
+        case 2:
+            return responses.JSONResponse(
+                content={
+                    "autenticado": "false",
+                    "motivo": "Campos nao preenchidos",
+                    "nome": ""
+                },
+                status_code=400
+            )
