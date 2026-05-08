@@ -1,27 +1,13 @@
 from fastapi import FastAPI, responses
 from dotenv import load_dotenv
-from psycopg2.extras import RealDictCursor
-import psycopg2
-import os
 import re
+
+import acoesUsuario
 
 load_dotenv()
 
 app = FastAPI()
 regex_email = re.compile(r'^\S+@\S+\.\S+$')
-
-try:
-    db = psycopg2.connect(
-        dbname = os.environ.get("DB_NAME"),
-        user = os.environ.get("DB_USER"),
-        password = os.environ.get("DB_PASSWORD"),
-        host = os.environ.get("DB_HOST")
-    )
-
-    db_cursor = db.cursor(cursor_factory=RealDictCursor)
-
-except Exception as e:
-    print(f"Erro ao conectar ao banco de dados: {e}")
 
 @app.post("/registrarUsuario")
 async def registar_usuario(email,nome,senha):
@@ -33,23 +19,14 @@ async def registar_usuario(email,nome,senha):
         )
 
     try:
-        db_cursor.execute("SELECT id FROM usuarios WHERE email = %s",(email,))
-        row = db_cursor.fetchone()
-
-        if row:
+        if acoesUsuario.usuarioExiste(email=email, id=None):
             return responses.JSONResponse(
-                content={"message":"Usuario ja existe"},
+                content={"message": "Conta ja existe"},
                 status_code=400
-            )
+            )   
+        
+        acoesUsuario.registar_usuario(email, nome, senha)
 
-        if not bool(re.match(regex_email, email)):
-            return responses.JSONResponse(
-                content={"message":"Email invalido"},
-                status_code=400
-            )
-
-        db_cursor.execute("INSERT INTO usuarios(nome,email,senha) VALUES (%s,%s,%s)",(nome,email,senha))
-        db.commit()
         return responses.JSONResponse(
             content={"message": "Ok"},
             status_code=200
@@ -71,17 +48,14 @@ async def apagar_usuario(id):
         )
 
     try:
-        db_cursor.execute("SELECT id FROM usuarios WHERE id = %s",(id,))
-        row = db_cursor.fetchone()
-
-        if not row:
+        if not acoesUsuario.usuarioExiste(id=id, email=None):
             return responses.JSONResponse(
-                content={"message":"Usuario nao existe"},
+                content={"message": "Usuario nao existe"},
                 status_code=400
             )
         
-        db_cursor.execute("DELETE FROM usuarios WHERE ID = %s",(id,))
-        db.commit()
+        acoesUsuario.apagar_usuario(id)
+
         return responses.JSONResponse(
             content={"message": "Ok"},
             status_code=200
