@@ -1,5 +1,7 @@
 from dotenv import load_dotenv
 from psycopg2.extras import RealDictCursor
+from uuid import uuid4
+
 import psycopg2
 import os
 
@@ -97,3 +99,46 @@ def info_usuario(id, email):
     row = db_cursor.fetchone()
 
     return row
+
+# ---------------------------------------
+
+def gerar_token_usuario(id):
+
+    if id == None:
+        return 2
+    
+    tokenGerado = str(uuid4())
+    db_cursor.execute("UPDATE usuarios SET token_usuario = %s WHERE id = %s",(tokenGerado,id))
+    db.commit()
+
+    return tokenGerado
+
+# ---------------------------------------
+
+def reset_token_usuario(id):
+
+    if id == None:
+        return 2
+    
+    db_cursor.execute("UPDATE usuarios SET token_usuario = '' WHERE id = %s",(id,))
+    db.commit()
+
+    return 0
+
+# ---------------------------------------
+
+def tokenExiste(token):
+    try:
+        if not token == None: 
+            db_cursor.execute("SELECT token_usuario FROM usuarios WHERE token_usuario = %s",(token,))
+            row = db_cursor.fetchone()
+
+        if row:
+            return True
+        else:
+            return False
+        
+    except Exception as e:
+        return str(e)
+    
+# ---------------------------------------
