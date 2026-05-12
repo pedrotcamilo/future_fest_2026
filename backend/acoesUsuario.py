@@ -100,6 +100,20 @@ def info_usuario(id, email):
 
     return row
 
+
+# ---------------------------------------
+
+def listar_usuarios():
+
+    usuarios = []
+    db_cursor.execute("SELECT id, nome, email FROM usuarios")
+    data = db_cursor.fetchall()
+
+    for row in data:
+        usuarios.append(row)
+
+    return usuarios
+
 # ---------------------------------------
 
 def gerar_token_usuario(id):
