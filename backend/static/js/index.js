@@ -1,4 +1,5 @@
 const notif_msg = document.getElementById("notif-msg");
+var emailsCarregadosReset = [];
 
 function exibirNotificacao(texto) {
     notif_msg.innerHTML = texto;
@@ -36,7 +37,12 @@ async function criarUsuario() {
         );
 
         const texto = await response.text();
-        exibirNotificacao("Usuario criado com sucesso");
+
+        if (response.ok) {
+            exibirNotificacao("Usuario criado com sucesso");
+        } else {
+            exibirNotificacao("Falha ao criar usuario!");
+        }
     } catch (erro) {
         console.error("Erro:", erro);
         exibirNotificacao("Erro ao criar o usuario, verifique o console.");
@@ -59,7 +65,11 @@ async function apagarUsuario() {
         );
 
         const texto = await response.text();
-        exibirNotificacao("Ação de apagar realizada.");
+        if (response.ok) {
+            exibirNotificacao("Usuario apagado com sucesso!");
+        } else {
+            exibirNotificacao("Erro ao apagar o usuario");
+        }
     } catch (erro) {
         console.error("Erro:", erro);
         exibirNotificacao("Erro ao apagar o usuario, verifique o console.");
@@ -68,4 +78,37 @@ async function apagarUsuario() {
     }
 }
 
+function adicionarCodigoReset(email, codigo) {
+    const container = document.getElementById("codigos-reset");
+    const card = `
+        <div class="card p-1 mt-2" style="width: 30vw;">
+            <div class="card-body d-flex">
+                <b class="card-title">${email}</b>
+                <b class="position-absolute end-0 text-primary me-3">${codigo}</b>
+            </div>
+        </div>
+    `;
+
+    if (!emailsCarregadosReset.includes(email)) {
+        container.innerHTML += card;
+        emailsCarregadosReset.push(email);
+    }
+}
+
+async function lerCodigosReset() {
+    try {
+        const response = await fetch("/codigosReset");
+        const data = await response.json();
+
+        for (const key in data) {
+            adicionarCodigoReset(key, data[key]);
+        }
+    } catch(erro) {
+        console.error(erro)
+    }
+}
+
+setInterval(() => {
+    lerCodigosReset();
+}, 5000);
 exibirNotificacao("Carregado com sucesso!")

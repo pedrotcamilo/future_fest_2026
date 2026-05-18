@@ -4,8 +4,11 @@ from uuid import uuid4
 
 import psycopg2
 import os
+import random
 
 load_dotenv()
+
+codigosReset = {}
 
 try:
     db = psycopg2.connect(
@@ -20,8 +23,7 @@ try:
 except Exception as e:
     print(f"Erro ao conectar ao banco de dados: {e}")
 
-
-# ---------------------------------------
+# Usuario
 
 def usuarioExiste(email,id):
     try:
@@ -41,8 +43,6 @@ def usuarioExiste(email,id):
     except Exception as e:
         return str(e)
 
-# ---------------------------------------
-
 def registar_usuario(email,nome,senha):
 
     if email == None or nome == None or senha == None:
@@ -56,8 +56,6 @@ def registar_usuario(email,nome,senha):
     except Exception as e:
         return str(e)
 
-# ---------------------------------------
-
 def apagar_usuario(id):
     
     if id == None:
@@ -70,8 +68,6 @@ def apagar_usuario(id):
     
     except Exception as e:
         return str(e)
-    
-# ---------------------------------------
 
 def logar_usuario(email, senha):
 
@@ -85,8 +81,19 @@ def logar_usuario(email, senha):
         return 0
     else:
         return 1
+
+def logar_usuario_token(token):
+
+    if token == None:
+        return 2
     
-# ---------------------------------------
+    db_cursor.execute("SELECT id FROM usuarios WHERE token_usuario = %s",(token,))
+    row = db_cursor.fetchone()
+
+    if row:
+        return 0
+    else:
+        return 1
 
 def info_usuario(id, email):
 
@@ -100,9 +107,6 @@ def info_usuario(id, email):
 
     return row
 
-
-# ---------------------------------------
-
 def listar_usuarios():
 
     usuarios = []
@@ -114,7 +118,7 @@ def listar_usuarios():
 
     return usuarios
 
-# ---------------------------------------
+# Token
 
 def gerar_token_usuario(id):
 
@@ -127,8 +131,6 @@ def gerar_token_usuario(id):
 
     return tokenGerado
 
-# ---------------------------------------
-
 def reset_token_usuario(id):
 
     if id == None:
@@ -139,9 +141,8 @@ def reset_token_usuario(id):
 
     return 0
 
-# ---------------------------------------
-
 def tokenExiste(token):
+
     try:
         if not token == None: 
             db_cursor.execute("SELECT token_usuario FROM usuarios WHERE token_usuario = %s",(token,))
@@ -155,4 +156,45 @@ def tokenExiste(token):
     except Exception as e:
         return str(e)
     
-# ---------------------------------------
+# Atualizar Senha
+
+def solicitar_reset_senha(email):
+    codAleatorio = ""
+
+    if email == None:
+        return 2
+
+    for i in range(0,6):
+        n = random.randint(0,9)
+        codAleatorio += str(n)
+
+    codigosReset[email] = codAleatorio
+    return 0
+
+def atualizar_senha(email, codReset, senha_nova):
+    
+    if email == None or codReset == None or senha_nova == None:
+        return 2
+    
+    try:
+        codigoCorreto = False
+        for key, value in codigosReset.items():
+            if key == email:
+                if value == codReset:
+                    codigoCorreto = True
+        
+        if not codigoCorreto:
+            return 3
+
+        db_cursor.execute("UPDATE usuarios SET senha = %s WHERE email = %s", (senha_nova,email))
+        db.commit()
+
+        codigosReset[email] = ""
+        codigosReset.pop(email)
+        return 0
+    
+    except Exception as e:
+        return str(e)
+    
+def listar_codigos_reset():
+    return codigosReset
