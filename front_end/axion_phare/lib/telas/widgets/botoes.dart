@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 Widget CustomOutlinedButton(
+  // botão simples vasio com linha ao redor
   String nome,
   VoidCallback onPressed, {
   Color colorButton = const Color(0xffd8d8d8),
@@ -8,13 +9,20 @@ Widget CustomOutlinedButton(
   return Container(
     child: OutlinedButton(
       onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        side: BorderSide(color: colorButton, width: 1),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
       /* quando desativar o onPressed fica null */
-      child: Text(
-        nome,
-        style: TextStyle(
-          color: colorButton,
-          fontSize: 14,
-          fontWeight: FontWeight(500),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+        child: Text(
+          nome,
+          style: TextStyle(
+            color: Color(0xff0D0D14),
+            fontSize: 16,
+            fontWeight: FontWeight(500),
+          ),
         ),
       ),
     ),
@@ -22,6 +30,7 @@ Widget CustomOutlinedButton(
 }
 
 Widget buttonArrow(
+  // botão de seta, uma gambiarra funcional não mexe pq ta perfeito
   VoidCallback onPressed, {
   Color colorButton = const Color.fromARGB(0, 0, 0, 0),
   Color coloricon = const Color.fromARGB(255, 0, 0, 0),
@@ -46,6 +55,7 @@ Widget buttonArrow(
 }
 
 Widget buttonText(
+  // texto clicavel
   String nome,
   VoidCallback onPressed, {
   Color colorButton = const Color(0xffd8d8d8),

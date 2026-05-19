@@ -21,42 +21,48 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: Stack(
         children: [
-          SizedBox(
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Image.asset('assets/images/veio_brincando.png', width: 270),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(right: 22, top: 98),
-                        child: Column(
-                          children: [
-                            Image.asset(
-                              'assets/images/logo_axionphare_preta.png',
-                              width: 100,
-                            ),
-                          ],
-                        ),
+          Column(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Image.asset(
+                      'assets/images/veio_brincando.png',
+                      width: MediaQuery.of(context).size.width * 0.76,
+                    ),
+                    SizedBox(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Padding(padding: EdgeInsets.only(right: 22, top: 98)),
+                        ],
                       ),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [buttonArrow(() => proximatela(context))],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
+            ],
+          ),
+          Positioned(
+            top: MediaQuery.of(context).size.height * 0.1,
+            right: 22,
+            child: Image.asset(
+              'assets/images/logo_axionphare_preta.png',
+              width: MediaQuery.of(context).size.width * 0.31,
             ),
+          ),
+
+          // Botão fixo no canto inferior direito
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: buttonArrow(() => proximatela(context)),
           ),
         ],
       ),

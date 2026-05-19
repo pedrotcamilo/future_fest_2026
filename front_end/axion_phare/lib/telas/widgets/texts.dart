@@ -33,3 +33,17 @@ Widget TextInput(
     ],
   );
 }
+
+Widget texto(
+  String text,
+  double fontsize, {
+  int peso = 500,
+  Color cor = Colors.black,
+}) {
+  return Text(text,
+  style: TextStyle(
+    fontSize: fontsize,
+    fontWeight: FontWeight(peso),
+    color: cor
+  ),);
+}

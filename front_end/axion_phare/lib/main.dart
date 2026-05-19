@@ -1,5 +1,7 @@
+import 'package:axion_phare/telas/home.dart';
 import 'package:flutter/material.dart';
 import 'package:axion_phare/telas/inicio.dart';
+import 'package:axion_phare/telas/home.dart'; // sistema de teste
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,10 +14,13 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Axion Phare',
-      theme: ThemeData(fontFamily: 'GolosText'),
+      title: 'Axion Phare', //titulo da janela -- serve mais no pc
+      theme: ThemeData(
+        fontFamily: 'GolosText',
+      ), // fonte geral não precisa mudar de um a um
       debugShowCheckedModeBanner: false,
-      home: Home(),
+      home: Home(), // precisa ser Home() se não estiver favor alterar
+      // home: CriarConta(), // sistema de teste
     );
   }
 }
