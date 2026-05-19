@@ -55,7 +55,7 @@ async def registar_usuario(email,nome,senha):
             status_code=500
         )
     
-@app.post("/apagarUsuario")
+@app.delete("/apagarUsuario")
 async def apagar_usuario(id):
 
     if id == None:
@@ -143,10 +143,42 @@ async def logar_usuario(email, senha):
                 status_code=400
             )
 
+@app.post("/authToken")
+async def authToken(token):
+
+    if token == None:
+        return responses.JSONResponse(
+            content={
+                "autenticado": "false",
+            },
+            status_code=400
+        )
+    
+    statusLogin = acoesUsuario.logar_usuario_token(
+        token=token
+    )
+
+    match statusLogin:
+        case 0:
+            return responses.JSONResponse(
+                content={
+                    "autenticado": "true"
+                },
+                status_code=200
+            )
+
+        case _:
+            return responses.JSONResponse(
+                content={
+                    "autenticado": "false"
+                },
+                status_code=401
+            )
+
 app.mount("/admin", StaticFiles(directory="static",html = True))
 
 @app.get("/listarUsuarios")
-def listar_usuarios():
+async def listar_usuarios():
     usuarios = acoesUsuario.listar_usuarios()
 
     return responses.JSONResponse(content=usuarios)
@@ -203,7 +235,6 @@ async def traducaoBula(file: UploadFile, token):
 
     return responses.JSONResponse(content=json.loads(json_final))
 
-
 # Tradução de receita
 
 @app.post("/traduzirReceita") # é a mesma coisa de cima, só q com outro
@@ -255,3 +286,90 @@ async def traduzirReceita(file: UploadFile, token):
 
     print(response["message"]["thinking"])
     return responses.JSONResponse(content=json.loads(json_final))
+
+# Reset de senha
+
+@app.post("/solicitarResetSenha")
+def solicitarResetSenha(email):
+    if email == None:
+        return responses.JSONResponse(
+            content={
+                "message": "E-Mail necessario"
+            },
+            status_code=400
+        )
+    
+    if not acoesUsuario.usuarioExiste(email=email, id=None):
+        return responses.JSONResponse(
+            content={
+                "message": "Usuario nao existe"
+            },
+            status_code=400
+        )
+    
+    status = acoesUsuario.solicitar_reset_senha(email)
+
+    if status == 0:
+        return responses.JSONResponse(
+            content={
+                "message": "Ok"
+            },
+            status_code=200
+        )
+    
+    else:
+        return responses.JSONResponse(
+            content={
+                "error": status
+            },
+            status_code=500
+        )
+    
+@app.post("/resetarSenha")
+def resetarSenha(email, codReset, senha_nova):
+
+    if email == None or codReset == None or senha_nova == None:
+        return responses.JSONResponse(
+            content={
+                "message": "Campos vazios"
+            },
+            status_code=400
+        )
+    
+    status = acoesUsuario.atualizar_senha(
+        email=email,
+        codReset=codReset,
+        senha_nova=senha_nova
+    )
+
+    match status:
+        case 0:
+            return responses.JSONResponse(
+                content={
+                    "message": "Senha alterada!"
+                },
+                status_code=200
+            )
+        
+        case 3:
+            return responses.JSONResponse(
+                content={
+                    "message": "Codigo invalido"
+                },
+                status_code=400
+            )
+        
+        case _:
+            return responses.JSONResponse(
+                content={
+                    "error": status
+                },
+                status_code=500
+            )
+        
+@app.get("/codigosReset")
+def codigosReset():
+    return responses.JSONResponse(
+        content=acoesUsuario.listar_codigos_reset(),
+        status_code=200
+    )
