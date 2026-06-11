@@ -72,6 +72,7 @@ class _TelaLogginState extends State<TelaLoggin> {
       });
     }
   } // Pedro para de revisar o código
+    // não - 11 de junho de 2026 as 08:49
 
   @override // daqui pra frente é o sistema de construção da janela.
   Widget build(BuildContext context) {
