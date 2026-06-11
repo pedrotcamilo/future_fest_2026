@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'widgets/botoes.dart';
-import 'loggin.dart';
+import 'login.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -10,7 +10,7 @@ class Home extends StatelessWidget {
       context,
       PageRouteBuilder(
         // Substitua 'SuaOutraTela' pelo nome da classe da tela de destino
-        pageBuilder: (context, animation, secondaryAnimation) => TelaLoggin(),
+        pageBuilder: (context, animation, secondaryAnimation) => TelaLogin(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },

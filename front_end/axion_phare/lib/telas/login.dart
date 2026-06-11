@@ -2,19 +2,19 @@ import 'package:axion_phare/telas/home.dart';
 import 'package:flutter/material.dart';
 import 'criar_conta.dart';
 import 'home.dart';
+import 'alterar_senha.dart';
 import 'widgets/botoes.dart';
 import 'widgets/texts.dart';
 
-class TelaLoggin extends StatefulWidget {
-  TelaLoggin({super.key});
+class TelaLogin extends StatefulWidget {
+  TelaLogin({super.key});
 
   @override
-  State<TelaLoggin> createState() => _TelaLogginState();
+  State<TelaLogin> createState() => _TelaLoginState();
 }
 
-class _TelaLogginState extends State<TelaLoggin> {
-  final TextEditingController email =
-      TextEditingController(); //controler don imputs -- adicionar o sistema de salvamento
+class _TelaLoginState extends State<TelaLogin> {
+  final TextEditingController email = TextEditingController(); //controler don inputs -- adicionar o sistema de salvamento
   final TextEditingController senha = TextEditingController();
   final Color cortexto = const Color(
     0xffd8d8d8,
@@ -24,6 +24,17 @@ class _TelaLogginState extends State<TelaLoggin> {
   String textoErro = ''; // mostra a mensagem de erro
 
   void esqueciSenha() {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        // Substitua 'SuaOutraTela' pelo nome da classe da tela de destino
+        pageBuilder: (context, animation, secondaryAnimation) => TelaAlterarSenha(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          //animação de transição entre telas
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
+    );
     print(
       'esquci minha senha',
     ); // adicionar tela de recuperação de senha depois
@@ -51,11 +62,17 @@ class _TelaLogginState extends State<TelaLoggin> {
       setState(() {
         textoErro = 'Preencha todos os campos';
         CorTextInput = Colors.red;
-        print(
-          'Preencha todos os campos',
-        ); // remover depois,  serve para mostrar se o codigo esta funcionando
       });
     } else {
+      var re = RegExp(r"/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/");
+
+      if (!re.hasMatch(emailvalue)) {
+        setState(() {
+          textoErro = 'E-Mail invalido';
+          CorTextInput = Colors.red;
+        });
+        return;
+      }
       setState(() {
         textoErro = '';
         CorTextInput = const Color(0xffd8d8d8);
