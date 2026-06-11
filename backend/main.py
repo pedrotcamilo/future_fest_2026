@@ -159,21 +159,26 @@ async def authToken(token):
     )
 
     match statusLogin:
-        case 0:
-            return responses.JSONResponse(
-                content={
-                    "autenticado": "true"
-                },
-                status_code=200
-            )
-
-        case _:
+        case 1:
             return responses.JSONResponse(
                 content={
                     "autenticado": "false"
                 },
                 status_code=401
             )
+        case _:
+            nome = acoesUsuario.info_usuario(
+                id=statusLogin,
+                email=None
+            )["nome"]
+            return responses.JSONResponse(
+                content={
+                    "autenticado": "true",
+                    "nome": nome
+                },
+                status_code=200
+            )
+
 
 app.mount("/admin", StaticFiles(directory="static",html = True))
 
@@ -183,8 +188,7 @@ async def listar_usuarios():
 
     return responses.JSONResponse(content=usuarios)
 
-# Tradução da bula
-
+'''
 @app.post("/traducaoBula")
 async def traducaoBula(file: UploadFile, token):
 
@@ -234,11 +238,10 @@ async def traducaoBula(file: UploadFile, token):
     json_final = repair_json(cleaned)
 
     return responses.JSONResponse(content=json.loads(json_final))
+'''
 
-# Tradução de receita
-
-@app.post("/traduzirReceita") # é a mesma coisa de cima, só q com outro
-async def traduzirReceita(file: UploadFile, token):
+@app.post("/extrairReceita") # é a mesma coisa de cima, só q com outro
+async def extrairReceita(file: UploadFile, token):
     formatosPermitidos = ["image/jpeg", "image/png"]
 
     if not file.content_type in formatosPermitidos:
