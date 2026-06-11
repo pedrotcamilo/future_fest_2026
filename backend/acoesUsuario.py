@@ -91,7 +91,7 @@ def logar_usuario_token(token):
     row = db_cursor.fetchone()
 
     if row:
-        return 0
+        return id
     else:
         return 1
 

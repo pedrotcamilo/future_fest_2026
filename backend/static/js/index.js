@@ -1,5 +1,6 @@
 const notif_msg = document.getElementById("notif-msg");
 var emailsCarregadosReset = [];
+var usuariosCarregadosLista = [];
 
 function exibirNotificacao(texto) {
     notif_msg.innerHTML = texto;
@@ -60,7 +61,8 @@ async function apagarUsuario() {
         const response = await fetch(
             `/apagarUsuario?id=${encodeURIComponent(id)}`,
             {
-                method: "POST"
+                method: "DELETE"
+                
             }
         );
 
@@ -108,7 +110,52 @@ async function lerCodigosReset() {
     }
 }
 
+function adicionarUsuario(nome, email, id) {
+    const container = document.getElementById("lista-usuarios");
+    const card = `
+        <div class="card p-1 mt-2" style="width: 30vw;">
+            <div class="card-body">
+                <b class="card-title">(ID: ${id}) ${nome}</b>
+                <p class="card-text">${email}</p>
+            </div>
+        </div>
+    `;
+
+    if (!usuariosCarregadosLista.includes(id)) {
+        container.innerHTML += card;
+        usuariosCarregadosLista.push(id);
+    }
+}
+
+async function lerUsuarios() {
+    try {
+        const response = await fetch("/listarUsuarios");
+        const data = await response.json();
+
+        data.forEach(user => {
+            adicionarUsuario(user.nome, user.email, user.id);
+        });
+    } catch (erro) {
+        console.error(erro)
+    }
+}
+
+function limparListas() {
+    emailsCarregadosReset = [];
+    usuariosCarregadosLista = [];
+    document.getElementById("lista-usuarios").innerHTML = null;
+    document.getElementById("codigos-reset").innerHTML = null;
+}
+
+lerCodigosReset();
+lerUsuarios();
+
+setInterval(() => {
+    limparListas();
+}, 4900);
+
 setInterval(() => {
     lerCodigosReset();
+    lerUsuarios();
 }, 5000);
 exibirNotificacao("Carregado com sucesso!")
