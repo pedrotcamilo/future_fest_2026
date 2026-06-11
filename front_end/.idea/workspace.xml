@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4c6a8ca5-f132-4b83-8c3c-68210a1ed731" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/axion_phare/lib/telas/alterar_senha.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/axion_phare/lib/vars.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/axion_phare/ios/Runner/GeneratedPluginRegistrant.m" beforeDir="false" afterPath="$PROJECT_DIR$/axion_phare/ios/Runner/GeneratedPluginRegistrant.m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/axion_phare/lib/telas/inicio.dart" beforeDir="false" afterPath="$PROJECT_DIR$/axion_phare/lib/telas/inicio.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/axion_phare/lib/telas/loggin.dart" beforeDir="false" afterPath="$PROJECT_DIR$/axion_phare/lib/telas/login.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/axion_phare/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/axion_phare/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/axion_phare/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/axion_phare/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/axion_phare/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/axion_phare/pubspec.yaml" afterDir="false" />
-    </list>
+    <list default="true" id="4c6a8ca5-f132-4b83-8c3c-68210a1ed731" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -43,7 +33,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "frontend-dev",
+    "git-widget-placeholder": "backend-dev",
     "kotlin-language-version-configured": "true",
     "settings.editor.selected.configurable": "preferences.lookFeel",
     "show.migrate.to.gradle.popup": "false"
