@@ -23,6 +23,6 @@ except Exception as e:
 def recriar_db():
     print("Ferramenta de recriação de banco de dados...")
 
-    db_cursor.execute('CREATE TABLE usuarios(id SERIAL PRIMARY KEY, nome VARCHAR(100), email VARCHAR(320), senha VARCHAR(255) NOT NULL)')
+    db_cursor.execute('CREATE TABLE usuarios(id SERIAL PRIMARY KEY, nome VARCHAR(100), email VARCHAR(320), senha VARCHAR(255) NOT NULL, token_usuario VARCHAR(36))')
     db.commit()
     print("Tabela de usuarios recriada")
