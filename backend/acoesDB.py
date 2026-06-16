@@ -26,3 +26,11 @@ def recriar_db():
     db_cursor.execute('CREATE TABLE usuarios(id SERIAL PRIMARY KEY, nome VARCHAR(100), email VARCHAR(320), senha VARCHAR(255) NOT NULL, token_usuario VARCHAR(36))')
     db.commit()
     print("Tabela de usuarios recriada")
+
+    db_cursor.execute('INSERT INTO usuarios VALUES("Admin", "admin@local", "AxionAdmin@", "0")')
+    db.commit()
+    print("Usuario Administrador adicionado")
+
+    db_cursor.execute('INSERT INTO usuarios VALUES("Teste da Silva", "teste.silva@email.com", "UsuarioDeTeste@", "")')
+    db.commit()
+    print("Usuario de Teste adicionado")
