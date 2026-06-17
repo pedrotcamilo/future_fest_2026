@@ -18,7 +18,7 @@ app = FastAPI()
 regex_email = re.compile(r'^\S+@\S+\.\S+$')
 
 prompt_traducaoreceita_arquivo = open(os.path.join(
-    os.path.curdir(),
+    os.path.curdir,
     "prompts",
     "receita.txt"
 ),"r")
