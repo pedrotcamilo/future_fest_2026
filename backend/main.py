@@ -2,25 +2,26 @@ from fastapi import FastAPI, responses, File, UploadFile
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from json_repair import repair_json
+from openai import OpenAI
 
 import re
 import ollama
 import json
+import base64
+import os
 
 import acoesUsuario
-import ferramentas
-import acoesDB
 
 load_dotenv()
 
 app = FastAPI()
 regex_email = re.compile(r'^\S+@\S+\.\S+$')
 
-prompt_traducaobula_arquivo = open("prompt_traducaoBula.txt","r")
-prompt_traducao_bula = prompt_traducaobula_arquivo.read()
-prompt_traducaobula_arquivo.close()
-
-prompt_traducaoreceita_arquivo = open("prompt_traducaoReceita.txt","r")
+prompt_traducaoreceita_arquivo = open(os.path.join(
+    os.path.curdir(),
+    "prompts",
+    "receita.txt"
+),"r")
 prompt_traducao_receita = prompt_traducaoreceita_arquivo.read()
 prompt_traducaoreceita_arquivo.close()
 
@@ -188,81 +189,46 @@ async def listar_usuarios():
 
     return responses.JSONResponse(content=usuarios)
 
-'''
-@app.post("/traducaoBula")
-async def traducaoBula(file: UploadFile, token):
-
-    formatosPermitidos = ["image/jpeg", "image/png"]
-
-    if not file.content_type in formatosPermitidos:
-        return responses.JSONResponse(
-            content={
-                "erro": "Formato nao permitido! Somente image/jpeg e image/png sao permitidos!"
-            },
-            status_code=415
-        )
-    
-    if not acoesUsuario.tokenExiste(token=token):
-        return responses.JSONResponse(
-            content={"erro": "Token invalido"},
-            status_code=401
-        )
-    
-    conteudo = await file.read()
-
-    response = ollama.chat(
-        model="gemma4:e2b",
-        #model="medgemma:4b",   # esse modelo é lerdo para um caralho, se você tiver tempo usa ele
-        messages=[
-            {
-                "role": "system",
-                "content": prompt_traducao_bula
-            },
-            {
-                "role": "user",
-                "content": "Siga as instruções do sistema",
-                "images": [conteudo]
-            },
-        ],
-        options={"temperature": 0.1},
-        tools=[ferramentas.aprovadoAnvisa],
-        think=True,
-    )
-
-    cleaned = (
-        response["message"]["content"].replace("```json", "")
-        .replace("```", "")
-        .strip()
-    )
-
-    json_final = repair_json(cleaned)
-
-    return responses.JSONResponse(content=json.loads(json_final))
-'''
-
-@app.post("/extrairReceita") # é a mesma coisa de cima, só q com outro
+@app.post("/extrairReceita")
 async def extrairReceita(file: UploadFile, token):
-    formatosPermitidos = ["image/jpeg", "image/png"]
+    formatosPermitidos = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/webp",
+        "image/bmp",
+        "image/tiff",
+        "image/gif",
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ]
 
-    if not file.content_type in formatosPermitidos:
+    openroute_client = OpenAI(
+        api_key=os.environ.get("OPENROUTE_API_KEY"),
+        base_url="https://openrouter.ai/api/v1"
+    )
+
+    if file.content_type not in formatosPermitidos:
         return responses.JSONResponse(
             content={
-                "erro": "Formato nao permitido! Somente image/jpeg e image/png sao permitidos!"
+                "erro": f"Formato nao permitido! Somente {formatosPermitidos} sao permitidos!"
             },
             status_code=415
         )
-    
+
     if not acoesUsuario.tokenExiste(token=token):
         return responses.JSONResponse(
             content={"erro": "Token invalido"},
             status_code=401
         )
-    
+
     conteudo = await file.read()
 
-    response = ollama.chat(
-        model="gemma4:e2b",
-        #model="medgemma:4b",
+    image_b64 = base64.b64encode(conteudo).decode("utf-8")
+
+    response = openroute_client.chat.completions.create(
+        model="nex-agi/nex-n2-pro:free",
+        temperature=0.1,
         messages=[
             {
                 "role": "system",
@@ -270,64 +236,35 @@ async def extrairReceita(file: UploadFile, token):
             },
             {
                 "role": "user",
-                "content": "Siga as instruções do sistema",
-                "images": [conteudo]
-            },
-        ],
-        options={"temperature": 0.1},
-        tools=[],
-        think=True,
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "Siga as instruções do sistema"
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:{file.content_type};base64,{image_b64}"
+                        }
+                    }
+                ]
+            }
+        ]
     )
 
     cleaned = (
-        response["message"]["content"].replace("```json", "")
+        response.choices[0].message.content
+        .replace("```json", "")
         .replace("```", "")
         .strip()
     )
 
     json_final = repair_json(cleaned)
 
-    print(response["message"]["thinking"])
-    return responses.JSONResponse(content=json.loads(json_final))
+    return responses.JSONResponse(
+        content=json.loads(json_final)
+    )
 
-# Reset de senha
-
-@app.post("/solicitarResetSenha")
-def solicitarResetSenha(email):
-    if email == None:
-        return responses.JSONResponse(
-            content={
-                "message": "E-Mail necessario"
-            },
-            status_code=400
-        )
-    
-    if not acoesUsuario.usuarioExiste(email=email, id=None):
-        return responses.JSONResponse(
-            content={
-                "message": "Usuario nao existe"
-            },
-            status_code=400
-        )
-    
-    status = acoesUsuario.solicitar_reset_senha(email)
-
-    if status == 0:
-        return responses.JSONResponse(
-            content={
-                "message": "Ok"
-            },
-            status_code=200
-        )
-    
-    else:
-        return responses.JSONResponse(
-            content={
-                "error": status
-            },
-            status_code=500
-        )
-    
 @app.post("/resetarSenha")
 def resetarSenha(email, codReset, senha_nova):
 
