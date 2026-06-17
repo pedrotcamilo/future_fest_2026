@@ -5,7 +5,6 @@ from json_repair import repair_json
 from openai import OpenAI
 
 import re
-import ollama
 import json
 import base64
 import os
