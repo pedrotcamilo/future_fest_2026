@@ -26,12 +26,14 @@ except Exception as e:
 # Usuario
 
 def usuarioExiste(email,id):
+    row = None
+
     try:
-        if not email == None: 
+        if not email is None:
             db_cursor.execute("SELECT email FROM usuarios WHERE email = %s",(email,))
             row = db_cursor.fetchone()
 
-        elif not id == None:
+        elif not id is None:
             db_cursor.execute("SELECT id FROM usuarios WHERE id = %s",(id,))
             row = db_cursor.fetchone()
 
@@ -41,11 +43,13 @@ def usuarioExiste(email,id):
             return False
         
     except Exception as e:
+        print(f"Erro: {e}")
+        db.rollback()
         return str(e)
 
 def registar_usuario(email,nome,senha):
 
-    if email == None or nome == None or senha == None:
+    if email is None or nome is None or senha is None:
         return 1
 
     try:
@@ -54,11 +58,13 @@ def registar_usuario(email,nome,senha):
         return 0
 
     except Exception as e:
+        print(f"Erro: {e}")
+        db.rollback()
         return str(e)
 
 def apagar_usuario(id):
     
-    if id == None:
+    if id is None:
         return 1
     
     try:
@@ -67,11 +73,13 @@ def apagar_usuario(id):
         return 0
     
     except Exception as e:
+        print(f"Erro: {e}")
+        db.rollback()
         return str(e)
 
 def logar_usuario(email, senha):
 
-    if email == None or senha == None:
+    if email is None or senha is None:
         return 2
     
     db_cursor.execute("SELECT id FROM usuarios WHERE email = %s AND senha = %s",(email,senha))
@@ -84,23 +92,23 @@ def logar_usuario(email, senha):
 
 def logar_usuario_token(token):
 
-    if token == None:
+    if token is None:
         return 2
     
-    db_cursor.execute("SELECT id FROM usuarios WHERE token_usuario = %s",(token,))
+    db_cursor.execute("SELECT * FROM usuarios WHERE token_usuario = %s",(token,))
     row = db_cursor.fetchone()
 
     if row:
-        return id
+        return row
     else:
         return 1
 
 def info_usuario(id, email):
 
-    if not id == None:
+    if not id is None:
         db_cursor.execute("SELECT * FROM usuarios WHERE id = %s",(id,))
 
-    if not email == None:
+    if not email is None:
         db_cursor.execute("SELECT * FROM usuarios WHERE email = %s",(email,))
 
     row = db_cursor.fetchone()
@@ -122,7 +130,7 @@ def listar_usuarios():
 
 def gerar_token_usuario(id):
 
-    if id == None:
+    if id is None:
         return 2
     
     tokenGerado = str(uuid4())
@@ -133,7 +141,7 @@ def gerar_token_usuario(id):
 
 def reset_token_usuario(id):
 
-    if id == None:
+    if id is None:
         return 2
     
     db_cursor.execute("UPDATE usuarios SET token_usuario = '' WHERE id = %s",(id,))
@@ -141,10 +149,11 @@ def reset_token_usuario(id):
 
     return 0
 
-def tokenExiste(token):
+def token_existe(token):
+    row = None
 
     try:
-        if not token == None: 
+        if not token is None:
             db_cursor.execute("SELECT token_usuario FROM usuarios WHERE token_usuario = %s",(token,))
             row = db_cursor.fetchone()
 
@@ -154,6 +163,26 @@ def tokenExiste(token):
             return False
         
     except Exception as e:
+        print(f"Erro: {e}")
+        db.rollback()
+        return str(e)
+
+def token_correto(id, token):
+    row = None
+
+    try:
+        if not token is None:
+            db_cursor.execute("SELECT token_usuario FROM usuarios WHERE token_usuario = %s AND id = %s", (token,id))
+            row = db_cursor.fetchone()
+
+        if row:
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        print(f"Erro: {e}")
+        db.rollback()
         return str(e)
     
 # Atualizar Senha
@@ -161,7 +190,7 @@ def tokenExiste(token):
 def solicitar_reset_senha(email):
     codAleatorio = ""
 
-    if email == None:
+    if email is None:
         return 2
 
     for i in range(0,6):
@@ -173,7 +202,7 @@ def solicitar_reset_senha(email):
 
 def atualizar_senha(email, codReset, senha_nova):
     
-    if email == None or codReset == None or senha_nova == None:
+    if email is None or codReset is None or senha_nova is None:
         return 2
     
     try:
@@ -194,6 +223,8 @@ def atualizar_senha(email, codReset, senha_nova):
         return 0
     
     except Exception as e:
+        print(f"Erro: {e}")
+        db.rollback()
         return str(e)
     
 def listar_codigos_reset():

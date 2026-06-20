@@ -10,6 +10,8 @@ import base64
 import os
 
 import acoesUsuario
+import acoesReceita
+import acoesMedicamento
 
 load_dotenv()
 
@@ -26,10 +28,10 @@ prompt_traducaoreceita_arquivo.close()
 
 # Ações de Usuário
 
-@app.post("/registrarUsuario")
+@app.post("/usuario/registrarUsuario")
 async def registar_usuario(email,nome,senha):
 
-    if email == None or nome == None or senha == None:
+    if email is None or nome is None or senha is None:
         return responses.JSONResponse(
             content={"message": "Parametro ausente"},
             status_code=400
@@ -55,10 +57,10 @@ async def registar_usuario(email,nome,senha):
             status_code=500
         )
     
-@app.delete("/apagarUsuario")
-async def apagar_usuario(id):
+@app.delete("/usuario/apagarUsuario")
+async def apagar_usuario(id: str):
 
-    if id == None:
+    if id is None:
         return responses.JSONResponse(
             content={"message": "ID Ausente"},
             status_code=400
@@ -84,10 +86,10 @@ async def apagar_usuario(id):
             status_code=500
         )
     
-@app.post("/logarUsuario")
+@app.post("/usuario/logarUsuario")
 async def logar_usuario(email, senha):
 
-    if email == None or senha == None:
+    if email is None or senha is None:
         return responses.JSONResponse(
             content={
                 "autenticado": "false",
@@ -100,7 +102,7 @@ async def logar_usuario(email, senha):
     statusLogin = acoesUsuario.logar_usuario(
         email=email,
         senha=senha,
-    ) # say wallahi bro say wallahi
+    )
 
     infoUsuario = acoesUsuario.info_usuario(email=email,id=None)
 
@@ -142,132 +144,59 @@ async def logar_usuario(email, senha):
                 },
                 status_code=400
             )
+    return None
 
-@app.post("/authToken")
-async def authToken(token):
 
-    if token == None:
+@app.post("/usuario/authToken")
+async def auth_token(token):
+
+    if token is None:
         return responses.JSONResponse(
             content={
                 "autenticado": "false",
             },
             status_code=400
         )
-    
-    statusLogin = acoesUsuario.logar_usuario_token(
-        token=token
-    )
 
-    match statusLogin:
-        case 1:
-            return responses.JSONResponse(
-                content={
-                    "autenticado": "false"
-                },
-                status_code=401
+    else:
+        infoUsuario = acoesUsuario.logar_usuario_token(
+            token=token
+        )
+
+        if infoUsuario:
+            novo_token = acoesUsuario.gerar_token_usuario(
+                id=infoUsuario["id"]
             )
-        case _:
-            nome = acoesUsuario.info_usuario(
-                id=statusLogin,
-                email=None
-            )["nome"]
             return responses.JSONResponse(
                 content={
-                    "autenticado": "true",
-                    "nome": nome
+                    "id": infoUsuario["id"],
+                    "nome": infoUsuario["nome"],
+                    "novo_token": novo_token
                 },
                 status_code=200
             )
 
 
+    return responses.JSONResponse(
+        content={
+            "autenticado": "false",
+        },
+        status_code=400
+    )
+
+
 app.mount("/admin", StaticFiles(directory="static",html = True))
 
-@app.get("/listarUsuarios")
+@app.get("/usuario/listarUsuarios")
 async def listar_usuarios():
     usuarios = acoesUsuario.listar_usuarios()
 
     return responses.JSONResponse(content=usuarios)
 
-@app.post("/extrairReceita")
-async def extrairReceita(file: UploadFile, token):
-    formatosPermitidos = [
-        "image/jpeg",
-        "image/jpg",
-        "image/png",
-        "image/webp",
-        "image/bmp",
-        "image/tiff",
-        "image/gif",
-        "application/pdf",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    ]
+@app.post("/usuario/resetarSenha")
+def resetar_senha(email, codReset, senha_nova):
 
-    openroute_client = OpenAI(
-        api_key=os.environ.get("OPENROUTE_API_KEY"),
-        base_url="https://openrouter.ai/api/v1"
-    )
-
-    if file.content_type not in formatosPermitidos:
-        return responses.JSONResponse(
-            content={
-                "erro": f"Formato nao permitido! Somente {formatosPermitidos} sao permitidos!"
-            },
-            status_code=415
-        )
-
-    if not acoesUsuario.tokenExiste(token=token):
-        return responses.JSONResponse(
-            content={"erro": "Token invalido"},
-            status_code=401
-        )
-
-    conteudo = await file.read()
-
-    image_b64 = base64.b64encode(conteudo).decode("utf-8")
-
-    response = openroute_client.chat.completions.create(
-        model="nex-agi/nex-n2-pro:free",
-        temperature=0.1,
-        messages=[
-            {
-                "role": "system",
-                "content": prompt_traducao_receita
-            },
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": "Siga as instruções do sistema"
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": f"data:{file.content_type};base64,{image_b64}"
-                        }
-                    }
-                ]
-            }
-        ]
-    )
-
-    cleaned = (
-        response.choices[0].message.content
-        .replace("```json", "")
-        .replace("```", "")
-        .strip()
-    )
-
-    json_final = repair_json(cleaned)
-
-    return responses.JSONResponse(
-        content=json.loads(json_final)
-    )
-
-@app.post("/resetarSenha")
-def resetarSenha(email, codReset, senha_nova):
-
-    if email == None or codReset == None or senha_nova == None:
+    if email is None or codReset is None or senha_nova is None:
         return responses.JSONResponse(
             content={
                 "message": "Campos vazios"
@@ -306,9 +235,153 @@ def resetarSenha(email, codReset, senha_nova):
                 status_code=500
             )
         
-@app.get("/codigosReset")
-def codigosReset():
+@app.get("/usuario/codigosReset")
+def codigos_reset():
     return responses.JSONResponse(
         content=acoesUsuario.listar_codigos_reset(),
         status_code=200
     )
+
+@app.post("/receitas/extrairReceita")
+async def extrair_receita(file: UploadFile, token):
+    formatosPermitidos = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/webp",
+        "image/bmp",
+        "image/tiff",
+        "image/gif",
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ]
+
+    openroute_client = OpenAI(
+        api_key=os.environ.get("OPENROUTE_API_KEY"),
+        base_url="https://openrouter.ai/api/v1"
+    )
+
+    if file.content_type not in formatosPermitidos:
+        return responses.JSONResponse(
+            content={
+                "erro": f"Formato nao permitido! Somente {formatosPermitidos} sao permitidos!"
+            },
+            status_code=415
+        )
+
+    if not acoesUsuario.token_existe(token=token):
+        return responses.JSONResponse(
+            content={"erro": "Token invalido"},
+            status_code=401
+        )
+
+    conteudo = await file.read()
+
+    image_b64 = base64.b64encode(conteudo).decode("utf-8")
+
+    response = openroute_client.chat.completions.create(
+        model="nvidia/nemotron-3-super-120b-a12b:free",
+        temperature=0.1,
+        messages=[
+            {
+                "role": "system",
+                "content": prompt_traducao_receita
+            },
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "Siga as instruções do sistema"
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:{file.content_type};base64,{image_b64}"
+                        }
+                    }
+                ]
+            }
+        ]
+    )
+
+    cleaned = (
+        response.choices[0].message.content
+        .replace("```json", "")
+        .replace("```", "")
+        .strip()
+    )
+
+    json_final = repair_json(cleaned)
+
+    return responses.JSONResponse(
+        content=json.loads(json_final)
+    )
+
+@app.post("/receitas/informacoes/{id_usuario}")
+def info_receitas(id_usuario: int, token: str):
+
+    if id_usuario is None or token is None:
+        return responses.JSONResponse(
+            content={
+                "erro": "Campos pendentes"
+            },
+            status_code=401
+        )
+
+    status_token = acoesUsuario.token_correto(
+        id=id_usuario,
+        token=token
+    )
+
+    if not status_token:
+        return responses.JSONResponse(
+            content={
+                "erro": "Token incorreto!"
+            }
+        )
+
+    receitas_usuario = acoesReceita.listar_receitas_usuario(
+        id=id_usuario
+    )
+
+    return responses.JSONResponse(
+        content=receitas_usuario,
+        status_code=200
+    )
+
+@app.post("/medicamentos/registrarMedicamento")
+def registrar_medicamento(nome, principio_ativo, laboratorio, concentracao, forma_farmaceutica, via_administracao, registro_anvisa, descricao):
+
+    if nome is None or principio_ativo is None or laboratorio is None or concentracao is None or forma_farmaceutica is None or via_administracao is None or registro_anvisa is None:
+        return responses.JSONResponse(
+            content={
+                "erro": "Campos pendentes"
+            }
+        )
+
+    status_registro = acoesMedicamento.adicionar_medicamento(
+        nome=nome,
+        principio_ativo=principio_ativo,
+        laboratorio=laboratorio,
+        concentracao=concentracao,
+        forma_farmaceutica=forma_farmaceutica,
+        via_administracao=via_administracao,
+        registro_anvisa=registro_anvisa,
+        descricao=descricao
+    )
+
+    match status_registro:
+        case 0:
+            return responses.JSONResponse(
+                content={
+                    "info": "Medicamento registrado!"
+                }
+            )
+
+        case _:
+            return responses.JSONResponse(
+                content={
+                    "erro": status_registro
+                }
+            )
