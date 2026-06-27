@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine, select, update, delete
+from sqlalchemy.dialects.mysql import insert
 from sqlalchemy.orm import Session, DeclarativeBase, Mapped, mapped_column
 from os import getenv
 from dotenv import load_dotenv
@@ -6,78 +7,108 @@ from dotenv import load_dotenv
 load_dotenv(verbose=True)
 
 usuario = getenv("DB_USUARIO")
-senha = getenv("DB_SENHA")
+db_senha = getenv("DB_SENHA")
 host = getenv("DB_HOST")
 porta = getenv("DB_PORT")
 database = getenv("DB_SCHEM")
 
 engine = create_engine(
-    f"postgresql://{usuario}:{senha}@{host}:{porta}/{database}"
+    f"postgresql://{usuario}:{db_senha}@{host}:{porta}/{database}"
 )
 
 class Base(DeclarativeBase):
     pass
 
-class Clientes(Base):
-    __tablename__ = "clientes"
+class Usuarios(Base):
+    __tablename__ = "usuarios"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     nome: Mapped[str] = mapped_column()
     telefone: Mapped[str] = mapped_column()
     email: Mapped[str] = mapped_column()
+    admin: Mapped[bool] = mapped_column()
+    senha: Mapped[str] = mapped_column()
 
-def listar_clientes():
+def listar_usuarios():
     with Session(engine) as session:
-        stmt = select(Clientes)
+        stmt = select(Usuarios)
         result = session.execute(stmt)
 
-        clientes = result.scalars().all()
+        usuarios = result.scalars().all()
 
         data = [
             {
                 "id": c.id,
                 "nome": c.nome,
                 "telefone": c.telefone,
-                "email": c.email
+                "email": c.email,
+                "admin": c.admin
             }
-            for c in clientes
+            for c in usuarios
         ]
 
         return data
 
-def listar_cliente_id(id: int):
+def listar_usuario_id(id: int):
     with Session(engine) as session:
-        stmt = select(Clientes).where(Clientes.id == id)
+        stmt = select(Usuarios).where(Usuarios.id == id)
         result = session.execute(stmt)
 
-        clientes = result.scalars().all()
+        usuarios = result.scalars().all()
 
         data = [
             {
                 "id": c.id,
                 "nome": c.nome,
                 "telefone": c.telefone,
-                "email": c.email
+                "email": c.email,
+                "admin": c.admin
             }
-            for c in clientes
+            for c in usuarios
         ]
 
         return data
 
-def editar_cliente(
-    id: int,
-    nome = None,
-    telefone = None,
-    email = None
+def criar_usuario(
+    nome: str,
+    telefone: str,
+    email: str,
+    senha = "SenhaPadrao"
 ):
     with Session(engine) as session:
         stmt = (
-            update(Clientes)
-            .where(Clientes.id == id)
+            insert(Usuarios)
             .values(
                 nome = nome,
                 telefone = telefone,
-                email = email
+                email = email,
+                admin = False,
+                senha = senha
+            )
+        )
+
+        session.execute(stmt)
+        session.commit()
+        return "Ok"
+
+def editar_usuario(
+    id: int,
+    nome = None,
+    telefone = None,
+    email = None,
+    senha = "SenhaPadrao",
+    admin = False
+):
+    with Session(engine) as session:
+        stmt = (
+            update(Usuarios)
+            .where(Usuarios.id == id)
+            .values(
+                nome = nome,
+                telefone = telefone,
+                email = email,
+                admin = admin,
+                senha = senha
             )
         )
 
@@ -86,11 +117,12 @@ def editar_cliente(
 
         return "Ok"
 
-def deletar_cliente(id: int):
+def deletar_usuario(id: int):
     with Session(engine) as session:
         stmt = (
-            delete(Clientes)
-            .where(Clientes.id == id)
+            delete(Usuarios)
+            .where(Usuarios.id == id)
+            .where(Usuarios.admin == False)
         )
 
         session.execute(stmt)
