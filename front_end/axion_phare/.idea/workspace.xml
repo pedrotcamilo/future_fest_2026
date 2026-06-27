@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cd48a084-0ec2-4575-bc12-46d65613c455" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../../backend/acoesUsuario.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../backend/acoesUsuario.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../backend/acoesMedicamento.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../backend/acoesMedicamento.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../backend/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../backend/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,6 +52,8 @@
     "dart.analysis.tool.window.visible": "false",
     "git-widget-placeholder": "backend-dev",
     "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/mnt/devdrive/FIAP/2026/flutter/aula9_ac",
+    "nodejs_package_manager_path": "npm",
     "show.migrate.to.gradle.popup": "false"
   }
 }]]></component>
