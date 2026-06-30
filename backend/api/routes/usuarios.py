@@ -1,5 +1,5 @@
 from fastapi import APIRouter, responses
-from api.services import database, respostas_padrao
+from api.services import database_usuarios, respostas_padrao
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -17,7 +17,7 @@ class BaseCriacaoUsuario(BaseModel):
 
 @router.get("/")
 async def listar_usuarios():
-    resultado = database.listar_usuarios()
+    resultado = database_usuarios.listar_usuarios()
     return responses.JSONResponse(
         content=resultado,
         status_code=200
@@ -28,7 +28,7 @@ async def listar_usuarios_id(id: int):
     if id is None:
         return respostas_padrao.campos_pendentes
 
-    resultado = database.listar_usuario_id(id)
+    resultado = database_usuarios.listar_usuario_id(id)
     return responses.JSONResponse(
         content=resultado,
         status_code=200
@@ -45,7 +45,7 @@ async def criar_usuario(body: BaseCriacaoUsuario):
     ):
         return respostas_padrao.campos_pendentes
 
-    resultado = database.criar_usuario(
+    resultado = database_usuarios.criar_usuario(
         nome = body.nome,
         telefone = body.telefone,
         email = body.email,
@@ -62,7 +62,7 @@ async def atualizar_usuario(id: int, body: BaseUsuarios):
     if id is None:
         return respostas_padrao.campos_pendentes
 
-    resultado = database.editar_usuario(
+    resultado = database_usuarios.editar_usuario(
         id = id,
         nome = body.nome,
         telefone = body.telefone,
@@ -79,7 +79,7 @@ async def deletar_usuario(id: int):
     if id is None:
         return respostas_padrao.campos_pendentes
 
-    resultado = database.deletar_usuario(id)
+    resultado = database_usuarios.deletar_usuario(id)
     return responses.PlainTextResponse(
         content=resultado,
         status_code=200
