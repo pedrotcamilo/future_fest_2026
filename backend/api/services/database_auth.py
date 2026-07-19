@@ -1,30 +1,53 @@
-from sqlalchemy import create_engine, select, update, delete
-from sqlalchemy.dialects.mysql import insert
-from sqlalchemy.orm import Session, DeclarativeBase, Mapped, mapped_column
-from os import getenv
-from dotenv import load_dotenv
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+from uuid import uuid4
+from pwdlib import PasswordHash
 
-load_dotenv(verbose=True)
+from api.services.database import engine
+from api.services.models import Usuarios
 
-usuario = getenv("DB_USUARIO")
-db_senha = getenv("DB_SENHA")
-host = getenv("DB_HOST")
-porta = getenv("DB_PORT")
-database = getenv("DB_SCHEM")
+hash_senha = PasswordHash.recommended()
+tokens_dict = {}
 
-engine = create_engine(
-    f"postgresql://{usuario}:{db_senha}@{host}:{porta}/{database}"
-)
+def verificar_senha(email: str, senha: str):
+    with Session(engine) as session:
+        stmt = select(Usuarios).where(Usuarios.email == email)
+        usuario = session.scalar(stmt)
 
-class Base(DeclarativeBase):
-    pass
+        if usuario is None:
+            return False
 
-#class Usuarios(Base):
-#    __tablename__ = "usuarios"
-#
-#    id: Mapped[int] = mapped_column(primary_key=True)
-#    nome: Mapped[str] = mapped_column()
-#    telefone: Mapped[str] = mapped_column()
-#    email: Mapped[str] = mapped_column()
-#    admin: Mapped[bool] = mapped_column()
-#    senha: Mapped[str] = mapped_column()
+        hash_db = usuario.senha
+        status = hash_senha.verify(senha, hash_db)
+
+        return status
+
+def gerar_token(email: str):
+    novo_token = str(uuid4())
+
+    tokens_dict[email] = novo_token
+
+    return novo_token
+
+def buscar_usuario_por_email(email: str):
+    with Session(engine) as session:
+        stmt = select(Usuarios).where(Usuarios.email == email)
+        usuario = session.scalar(stmt)
+
+        if usuario is None:
+            return None
+
+        return {
+            "id": usuario.id,
+            "nome": usuario.nome,
+            "telefone": usuario.telefone,
+            "email": usuario.email,
+            "admin": usuario.admin
+        }
+
+def obter_tokens():
+    return tokens_dict
+
+def remover_token(email: str):
+    if email in tokens_dict:
+        del tokens_dict[email]

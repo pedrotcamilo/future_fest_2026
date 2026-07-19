@@ -1,8 +1,10 @@
 from fastapi import APIRouter, responses
 from api.services import database_usuarios, respostas_padrao
 from pydantic import BaseModel
+from pwdlib import PasswordHash
 
 router = APIRouter()
+hash_senha = PasswordHash.recommended()
 
 class BaseUsuarios(BaseModel):
     nome: str
@@ -45,11 +47,13 @@ async def criar_usuario(body: BaseCriacaoUsuario):
     ):
         return respostas_padrao.campos_pendentes
 
+    hashed = hash_senha.hash(body.senha)
+
     resultado = database_usuarios.criar_usuario(
         nome = body.nome,
         telefone = body.telefone,
         email = body.email,
-        senha = body.senha
+        senha = hashed
     )
 
     return responses.PlainTextResponse(
