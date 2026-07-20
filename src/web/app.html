@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Administracao</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="app/css/app.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="app/js/api.js" defer></script>
+    <script src="app/js/app.js" defer></script>
+</head>
+<body data-bs-theme="dark">
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="login/content/images/logo2.png" class="sidebar-logo">
+                <span class="sidebar-title">Farmácia</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-page="dashboard"><i class="bi bi-grid-fill"></i> Dashboard</a>
+                <div class="nav-divider">Cadastros</div>
+                <a href="#" class="nav-item" data-page="usuarios"><i class="bi bi-people-fill"></i> Usuarios</a>
+                <a href="#" class="nav-item" data-page="fornecedores"><i class="bi bi-truck"></i> Fornecedores</a>
+                <a href="#" class="nav-item" data-page="materias-primas"><i class="bi bi-capsule"></i> Materias-Primas</a>
+                <a href="#" class="nav-item" data-page="lotes"><i class="bi bi-upc-scan"></i> Lotes</a>
+                <a href="#" class="nav-item" data-page="clientes"><i class="bi bi-person-badge"></i> Clientes</a>
+                <a href="#" class="nav-item" data-page="formulas"><i class="bi bi-file-earmark-text"></i> Formulas</a>
+                <div class="nav-divider">Operacoes</div>
+                <a href="#" class="nav-item" data-page="estoque"><i class="bi bi-box-seam"></i> Estoque</a>
+                <a href="#" class="nav-item" data-page="compras"><i class="bi bi-cart3"></i> Compras</a>
+                <a href="#" class="nav-item" data-page="pedidos"><i class="bi bi-receipt"></i> Pedidos</a>
+                <a href="#" class="nav-item" data-page="producao"><i class="bi bi-gear-wide-connected"></i> Producao</a>
+                <div class="nav-divider">Analise</div>
+                <a href="#" class="nav-item" data-page="consumo"><i class="bi bi-graph-down"></i> Consumo</a>
+                <a href="#" class="nav-item" data-page="previsoes"><i class="bi bi-graph-up"></i> Previsoes</a>
+                <a href="#" class="nav-item" data-page="sugestoes"><i class="bi bi-lightbulb"></i> Sugestoes</a>
+                <a href="#" class="nav-item" data-page="alertas"><i class="bi bi-exclamation-triangle"></i> Alertas</a>
+                <div class="nav-divider">Relatorios</div>
+                <a href="#" class="nav-item" data-page="relatorios"><i class="bi bi-bar-chart-fill"></i> Relatorios</a>
+                <div class="nav-divider"></div>
+                <a href="#" class="nav-item text-danger" id="btn-logout"><i class="bi bi-box-arrow-left"></i> Sair</a>
+            </nav>
+        </aside>
+
+        <!-- Main -->
+        <main class="main-content">
+            <header class="content-header">
+                <button class="btn btn-outline-secondary d-md-none me-2" id="btn-toggle-sidebar"><i class="bi bi-list"></i></button>
+                <h5 class="mb-0" id="page-title">Dashboard</h5>
+                <div class="ms-auto text-body-tertiary small" id="header-info"></div>
+            </header>
+            <div class="content-body" id="content-body">
+                <div class="text-center py-5"><div class="spinner-border"></div></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Generic CRUD Modal -->
+    <div class="modal fade" id="modal-form" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header"><h5 class="modal-title" id="modal-title">Formulario</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body" id="modal-body"></div>
+                <div class="modal-footer" id="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-primary" id="btn-modal-save">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

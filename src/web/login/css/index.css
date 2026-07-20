@@ -1,0 +1,15 @@
+.logo-axionphare {
+    max-height: 35vh;
+}
+
+.corpo-login {
+    margin-top: 35vh;
+}
+
+#btn-esconder-senha {
+    cursor: pointer;
+}
+
+#btn-autenticar {
+    width: 100%;
+}
