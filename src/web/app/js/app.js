@@ -855,7 +855,7 @@ async function renderRelatorios() {
         </div>
         <div class="col-md-4">
             <div class="card-dash" onclick="verRelatorio('vencimentos')" style="cursor:pointer">
-                <div class="icon bi bi-calendar-exclamation text-warning"></div>
+                <div class="icon bi bi-calendar-x text-warning"></div>
                 <div class="fw-bold">Vencimentos</div>
                 <div class="label small">Lotes proximos ao vencimento</div>
             </div>
