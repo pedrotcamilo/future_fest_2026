@@ -1,10 +1,16 @@
-from fastapi import APIRouter, responses
-from api.services import database_usuarios, respostas_padrao
+from fastapi import APIRouter, responses, Header
+from api.services import database_usuarios, database_auth, respostas_padrao
 from pydantic import BaseModel
 from pwdlib import PasswordHash
 
 router = APIRouter()
 hash_senha = PasswordHash.recommended()
+
+def obter_usuario_atual(authorization: str):
+    if not authorization or not authorization.startswith("Bearer "):
+        return None
+    token = authorization[7:]
+    return database_auth.buscar_usuario_por_token(token)
 
 class BaseUsuarios(BaseModel):
     nome: str
@@ -37,7 +43,11 @@ async def listar_usuarios_id(id: int):
     )
 
 @router.post("/")
-async def criar_usuario(body: BaseCriacaoUsuario):
+async def criar_usuario(body: BaseCriacaoUsuario, authorization: str = Header(None)):
+
+    usuario_atual = obter_usuario_atual(authorization)
+    if usuario_atual is None or not usuario_atual.get("admin"):
+        return respostas_padrao.somente_admin
 
     if (
         body.nome is None
@@ -62,7 +72,11 @@ async def criar_usuario(body: BaseCriacaoUsuario):
     )
 
 @router.put("/{id}")
-async def atualizar_usuario(id: int, body: BaseUsuarios):
+async def atualizar_usuario(id: int, body: BaseUsuarios, authorization: str = Header(None)):
+    usuario_atual = obter_usuario_atual(authorization)
+    if usuario_atual is None or not usuario_atual.get("admin"):
+        return respostas_padrao.somente_admin
+
     if id is None:
         return respostas_padrao.campos_pendentes
 
@@ -79,7 +93,11 @@ async def atualizar_usuario(id: int, body: BaseUsuarios):
     )
 
 @router.delete("/{id}")
-async def deletar_usuario(id: int):
+async def deletar_usuario(id: int, authorization: str = Header(None)):
+    usuario_atual = obter_usuario_atual(authorization)
+    if usuario_atual is None or not usuario_atual.get("admin"):
+        return respostas_padrao.somente_admin
+
     if id is None:
         return respostas_padrao.campos_pendentes
 

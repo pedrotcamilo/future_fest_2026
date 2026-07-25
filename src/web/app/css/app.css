@@ -21,6 +21,7 @@
 }
 .sidebar-logo {
     height: 36px;
+    user-select: none;
 }
 .sidebar-title {
     font-weight: 700;

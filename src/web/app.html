@@ -18,13 +18,14 @@
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <img src="login/content/images/logo2.png" class="sidebar-logo">
-                <span class="sidebar-title">Farmácia</span>
+                <!--<img src="app/img/logo_app.png" class="sidebar-logo">-->
+                <!--<span class="sidebar-title">Farmácia</span>-->
+                <img src="app/img/logo_app.png" class="sidebar-logo">
             </div>
             <nav class="sidebar-nav">
                 <a href="#" class="nav-item active" data-page="dashboard"><i class="bi bi-grid-fill"></i> Dashboard</a>
                 <div class="nav-divider">Cadastros</div>
-                <a href="#" class="nav-item" data-page="usuarios"><i class="bi bi-people-fill"></i> Usuarios</a>
+                <a href="#" class="nav-item" data-page="usuarios" id="nav-usuarios"><i class="bi bi-people-fill"></i> Usuarios</a>
                 <a href="#" class="nav-item" data-page="fornecedores"><i class="bi bi-truck"></i> Fornecedores</a>
                 <a href="#" class="nav-item" data-page="materias-primas"><i class="bi bi-capsule"></i> Materias-Primas</a>
                 <a href="#" class="nav-item" data-page="lotes"><i class="bi bi-upc-scan"></i> Lotes</a>
@@ -52,7 +53,7 @@
             <header class="content-header">
                 <button class="btn btn-outline-secondary d-md-none me-2" id="btn-toggle-sidebar"><i class="bi bi-list"></i></button>
                 <h5 class="mb-0" id="page-title">Dashboard</h5>
-                <div class="ms-auto text-body-tertiary small" id="header-info"></div>
+                <span class="ms-auto text-body-tertiary small" id="header-greeting"></span>
             </header>
             <div class="content-body" id="content-body">
                 <div class="text-center py-5"><div class="spinner-border"></div></div>
