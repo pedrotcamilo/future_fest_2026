@@ -1,7 +1,19 @@
 let modalInstance = null;
+let currentUser = null;
 
-window.onload = function () {
+window.onload = async function () {
     if (!API.getToken()) { window.location.href = "/web/login"; return; }
+
+    const me = await API.me();
+    if (me.ok) {
+        currentUser = me.data;
+        const greeting = document.getElementById("header-greeting");
+        if (greeting) greeting.textContent = "Olá, " + currentUser.nome;
+    }
+    if (me.ok && !currentUser.admin) {
+        const navUsuarios = document.getElementById("nav-usuarios");
+        if (navUsuarios) navUsuarios.style.display = "none";
+    }
 
     document.querySelectorAll("[data-page]").forEach(a => {
         a.addEventListener("click", function (e) {
@@ -39,7 +51,7 @@ async function navigateTo(page) {
         alertas: "Alertas", relatorios: "Relatorios"
     };
     document.getElementById("page-title").textContent = titles[page] || page;
-    document.getElementById("header-info").textContent = "";
+
     document.getElementById("content-body").innerHTML =
         '<div class="text-center py-5"><div class="spinner-border"></div></div>';
 
@@ -140,15 +152,20 @@ async function renderDashboard() {
 async function renderUsuarios() {
     const res = await API.listarUsuarios();
     const data = res.ok ? res.data : [];
+    const isAdmin = currentUser && currentUser.admin;
     let html = `<div class="d-flex justify-content-between mb-3">
-        <h5>Usuarios</h5>
-        <button class="btn btn-primary btn-sm" onclick="usuarioForm(null)"><i class="bi bi-plus-lg"></i> Novo</button>
-    </div>`;
+        <h5>Usuarios</h5>`;
+    if (isAdmin) {
+        html += `<button class="btn btn-primary btn-sm" onclick="usuarioForm(null)"><i class="bi bi-plus-lg"></i> Novo</button>`;
+    }
+    html += `</div>`;
     html += renderTable(
         ["ID", "Nome", "Email", "Telefone", "Admin"],
         data.map(u => [u.id, u.nome, u.email, u.telefone || "-", u.admin ? "Sim" : "Nao"]),
-        r => `<button class="btn btn-sm btn-outline-info me-1" onclick="usuarioForm(${r[0]})"><i class="bi bi-pencil"></i></button>
-              <button class="btn btn-sm btn-outline-danger" onclick="usuarioDelete(${r[0]})"><i class="bi bi-trash"></i></button>`
+        isAdmin
+            ? r => `<button class="btn btn-sm btn-outline-info me-1" onclick="usuarioForm(${r[0]})"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="usuarioDelete(${r[0]})"><i class="bi bi-trash"></i></button>`
+            : null
     );
     document.getElementById("content-body").innerHTML = html;
 }

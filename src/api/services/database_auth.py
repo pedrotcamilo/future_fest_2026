@@ -51,3 +51,14 @@ def obter_tokens():
 def remover_token(email: str):
     if email in tokens_dict:
         del tokens_dict[email]
+
+def buscar_usuario_por_token(token: str):
+    tokens = obter_tokens()
+    email = None
+    for em, tk in tokens.items():
+        if tk == token:
+            email = em
+            break
+    if email is None:
+        return None
+    return buscar_usuario_por_email(email)
