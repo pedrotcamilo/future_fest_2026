@@ -154,7 +154,7 @@ async function renderUsuarios() {
     const data = res.ok ? res.data : [];
     const isAdmin = currentUser && currentUser.admin;
     let html = `<div class="d-flex justify-content-between mb-3">
-        <h5>Usuarios</h5>`;
+        <p></p>`;
     if (isAdmin) {
         html += `<button class="btn btn-primary btn-sm" onclick="usuarioForm(null)"><i class="bi bi-plus-lg"></i> Novo</button>`;
     }
@@ -206,7 +206,7 @@ async function renderFornecedores() {
     const res = await API.listarFornecedores(params.toString());
     const data = res.ok ? res.data : [];
     let html = `<div class="d-flex justify-content-between mb-3">
-        <h5>Fornecedores</h5>
+        <p></p>
         <button class="btn btn-primary btn-sm" onclick="fornForm(null)"><i class="bi bi-plus-lg"></i> Novo</button>
     </div>
     <div class="filters-bar">
@@ -261,7 +261,7 @@ async function renderMateriasPrimas() {
     const res = await API.listarMateriasPrimas(params.toString());
     const data = res.ok ? res.data : [];
     let html = `<div class="d-flex justify-content-between mb-3">
-        <h5>Materias-Primas</h5>
+        <p></p>
         <button class="btn btn-primary btn-sm" onclick="mpForm(null)"><i class="bi bi-plus-lg"></i> Nova</button>
     </div>
     <div class="filters-bar">
@@ -316,7 +316,7 @@ async function renderLotes() {
     const res = await API.listarLotes(params.toString());
     const data = res.ok ? res.data : [];
     let html = `<div class="d-flex justify-content-between mb-3">
-        <h5>Lotes</h5>
+        <p></p>
         <button class="btn btn-primary btn-sm" onclick="loteForm(null)"><i class="bi bi-plus-lg"></i> Novo</button>
     </div>
     <div class="filters-bar">
@@ -364,7 +364,7 @@ async function renderClientes() {
     const res = await API.listarClientes();
     const data = res.ok ? res.data : [];
     let html = `<div class="d-flex justify-content-between mb-3">
-        <h5>Clientes</h5>
+        <p></p>
         <button class="btn btn-primary btn-sm" onclick="clienteForm(null)"><i class="bi bi-plus-lg"></i> Novo</button>
     </div>`;
     html += renderTable(["ID", "Nome", "Telefone", "Email"],
@@ -399,7 +399,7 @@ async function renderFormulas() {
     const res = await API.listarFormulas();
     const data = res.ok ? res.data : [];
     let html = `<div class="d-flex justify-content-between mb-3">
-        <h5>Formulas</h5>
+        <p></p>
         <button class="btn btn-primary btn-sm" onclick="formulaForm(null)"><i class="bi bi-plus-lg"></i> Nova</button>
     </div>`;
     html += renderTable(["ID", "Codigo", "Descricao", "Categoria", "Ativa"],
@@ -509,7 +509,7 @@ async function renderCompras() {
     const res = await API.listarCompras();
     const data = res.ok ? res.data : [];
     let html = `<div class="d-flex justify-content-between mb-3">
-        <h5>Compras</h5>
+        <p></p>
         <button class="btn btn-primary btn-sm" onclick="compraForm(null)"><i class="bi bi-plus-lg"></i> Nova</button>
     </div>`;
     html += renderTable(
@@ -584,7 +584,7 @@ async function renderPedidos() {
     const res = await API.listarPedidos();
     const data = res.ok ? res.data : [];
     let html = `<div class="d-flex justify-content-between mb-3">
-        <h5>Pedidos</h5>
+        <p></p>
         <button class="btn btn-primary btn-sm" onclick="pedidoForm(null)"><i class="bi bi-plus-lg"></i> Novo</button>
     </div>`;
     html += renderTable(
@@ -660,7 +660,7 @@ async function renderProducao() {
     const res = await API.listarOrdens();
     const data = res.ok ? res.data : [];
     let html = `<div class="d-flex justify-content-between mb-3">
-        <h5>Ordens de Producao</h5>
+        <p></p>
         <button class="btn btn-primary btn-sm" onclick="ordemForm(null)"><i class="bi bi-plus-lg"></i> Nova</button>
     </div>`;
     html += renderTable(
@@ -727,7 +727,7 @@ async function renderConsumo() {
     if (fmp) params.set("materiaPrima", fmp);
     const res = await API.listarConsumos(params.toString());
     const data = res.ok ? res.data : [];
-    let html = `<h5 class="mb-3">Historico de Consumo</h5>
+    let html = `
     <div class="filters-bar">
         <input class="form-control form-control-sm" type="date" id="filtro-cons-inicio" value="${finicio||""}">
         <input class="form-control form-control-sm" type="date" id="filtro-cons-fim" value="${ffim||""}">
@@ -750,7 +750,7 @@ async function renderPrevisoes() {
     const data = res.ok ? res.data : [];
     const materias = mpList.ok ? mpList.data : [];
     let html = `<div class="d-flex justify-content-between mb-3">
-        <h5>Previsoes de Consumo</h5>
+        <p></p>
         <button class="btn btn-primary btn-sm" onclick="previsaoForm()"><i class="bi bi-plus-lg"></i> Nova Previsao</button>
     </div>`;
     html += renderTable(
@@ -786,7 +786,7 @@ async function renderSugestoes() {
     const res = await API.listarSugestoes();
     const data = res.ok ? res.data : [];
     let html = `<div class="d-flex justify-content-between mb-3">
-        <h5>Sugestoes de Compra</h5>
+        <p></p>
         <button class="btn btn-warning btn-sm" onclick="gerarSugestoes()"><i class="bi bi-magic"></i> Gerar Sugestoes</button>
     </div>`;
     html += renderTable(
@@ -820,7 +820,7 @@ async function renderAlertas() {
     if (fres) params.set("resolvido", fres);
     const res = await API.listarAlertas(params.toString());
     const data = res.ok ? res.data : [];
-    let html = `<h5 class="mb-3">Alertas</h5>
+    let html = `
     <div class="filters-bar">
         <select class="form-select form-select-sm" id="filtro-alerta-tipo">
             <option value="">Todos tipos</option><option value="VALIDADE" ${ftipo=="VALIDADE"?"selected":""}>Validade</option>
