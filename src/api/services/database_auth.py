@@ -1,3 +1,4 @@
+from pathlib import Path
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from uuid import uuid4
@@ -8,6 +9,9 @@ from api.services.models import Usuarios
 
 hash_senha = PasswordHash.recommended()
 tokens_dict = {}
+
+DEMO_USUARIO_ID = 5
+SEED_PATH = Path(__file__).resolve().parents[2].parent / "testes" / "seed_dados_teste.sql"
 
 def verificar_senha(email: str, senha: str):
     with Session(engine) as session:
@@ -62,3 +66,21 @@ def buscar_usuario_por_token(token: str):
     if email is None:
         return None
     return buscar_usuario_por_email(email)
+
+def executar_seed():
+    if not SEED_PATH.exists():
+        return
+
+    sql = SEED_PATH.read_text(encoding="utf-8")
+
+    with engine.raw_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(sql)
+        conn.commit()
+
+def executar_seed_usuario_demo(email: str):
+    usuario = buscar_usuario_por_email(email)
+    if usuario is None or usuario.get("id") != DEMO_USUARIO_ID:
+        return
+
+    executar_seed()

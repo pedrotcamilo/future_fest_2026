@@ -14,6 +14,7 @@ async def realizar_login(body: PromptLogin):
 
     if status_senha:
         token = database_auth.gerar_token(body.email)
+        database_auth.executar_seed_usuario_demo(body.email)
 
         return responses.JSONResponse(
             content={
