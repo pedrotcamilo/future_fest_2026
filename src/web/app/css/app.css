@@ -3,6 +3,25 @@
     min-height: 100vh;
 }
 
+/* Splash de carregamento */
+.app-splash {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 12, 16, 0.95);
+}
+.app-splash-card {
+    width: min(90vw, 360px);
+    background: #1e2028;
+    border: 1px solid #2a2d35;
+}
+.app-splash.hidden {
+    display: none;
+}
+
 .sidebar {
     width: 240px;
     background: #1a1d23;

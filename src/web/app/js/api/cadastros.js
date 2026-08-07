@@ -1,0 +1,41 @@
+Object.assign(API, {
+  listarUsuarios() { return this.get("/usuarios"); },
+  buscarUsuario(id) { return this.get(`/usuarios/${id}`); },
+  criarUsuario(d) { return this.post("/usuarios", d); },
+  atualizarUsuario(id, d) { return this.put(`/usuarios/${id}`, d); },
+  deletarUsuario(id) { return this.del(`/usuarios/${id}`); },
+
+  listarFornecedores(params) { return this.get(`/fornecedores${params ? "?"+params : ""}`); },
+  buscarFornecedor(id) { return this.get(`/fornecedores/${id}`); },
+  criarFornecedor(d) { return this.post("/fornecedores", d); },
+  atualizarFornecedor(id, d) { return this.put(`/fornecedores/${id}`, d); },
+  deletarFornecedor(id) { return this.del(`/fornecedores/${id}`); },
+
+  listarMateriasPrimas(params) { return this.get(`/materias-primas${params ? "?"+params : ""}`); },
+  buscarMateriaPrima(id) { return this.get(`/materias-primas/${id}`); },
+  criarMateriaPrima(d) { return this.post("/materias-primas", d); },
+  atualizarMateriaPrima(id, d) { return this.put(`/materias-primas/${id}`, d); },
+  deletarMateriaPrima(id) { return this.del(`/materias-primas/${id}`); },
+
+  listarLotes(params) { return this.get(`/lotes${params ? "?"+params : ""}`); },
+  buscarLote(id) { return this.get(`/lotes/${id}`); },
+  criarLote(d) { return this.post("/lotes", d); },
+  atualizarLote(id, d) { return this.put(`/lotes/${id}`, d); },
+  deletarLote(id) { return this.del(`/lotes/${id}`); },
+
+  listarClientes() { return this.get("/clientes"); },
+  buscarCliente(id) { return this.get(`/clientes/${id}`); },
+  criarCliente(d) { return this.post("/clientes", d); },
+  atualizarCliente(id, d) { return this.put(`/clientes/${id}`, d); },
+  deletarCliente(id) { return this.del(`/clientes/${id}`); },
+
+  listarFormulas() { return this.get("/formulas"); },
+  buscarFormula(id) { return this.get(`/formulas/${id}`); },
+  criarFormula(d) { return this.post("/formulas", d); },
+  atualizarFormula(id, d) { return this.put(`/formulas/${id}`, d); },
+  deletarFormula(id) { return this.del(`/formulas/${id}`); },
+  listarItensFormula(id) { return this.get(`/formulas/${id}/itens`); },
+  adicionarItemFormula(id, d) { return this.post(`/formulas/${id}/itens`, d); },
+  atualizarItemFormula(id, itemId, d) { return this.put(`/formulas/${id}/itens/${itemId}`, d); },
+  deletarItemFormula(id, itemId) { return this.del(`/formulas/${id}/itens/${itemId}`); },
+});
