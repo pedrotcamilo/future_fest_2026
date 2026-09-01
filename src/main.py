@@ -4,7 +4,8 @@ from api.routes import (
     fornecedores, materias_primas, lotes,
     estoque, compras, formulas, clientes,
     pedidos, producao, consumo, previsoes,
-    sugestoes, alertas, dashboard, relatorios
+    sugestoes, alertas, dashboard, relatorios,
+    graficos
 )
 from fastapi.staticfiles import StaticFiles
 
@@ -28,4 +29,5 @@ app.include_router(sugestoes.router, prefix="/sugestoes-compra", tags=["Sugestoe
 app.include_router(alertas.router, prefix="/alertas", tags=["Alertas"])
 app.include_router(dashboard.router, prefix="/dashboard", tags=["Dashboard"])
 app.include_router(relatorios.router, prefix="/relatorios", tags=["Relatorios"])
+app.include_router(graficos.router, prefix="/graficos", tags=["Graficos"])
 app.mount("/web", StaticFiles(directory="web", html=True), name="Web")
