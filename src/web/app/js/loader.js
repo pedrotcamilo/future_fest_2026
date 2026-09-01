@@ -26,8 +26,8 @@
         "app/js/app.js"
     ];
 
-    const CACHE_NAME = "future-fest-scripts-v2";
-    const LS_PREFIX = "future-fest-scripts-v2:";
+    const CACHE_NAME = "axionphare-assets-v2";
+    const LS_PREFIX = "axionphare-assets-v2:";
 
     const splash = document.getElementById("app-splash");
     const statusEl = document.getElementById("app-splash-status");
@@ -36,9 +36,9 @@
     let loadFailed = false;
 
     if (typeof caches !== "undefined") {
-        try { caches.delete("future-fest-scripts-v1"); } catch (e) { }
+        try { caches.delete("axionphare-assets-v1"); } catch (e) { }
         Object.keys(localStorage)
-            .filter(k => k.startsWith("future-fest-scripts-v1:"))
+            .filter(k => k.startsWith("axionphare-assets-v1:"))
             .forEach(k => localStorage.removeItem(k));
     }
 

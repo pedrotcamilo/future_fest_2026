@@ -1,4 +1,3 @@
-from asyncio import subprocess
 from api.services.database import engine
 from sqlalchemy.orm import Session
 from sqlalchemy import select
