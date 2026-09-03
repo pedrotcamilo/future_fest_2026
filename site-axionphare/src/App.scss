@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,300..900;1,300..900&display=swap');
+
+:root {
+    padding: 0;
+    margin: 0;
+    width: 100vw;
+    overflow-x: hidden;
+    font-family: 'Red Hat Display', sans-serif;
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #020024;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(151deg, rgba(2, 0, 36, 1) 50%, rgba(0, 0, 117, 1) 100%);
+    z-index: -1;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.scroll-expand-wrapper {
+    margin-bottom: 0;
+}
