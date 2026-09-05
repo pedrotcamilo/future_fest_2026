@@ -1,0 +1,15 @@
+.git
+.gitignore
+__pycache__
+*.pyc
+.venv
+venv
+.env
+.env.*
+.idea
+.vscode
+*.md
+docker/
+slides_bg/
+testes/
+*.sql

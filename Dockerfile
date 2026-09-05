@@ -1,12 +1,21 @@
-FROM python:3.14-slim
+ARG PYTHON_VERSION=3.12
+FROM python:${PYTHON_VERSION}-slim
 
 WORKDIR /app
 
+ARG UV_VERSION=latest
+COPY --from=ghcr.io/astral-sh/uv:${UV_VERSION} /uv /usr/local/bin/uv
+
 COPY src/pyproject.toml src/uv.lock ./
-RUN pip install --no-cache-dir .
+RUN uv sync --frozen --no-dev
 
 COPY src/ .
 
-EXPOSE 8000
+ARG APP_PORT=80
+ENV APP_PORT=${APP_PORT}
+EXPOSE ${APP_PORT}
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+ENV APP_HOST=0.0.0.0
+ENV APP_MODULE=main:app
+
+CMD uvicorn ${APP_MODULE} --host ${APP_HOST} --port ${APP_PORT}
