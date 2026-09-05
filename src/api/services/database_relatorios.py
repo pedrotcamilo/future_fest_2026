@@ -1,12 +1,11 @@
 from sqlalchemy import select, func
-from sqlalchemy.orm import Session
 from datetime import date
 
-from api.services.database import engine
+from api.services.database_manager import get_session
 from api.services.models import HistoricoConsumo, MateriasPrimas, Lotes, Compras, OrdensProducao, PrevisoesConsumo
 
 def relatorio_consumo(inicio: date = None, fim: date = None):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             select(
                 HistoricoConsumo.materia_prima_id,
@@ -43,7 +42,7 @@ def relatorio_consumo(inicio: date = None, fim: date = None):
         ]
 
 def relatorio_estoque():
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             select(
                 MateriasPrimas.id,
@@ -68,7 +67,7 @@ def relatorio_estoque():
         ]
 
 def relatorio_vencimentos():
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             select(
                 MateriasPrimas.nome,
@@ -93,7 +92,7 @@ def relatorio_vencimentos():
         ]
 
 def relatorio_compras(inicio: date = None, fim: date = None):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Compras)
 
         if inicio is not None:
@@ -117,7 +116,7 @@ def relatorio_compras(inicio: date = None, fim: date = None):
         ]
 
 def relatorio_producao(inicio: date = None, fim: date = None):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(OrdensProducao)
 
         if inicio is not None:
@@ -142,7 +141,7 @@ def relatorio_producao(inicio: date = None, fim: date = None):
         ]
 
 def relatorio_previsoes():
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             select(
                 PrevisoesConsumo.materia_prima_id,

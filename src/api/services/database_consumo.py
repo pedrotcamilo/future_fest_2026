@@ -1,8 +1,7 @@
 from sqlalchemy import select
-from sqlalchemy.orm import Session
 from datetime import date
 
-from api.services.database import engine
+from api.services.database_manager import get_session
 from api.services.models import HistoricoConsumo
 
 def listar_consumos(
@@ -10,7 +9,7 @@ def listar_consumos(
     fim: date = None,
     materia_prima: int = None
 ):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(HistoricoConsumo)
 
         if materia_prima is not None:

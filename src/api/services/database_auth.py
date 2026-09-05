@@ -1,10 +1,9 @@
 from pathlib import Path
-from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy import select, text
 from uuid import uuid4
 from pwdlib import PasswordHash
 
-from api.services.database import engine
+from api.services.database_manager import get_session, get_primary_engine, get_supabase_engine
 from api.services.models import Usuarios
 
 hash_senha = PasswordHash.recommended()
@@ -14,7 +13,7 @@ DEMO_USUARIO_ID = 5
 SEED_PATH = Path(__file__).resolve().parent / "dependencies" / "seed_demo.sql"
 
 def verificar_senha(email: str, senha: str):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Usuarios).where(Usuarios.email == email)
         usuario = session.scalar(stmt)
 
@@ -34,7 +33,7 @@ def gerar_token(email: str):
     return novo_token
 
 def buscar_usuario_por_email(email: str):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Usuarios).where(Usuarios.email == email)
         usuario = session.scalar(stmt)
 
@@ -73,10 +72,12 @@ def executar_seed():
 
     sql = SEED_PATH.read_text(encoding="utf-8")
 
-    with engine.raw_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute(sql)
-        conn.commit()
+    try:
+        with get_session() as session:
+            session.execute(text(sql))
+            session.commit()
+    except Exception:
+        pass
 
 def executar_seed_usuario_demo(email: str):
     usuario = buscar_usuario_por_email(email)

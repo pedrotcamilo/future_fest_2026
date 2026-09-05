@@ -1,12 +1,11 @@
 from sqlalchemy import select, update, delete
 from sqlalchemy import insert
-from sqlalchemy.orm import Session
 
-from api.services.database import engine
+from api.services.database_manager import get_session
 from api.services.models import Clientes
 
 def listar_clientes():
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Clientes)
         result = session.execute(stmt)
         clientes = result.scalars().all()
@@ -22,7 +21,7 @@ def listar_clientes():
         ]
 
 def listar_cliente_id(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Clientes).where(Clientes.id == id)
         result = session.execute(stmt)
         cliente = result.scalar_one_or_none()
@@ -42,7 +41,7 @@ def criar_cliente(
     telefone: str = None,
     email: str = None
 ):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             insert(Clientes)
             .values(
@@ -57,7 +56,7 @@ def criar_cliente(
         return "Ok"
 
 def editar_cliente(id: int, **kwargs):
-    with Session(engine) as session:
+    with get_session() as session:
         valores = {k: v for k, v in kwargs.items() if v is not None}
         if not valores:
             return "Ok"
@@ -73,7 +72,7 @@ def editar_cliente(id: int, **kwargs):
         return "Ok"
 
 def deletar_cliente(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = delete(Clientes).where(Clientes.id == id)
         session.execute(stmt)
         session.commit()

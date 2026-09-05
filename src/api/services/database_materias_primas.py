@@ -1,17 +1,33 @@
-from sqlalchemy import select, update, delete, func
+from sqlalchemy import select, update, delete, func, text
 from sqlalchemy import insert
-from sqlalchemy.orm import Session
 from datetime import date
 
-from api.services.database import engine
+from api.services.database_manager import get_session
 from api.services.models import MateriasPrimas, Lotes
+
+def listar_consumos_mensais(session: Session):
+    stmt = text("""
+        SELECT materia_prima_id, to_char(mes, 'YYYY-MM') AS mes, consumo
+        FROM vw_consumo_mensal
+        WHERE mes >= date_trunc('month', CURRENT_DATE) - INTERVAL '6 months'
+          AND mes <  date_trunc('month', CURRENT_DATE)
+        ORDER BY mes ASC
+    """)
+    result = session.execute(stmt)
+    consumo_mensal = {}
+    for row in result:
+        consumo_mensal.setdefault(row[0], []).append({
+            "mes": row[1],
+            "consumo": float(row[2])
+        })
+    return consumo_mensal
 
 def listar_materias_primas(
     nome: str = None,
     estoque_baixo: bool = None,
     vencendo: bool = None
 ):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(MateriasPrimas)
 
         if nome is not None:
@@ -19,6 +35,8 @@ def listar_materias_primas(
 
         result = session.execute(stmt)
         materias = result.scalars().all()
+
+        consumo_mensal = listar_consumos_mensais(session)
 
         data = []
         for mp in materias:
@@ -30,6 +48,7 @@ def listar_materias_primas(
                 "estoque_minimo": mp.estoque_minimo,
                 "estoque_maximo": mp.estoque_maximo,
                 "consumo_medio_mensal": mp.consumo_medio_mensal,
+                "consumo_mensal": consumo_mensal.get(mp.id, []),
                 "ativo": mp.ativo
             }
 
@@ -60,7 +79,7 @@ def listar_materias_primas(
         return data
 
 def listar_materia_prima_id(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(MateriasPrimas).where(MateriasPrimas.id == id)
         result = session.execute(stmt)
         mp = result.scalar_one_or_none()
@@ -88,7 +107,7 @@ def criar_materia_prima(
     consumo_medio_mensal: float = None,
     ativo: bool = True
 ):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             insert(MateriasPrimas)
             .values(
@@ -107,7 +126,7 @@ def criar_materia_prima(
         return "Ok"
 
 def editar_materia_prima(id: int, **kwargs):
-    with Session(engine) as session:
+    with get_session() as session:
         valores = {k: v for k, v in kwargs.items() if v is not None}
         if not valores:
             return "Ok"
@@ -123,7 +142,7 @@ def editar_materia_prima(id: int, **kwargs):
         return "Ok"
 
 def deletar_materia_prima(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = delete(MateriasPrimas).where(MateriasPrimas.id == id)
         session.execute(stmt)
         session.commit()

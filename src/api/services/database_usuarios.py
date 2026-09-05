@@ -1,12 +1,11 @@
 from sqlalchemy import select, update, delete
 from sqlalchemy import insert
-from sqlalchemy.orm import Session
 
-from api.services.database import engine
+from api.services.database_manager import get_session
 from api.services.models import Usuarios
 
 def listar_usuarios():
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Usuarios)
         result = session.execute(stmt)
 
@@ -26,7 +25,7 @@ def listar_usuarios():
         return data
 
 def listar_usuario_id(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Usuarios).where(Usuarios.id == id)
         result = session.execute(stmt)
 
@@ -51,7 +50,7 @@ def criar_usuario(
     email: str,
     senha: str = "SenhaPadrao"
 ):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             insert(Usuarios)
             .values(
@@ -75,7 +74,7 @@ def editar_usuario(
     senha: str = None,
     admin: bool = None
 ):
-    with Session(engine) as session:
+    with get_session() as session:
         valores = {}
         if nome is not None:
             valores["nome"] = nome
@@ -100,7 +99,7 @@ def editar_usuario(
         return "Ok"
 
 def deletar_usuario(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             delete(Usuarios)
             .where(Usuarios.id == id)

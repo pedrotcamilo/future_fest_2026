@@ -1,13 +1,12 @@
 from sqlalchemy import select, update, delete
 from sqlalchemy import insert
-from sqlalchemy.orm import Session
 from datetime import date
 
-from api.services.database import engine
+from api.services.database_manager import get_session
 from api.services.models import Compras, CompraItens, Lotes
 
 def listar_compras():
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Compras)
         result = session.execute(stmt)
         compras = result.scalars().all()
@@ -25,7 +24,7 @@ def listar_compras():
         ]
 
 def listar_compra_id(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Compras).where(Compras.id == id)
         result = session.execute(stmt)
         compra = result.scalar_one_or_none()
@@ -60,7 +59,7 @@ def criar_compra(
     previsao_entrega: date = None,
     status: str = "PENDENTE"
 ):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             insert(Compras)
             .values(
@@ -78,7 +77,7 @@ def criar_compra(
         return compra_id
 
 def editar_compra(id: int, **kwargs):
-    with Session(engine) as session:
+    with get_session() as session:
         valores = {k: v for k, v in kwargs.items() if v is not None}
         if not valores:
             return "Ok"
@@ -94,7 +93,7 @@ def editar_compra(id: int, **kwargs):
         return "Ok"
 
 def deletar_compra(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt_itens = delete(CompraItens).where(CompraItens.compra_id == id)
         session.execute(stmt_itens)
 
@@ -104,7 +103,7 @@ def deletar_compra(id: int):
         return "Ok"
 
 def receber_compra(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Compras).where(Compras.id == id)
         compra = session.scalar(stmt)
 
@@ -155,7 +154,7 @@ def receber_compra(id: int):
         return "Ok"
 
 def cancelar_compra(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Compras).where(Compras.id == id)
         compra = session.scalar(stmt)
 
@@ -177,7 +176,7 @@ def adicionar_item_compra(
     quantidade: float,
     valor_unitario: float = None
 ):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             insert(CompraItens)
             .values(

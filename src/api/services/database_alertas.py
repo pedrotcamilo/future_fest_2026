@@ -1,8 +1,7 @@
 from sqlalchemy import select, update
 from sqlalchemy import insert
-from sqlalchemy.orm import Session
 
-from api.services.database import engine
+from api.services.database_manager import get_session
 from api.services.models import Alertas
 
 def listar_alertas(
@@ -10,7 +9,7 @@ def listar_alertas(
     prioridade: str = None,
     resolvido: bool = None
 ):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Alertas)
 
         if tipo is not None:
@@ -40,7 +39,7 @@ def listar_alertas(
         ]
 
 def resolver_alerta(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Alertas).where(Alertas.id == id)
         alerta = session.scalar(stmt)
 

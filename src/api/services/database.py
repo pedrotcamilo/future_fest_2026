@@ -1,19 +1,14 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, Session
-from os import getenv
-from dotenv import load_dotenv
+from sqlalchemy.orm import DeclarativeBase
 
-load_dotenv(verbose=True)
-
-usuario = getenv("DB_USUARIO")
-senha = getenv("DB_SENHA")
-host = getenv("DB_HOST")
-porta = getenv("DB_PORT")
-database = getenv("DB_SCHEM")
-
-engine = create_engine(
-    f"postgresql://{usuario}:{senha}@{host}:{porta}/{database}"
+from api.services.database_manager import (
+    get_primary_engine as _get_primary_engine,
+    get_session,
+    get_active_db,
+    get_stats,
 )
+
+engine = _get_primary_engine()
+
 
 class Base(DeclarativeBase):
     pass

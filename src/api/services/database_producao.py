@@ -1,13 +1,12 @@
 from sqlalchemy import select, update, delete
 from sqlalchemy import insert
-from sqlalchemy.orm import Session
 from datetime import datetime
 
-from api.services.database import engine
+from api.services.database_manager import get_session
 from api.services.models import OrdensProducao, ConsumoProducao, Lotes
 
 def listar_ordens():
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(OrdensProducao)
         result = session.execute(stmt)
         ordens = result.scalars().all()
@@ -24,7 +23,7 @@ def listar_ordens():
         ]
 
 def listar_ordem_id(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(OrdensProducao).where(OrdensProducao.id == id)
         result = session.execute(stmt)
         ordem = result.scalar_one_or_none()
@@ -44,7 +43,7 @@ def criar_ordem(
     pedido_id: int = None,
     status: str = "PENDENTE"
 ):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             insert(OrdensProducao)
             .values(
@@ -60,7 +59,7 @@ def criar_ordem(
         return ordem_id
 
 def editar_ordem(id: int, **kwargs):
-    with Session(engine) as session:
+    with get_session() as session:
         valores = {k: v for k, v in kwargs.items() if v is not None}
         if not valores:
             return "Ok"
@@ -76,7 +75,7 @@ def editar_ordem(id: int, **kwargs):
         return "Ok"
 
 def deletar_ordem(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt_consumo = delete(ConsumoProducao).where(
             ConsumoProducao.ordem_producao_id == id
         )
@@ -88,7 +87,7 @@ def deletar_ordem(id: int):
         return "Ok"
 
 def iniciar_ordem(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(OrdensProducao).where(OrdensProducao.id == id)
         ordem = session.scalar(stmt)
 
@@ -108,7 +107,7 @@ def iniciar_ordem(id: int):
         return "Ok"
 
 def finalizar_ordem(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(OrdensProducao).where(OrdensProducao.id == id)
         ordem = session.scalar(stmt)
 
@@ -128,7 +127,7 @@ def finalizar_ordem(id: int):
         return "Ok"
 
 def cancelar_ordem(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(OrdensProducao).where(OrdensProducao.id == id)
         ordem = session.scalar(stmt)
 
@@ -149,7 +148,7 @@ def registrar_consumo(
     lote_id: int,
     quantidade: float
 ):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt_lote = select(Lotes).where(Lotes.id == lote_id)
         lote = session.scalar(stmt_lote)
 

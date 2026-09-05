@@ -1,11 +1,10 @@
 from sqlalchemy import select, func
-from sqlalchemy.orm import Session
 
-from api.services.database import engine
+from api.services.database_manager import get_session
 from api.services.models import MateriasPrimas, Lotes, Compras, OrdensProducao, Alertas, PrevisoesConsumo, HistoricoConsumo, MovimentacoesEstoque
 
 def resumo_geral():
-    with Session(engine) as session:
+    with get_session() as session:
         total_materias = session.scalar(
             select(func.count(MateriasPrimas.id))
         ) or 0
@@ -32,7 +31,7 @@ def resumo_geral():
         }
 
 def dashboard_estoque():
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             select(
                 MateriasPrimas.id,
@@ -55,7 +54,7 @@ def dashboard_estoque():
         return estoque
 
 def dashboard_compras():
-    with Session(engine) as session:
+    with get_session() as session:
         pendentes = session.scalar(
             select(func.count(Compras.id)).where(Compras.status == "PENDENTE")
         ) or 0
@@ -75,7 +74,7 @@ def dashboard_compras():
         }
 
 def dashboard_producao():
-    with Session(engine) as session:
+    with get_session() as session:
         pendentes = session.scalar(
             select(func.count(OrdensProducao.id)).where(
                 OrdensProducao.status == "PENDENTE"
@@ -108,7 +107,7 @@ def dashboard_producao():
         }
 
 def dashboard_previsoes():
-    with Session(engine) as session:
+    with get_session() as session:
         total_previsoes = session.scalar(
             select(func.count(PrevisoesConsumo.id))
         ) or 0
@@ -123,7 +122,7 @@ def dashboard_previsoes():
         }
 
 def dashboard_alertas():
-    with Session(engine) as session:
+    with get_session() as session:
         total = session.scalar(
             select(func.count(Alertas.id))
         ) or 0

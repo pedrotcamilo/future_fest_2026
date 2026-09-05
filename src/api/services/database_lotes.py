@@ -1,9 +1,8 @@
 from sqlalchemy import select, update, delete
 from sqlalchemy import insert
-from sqlalchemy.orm import Session
 from datetime import date, timedelta
 
-from api.services.database import engine
+from api.services.database_manager import get_session
 from api.services.models import Lotes
 
 def listar_lotes(
@@ -11,7 +10,7 @@ def listar_lotes(
     materia_prima: int = None,
     fornecedor: int = None
 ):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Lotes)
 
         if materia_prima is not None:
@@ -42,7 +41,7 @@ def listar_lotes(
         ]
 
 def listar_lote_id(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Lotes).where(Lotes.id == id)
         result = session.execute(stmt)
         lote = result.scalar_one_or_none()
@@ -74,7 +73,7 @@ def criar_lote(
     data_recebimento: date = None,
     valor_unitario: float = None
 ):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             insert(Lotes)
             .values(
@@ -95,7 +94,7 @@ def criar_lote(
         return "Ok"
 
 def editar_lote(id: int, **kwargs):
-    with Session(engine) as session:
+    with get_session() as session:
         valores = {k: v for k, v in kwargs.items() if v is not None}
         if not valores:
             return "Ok"
@@ -111,7 +110,7 @@ def editar_lote(id: int, **kwargs):
         return "Ok"
 
 def deletar_lote(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = delete(Lotes).where(Lotes.id == id)
         session.execute(stmt)
         session.commit()

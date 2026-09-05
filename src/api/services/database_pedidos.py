@@ -1,13 +1,12 @@
 from sqlalchemy import select, update, delete
 from sqlalchemy import insert
-from sqlalchemy.orm import Session
 from datetime import date, datetime
 
-from api.services.database import engine
+from api.services.database_manager import get_session
 from api.services.models import Pedidos, PedidoItens
 
 def listar_pedidos():
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Pedidos)
         result = session.execute(stmt)
         pedidos = result.scalars().all()
@@ -24,7 +23,7 @@ def listar_pedidos():
         ]
 
 def listar_pedido_id(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Pedidos).where(Pedidos.id == id)
         result = session.execute(stmt)
         pedido = result.scalar_one_or_none()
@@ -57,7 +56,7 @@ def criar_pedido(
     status: str = "PENDENTE",
     data_entrega: date = None
 ):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             insert(Pedidos)
             .values(
@@ -75,7 +74,7 @@ def criar_pedido(
         return pedido_id
 
 def editar_pedido(id: int, **kwargs):
-    with Session(engine) as session:
+    with get_session() as session:
         valores = {k: v for k, v in kwargs.items() if v is not None}
         if not valores:
             return "Ok"
@@ -91,7 +90,7 @@ def editar_pedido(id: int, **kwargs):
         return "Ok"
 
 def deletar_pedido(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt_itens = delete(PedidoItens).where(PedidoItens.pedido_id == id)
         session.execute(stmt_itens)
 
@@ -101,7 +100,7 @@ def deletar_pedido(id: int):
         return "Ok"
 
 def listar_itens_pedido(pedido_id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(PedidoItens).where(PedidoItens.pedido_id == pedido_id)
         result = session.execute(stmt)
         itens = result.scalars().all()
@@ -120,7 +119,7 @@ def adicionar_item_pedido(
     formula_id: int,
     quantidade: int
 ):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             insert(PedidoItens)
             .values(

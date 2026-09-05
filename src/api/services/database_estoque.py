@@ -1,12 +1,11 @@
 from sqlalchemy import select, func
-from sqlalchemy.orm import Session
 from datetime import datetime
 
-from api.services.database import engine
+from api.services.database_manager import get_session
 from api.services.models import Lotes, MovimentacoesEstoque, MateriasPrimas
 
 def consultar_estoque():
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             select(
                 MateriasPrimas.id,
@@ -29,7 +28,7 @@ def consultar_estoque():
         return data
 
 def consultar_estoque_materia_prima(materia_prima_id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             select(Lotes)
             .where(Lotes.materia_prima_id == materia_prima_id)
@@ -53,7 +52,7 @@ def registrar_movimentacao(
 ):
     from sqlalchemy import update
 
-    with Session(engine) as session:
+    with get_session() as session:
         dados = {
             "lote_id": lote_id,
             "tipo": tipo,
@@ -103,7 +102,7 @@ def registrar_movimentacao(
         return "Ok"
 
 def listar_movimentacoes():
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(MovimentacoesEstoque).order_by(
             MovimentacoesEstoque.data_movimento.desc()
         )

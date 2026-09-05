@@ -1,13 +1,12 @@
 from sqlalchemy import select, update
 from sqlalchemy import insert
-from sqlalchemy.orm import Session
 from datetime import date
 
-from api.services.database import engine
+from api.services.database_manager import get_session
 from api.services.models import SugestoesCompra, MateriasPrimas, Lotes
 
 def listar_sugestoes():
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(SugestoesCompra).order_by(
             SugestoesCompra.data_sugestao.desc()
         )
@@ -29,7 +28,7 @@ def listar_sugestoes():
 def gerar_sugestoes():
     from sqlalchemy import func
 
-    with Session(engine) as session:
+    with get_session() as session:
         stmt_mp = select(MateriasPrimas).where(MateriasPrimas.ativo == True)
         materias = session.execute(stmt_mp).scalars().all()
 
@@ -64,7 +63,7 @@ def gerar_sugestoes():
         return f"{sugestoes_criadas} sugestoes geradas"
 
 def aprovar_sugestao(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(SugestoesCompra).where(SugestoesCompra.id == id)
         sugestao = session.scalar(stmt)
 
@@ -81,7 +80,7 @@ def aprovar_sugestao(id: int):
         return "Ok"
 
 def rejeitar_sugestao(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(SugestoesCompra).where(SugestoesCompra.id == id)
         sugestao = session.scalar(stmt)
 
