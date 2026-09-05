@@ -105,7 +105,7 @@ def deletar_compra(id: int):
 def receber_compra(id: int):
     with get_session() as session:
         stmt = select(Compras).where(Compras.id == id)
-        compra = session.scalar(stmt)
+        compra = session.execute(stmt).scalars().first()
 
         if compra is None:
             return "Compra nao encontrada"
@@ -156,7 +156,7 @@ def receber_compra(id: int):
 def cancelar_compra(id: int):
     with get_session() as session:
         stmt = select(Compras).where(Compras.id == id)
-        compra = session.scalar(stmt)
+        compra = session.execute(stmt).scalars().first()
 
         if compra is None:
             return "Compra nao encontrada"

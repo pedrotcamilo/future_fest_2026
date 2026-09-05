@@ -89,7 +89,7 @@ def deletar_ordem(id: int):
 def iniciar_ordem(id: int):
     with get_session() as session:
         stmt = select(OrdensProducao).where(OrdensProducao.id == id)
-        ordem = session.scalar(stmt)
+        ordem = session.execute(stmt).scalars().first()
 
         if ordem is None:
             return "Ordem nao encontrada"
@@ -109,7 +109,7 @@ def iniciar_ordem(id: int):
 def finalizar_ordem(id: int):
     with get_session() as session:
         stmt = select(OrdensProducao).where(OrdensProducao.id == id)
-        ordem = session.scalar(stmt)
+        ordem = session.execute(stmt).scalars().first()
 
         if ordem is None:
             return "Ordem nao encontrada"
@@ -129,7 +129,7 @@ def finalizar_ordem(id: int):
 def cancelar_ordem(id: int):
     with get_session() as session:
         stmt = select(OrdensProducao).where(OrdensProducao.id == id)
-        ordem = session.scalar(stmt)
+        ordem = session.execute(stmt).scalars().first()
 
         if ordem is None:
             return "Ordem nao encontrada"
@@ -150,7 +150,7 @@ def registrar_consumo(
 ):
     with get_session() as session:
         stmt_lote = select(Lotes).where(Lotes.id == lote_id)
-        lote = session.scalar(stmt_lote)
+        lote = session.execute(stmt_lote).scalars().first()
 
         if lote is None:
             return "Lote nao encontrado"

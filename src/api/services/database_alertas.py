@@ -41,7 +41,7 @@ def listar_alertas(
 def resolver_alerta(id: int):
     with get_session() as session:
         stmt = select(Alertas).where(Alertas.id == id)
-        alerta = session.scalar(stmt)
+        alerta = session.execute(stmt).scalars().first()
 
         if alerta is None:
             return "Alerta nao encontrado"

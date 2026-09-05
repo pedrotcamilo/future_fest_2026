@@ -82,7 +82,7 @@ def listar_materia_prima_id(id: int):
     with get_session() as session:
         stmt = select(MateriasPrimas).where(MateriasPrimas.id == id)
         result = session.execute(stmt)
-        mp = result.scalar_one_or_none()
+        mp = result.scalars().first()
 
         if mp is None:
             return None

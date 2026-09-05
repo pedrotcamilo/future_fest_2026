@@ -65,7 +65,7 @@ def gerar_sugestoes():
 def aprovar_sugestao(id: int):
     with get_session() as session:
         stmt = select(SugestoesCompra).where(SugestoesCompra.id == id)
-        sugestao = session.scalar(stmt)
+        sugestao = session.execute(stmt).scalars().first()
 
         if sugestao is None:
             return "Sugestao nao encontrada"
@@ -82,7 +82,7 @@ def aprovar_sugestao(id: int):
 def rejeitar_sugestao(id: int):
     with get_session() as session:
         stmt = select(SugestoesCompra).where(SugestoesCompra.id == id)
-        sugestao = session.scalar(stmt)
+        sugestao = session.execute(stmt).scalars().first()
 
         if sugestao is None:
             return "Sugestao nao encontrada"

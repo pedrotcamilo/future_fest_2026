@@ -6,23 +6,24 @@ from api.services.models import Lotes, MovimentacoesEstoque, MateriasPrimas
 
 def consultar_estoque():
     with get_session() as session:
-        stmt = (
-            select(
-                MateriasPrimas.id,
-                MateriasPrimas.nome,
-                func.coalesce(func.sum(Lotes.quantidade_atual), 0)
-            )
-            .outerjoin(Lotes, MateriasPrimas.id == Lotes.materia_prima_id)
-            .group_by(MateriasPrimas.id, MateriasPrimas.nome)
-        )
+        r_mp = session.execute(select(MateriasPrimas))
+        materias = {}
+        for row in r_mp:
+            materias[row.id] = row.nome
 
-        result = session.execute(stmt)
+        r_lotes = session.execute(select(Lotes))
+        estoque_map = {}
+        for row in r_lotes:
+            mp_id = row.materia_prima_id
+            qtd = float(row.quantidade_atual) if row.quantidade_atual else 0
+            estoque_map[mp_id] = estoque_map.get(mp_id, 0) + qtd
+
         data = []
-        for row in result:
+        for mp_id, nome in materias.items():
             data.append({
-                "materia_prima_id": row[0],
-                "nome": row[1],
-                "estoque": float(row[2])
+                "materia_prima_id": mp_id,
+                "nome": nome,
+                "estoque": estoque_map.get(mp_id, 0)
             })
 
         return data
@@ -63,7 +64,7 @@ def registrar_movimentacao(
 
         if tipo == "SAIDA":
             stmt_lote = select(Lotes).where(Lotes.id == lote_id)
-            lote = session.scalar(stmt_lote)
+            lote = session.execute(stmt_lote).scalars().first()
             if lote is None:
                 return "Lote nao encontrado"
             if lote.quantidade_atual < quantidade:

@@ -15,7 +15,7 @@ SEED_PATH = Path(__file__).resolve().parent / "dependencies" / "seed_demo.sql"
 def verificar_senha(email: str, senha: str):
     with get_session() as session:
         stmt = select(Usuarios).where(Usuarios.email == email)
-        usuario = session.scalar(stmt)
+        usuario = session.execute(stmt).scalars().first()
 
         if usuario is None:
             return False
@@ -35,7 +35,7 @@ def gerar_token(email: str):
 def buscar_usuario_por_email(email: str):
     with get_session() as session:
         stmt = select(Usuarios).where(Usuarios.email == email)
-        usuario = session.scalar(stmt)
+        usuario = session.execute(stmt).scalars().first()
 
         if usuario is None:
             return None

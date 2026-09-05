@@ -44,6 +44,11 @@ class _AttrDict(dict):
         except KeyError:
             raise AttributeError(name)
 
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return list(self.values())[key]
+        return super().__getitem__(key)
+
 
 class _SupabaseResult:
     def __init__(self, rows):
@@ -150,16 +155,15 @@ class SupabaseSession:
         return _SupabaseResult([])
 
     def scalar(self, stmt):
-        from sqlalchemy.sql.elements import TextClause
-
-        if isinstance(stmt, TextClause):
-            result = self.execute(stmt)
-            rows = result.fetchall()
-            return rows[0] if rows else None
-
         result = self.execute(stmt)
         rows = result.scalars().all()
-        return rows[0] if rows else None
+        if not rows:
+            return None
+        row = rows[0]
+        if isinstance(row, dict):
+            vals = list(row.values())
+            return vals[0] if vals else None
+        return row
 
     def commit(self):
         pass
@@ -310,6 +314,31 @@ class SupabaseSession:
 
     def _exec_text(self, stmt) -> _SupabaseResult:
         sql_str = str(stmt.compile(compile_kwargs={"literal_binds": True}))
+
+        # Tenta extrair tabela/view de queries simples: SELECT ... FROM tabela
+        m = re.search(r"FROM\s+(\w+)", sql_str, re.IGNORECASE)
+        if m:
+            table = m.group(1)
+            try:
+                query = self._client.table(table).select("*")
+
+                # WHERE simples: coluna = 'valor'
+                where_match = re.search(r"WHERE\s+(.+?)(?:\s+ORDER\s|\s+GROUP\s|\s+LIMIT\s|$)", sql_str, re.IGNORECASE)
+                if where_match:
+                    query = self._apply_where(query, where_match.group(1))
+
+                # ORDER BY
+                order_match = re.search(r"ORDER\s+BY\s+(\w+(?:\.\w+)?)\s*(ASC|DESC)?", sql_str, re.IGNORECASE)
+                if order_match:
+                    col = order_match.group(1).split(".")[-1]
+                    desc = order_match.group(2) and order_match.group(2).upper() == "DESC"
+                    query = query.order(col, desc=desc)
+
+                resp = query.execute()
+                return _SupabaseResult(resp.data or [])
+            except Exception as e:
+                logger.warning("Supabase REST falhou para view %s: %s", table, e)
+
         logger.warning("Supabase REST nao suporta SQL raw: %s", sql_str[:100])
         return _SupabaseResult([])
 
