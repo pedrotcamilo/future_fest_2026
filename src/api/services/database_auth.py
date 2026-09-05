@@ -11,7 +11,7 @@ hash_senha = PasswordHash.recommended()
 tokens_dict = {}
 
 DEMO_USUARIO_ID = 5
-SEED_PATH = Path(__file__).resolve().parents[2].parent / "testes" / "seed_dados_teste.sql"
+SEED_PATH = Path(__file__).resolve().parent / "dependencies" / "seed_demo.sql"
 
 def verificar_senha(email: str, senha: str):
     with Session(engine) as session:
