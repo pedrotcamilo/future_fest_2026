@@ -1,12 +1,11 @@
 from sqlalchemy import select, update, delete
 from sqlalchemy import insert
-from sqlalchemy.orm import Session
 
-from api.services.database import engine
+from api.services.database_manager import get_session
 from api.services.models import Formulas, FormulaItens
 
 def listar_formulas():
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Formulas)
         result = session.execute(stmt)
         formulas = result.scalars().all()
@@ -23,7 +22,7 @@ def listar_formulas():
         ]
 
 def listar_formula_id(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Formulas).where(Formulas.id == id)
         result = session.execute(stmt)
         formula = result.scalar_one_or_none()
@@ -57,7 +56,7 @@ def criar_formula(
     categoria: str = None,
     ativa: bool = True
 ):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             insert(Formulas)
             .values(
@@ -75,7 +74,7 @@ def criar_formula(
         return formula_id
 
 def editar_formula(id: int, **kwargs):
-    with Session(engine) as session:
+    with get_session() as session:
         valores = {k: v for k, v in kwargs.items() if v is not None}
         if not valores:
             return "Ok"
@@ -91,7 +90,7 @@ def editar_formula(id: int, **kwargs):
         return "Ok"
 
 def deletar_formula(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt_itens = delete(FormulaItens).where(FormulaItens.formula_id == id)
         session.execute(stmt_itens)
 
@@ -101,7 +100,7 @@ def deletar_formula(id: int):
         return "Ok"
 
 def listar_itens_formula(formula_id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(FormulaItens).where(FormulaItens.formula_id == formula_id)
         result = session.execute(stmt)
         itens = result.scalars().all()
@@ -122,7 +121,7 @@ def adicionar_item_formula(
     quantidade: float,
     unidade: str = None
 ):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             insert(FormulaItens)
             .values(
@@ -141,7 +140,7 @@ def editar_item_formula(
     quantidade: float = None,
     unidade: str = None
 ):
-    with Session(engine) as session:
+    with get_session() as session:
         valores = {}
         if quantidade is not None:
             valores["quantidade"] = quantidade
@@ -161,7 +160,7 @@ def editar_item_formula(
         return "Ok"
 
 def deletar_item_formula(item_id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = delete(FormulaItens).where(FormulaItens.id == item_id)
         session.execute(stmt)
         session.commit()

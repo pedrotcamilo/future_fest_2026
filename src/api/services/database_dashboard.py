@@ -1,11 +1,10 @@
 from sqlalchemy import select, func
-from sqlalchemy.orm import Session
 
-from api.services.database import engine
+from api.services.database_manager import get_session
 from api.services.models import MateriasPrimas, Lotes, Compras, OrdensProducao, Alertas, PrevisoesConsumo, HistoricoConsumo, MovimentacoesEstoque
 
 def resumo_geral():
-    with Session(engine) as session:
+    with get_session() as session:
         total_materias = session.scalar(
             select(func.count(MateriasPrimas.id))
         ) or 0
@@ -32,30 +31,31 @@ def resumo_geral():
         }
 
 def dashboard_estoque():
-    with Session(engine) as session:
-        stmt = (
-            select(
-                MateriasPrimas.id,
-                MateriasPrimas.nome,
-                func.coalesce(func.sum(Lotes.quantidade_atual), 0)
-            )
-            .outerjoin(Lotes, MateriasPrimas.id == Lotes.materia_prima_id)
-            .group_by(MateriasPrimas.id, MateriasPrimas.nome)
-        )
+    with get_session() as session:
+        r_mp = session.execute(select(MateriasPrimas))
+        materias = {}
+        for row in r_mp:
+            materias[row.id] = row.nome
 
-        result = session.execute(stmt)
+        r_lotes = session.execute(select(Lotes))
+        estoque_map = {}
+        for row in r_lotes:
+            mp_id = row.materia_prima_id
+            qtd = float(row.quantidade_atual) if row.quantidade_atual else 0
+            estoque_map[mp_id] = estoque_map.get(mp_id, 0) + qtd
+
         estoque = []
-        for row in result:
+        for mp_id, nome in materias.items():
             estoque.append({
-                "materia_prima_id": row[0],
-                "nome": row[1],
-                "estoque": float(row[2])
+                "materia_prima_id": mp_id,
+                "nome": nome,
+                "estoque": estoque_map.get(mp_id, 0)
             })
 
         return estoque
 
 def dashboard_compras():
-    with Session(engine) as session:
+    with get_session() as session:
         pendentes = session.scalar(
             select(func.count(Compras.id)).where(Compras.status == "PENDENTE")
         ) or 0
@@ -75,7 +75,7 @@ def dashboard_compras():
         }
 
 def dashboard_producao():
-    with Session(engine) as session:
+    with get_session() as session:
         pendentes = session.scalar(
             select(func.count(OrdensProducao.id)).where(
                 OrdensProducao.status == "PENDENTE"
@@ -108,7 +108,7 @@ def dashboard_producao():
         }
 
 def dashboard_previsoes():
-    with Session(engine) as session:
+    with get_session() as session:
         total_previsoes = session.scalar(
             select(func.count(PrevisoesConsumo.id))
         ) or 0
@@ -123,7 +123,7 @@ def dashboard_previsoes():
         }
 
 def dashboard_alertas():
-    with Session(engine) as session:
+    with get_session() as session:
         total = session.scalar(
             select(func.count(Alertas.id))
         ) or 0

@@ -25,6 +25,14 @@ async def gerar_previsao(body: PrevisaoInput):
     )
     return responses.PlainTextResponse(content=resultado, status_code=200)
 
+@router.post("/gerar-automatica")
+async def gerar_previsao_automatica(
+    inicio: date = Query(None, alias="inicio"),
+    fim: date = Query(None, alias="fim")
+):
+    resultado = database_previsoes.gerar_previsao_automatica(inicio, fim)
+    return responses.PlainTextResponse(content=resultado, status_code=200)
+
 @router.get("/")
 async def listar_previsoes():
     resultado = database_previsoes.listar_previsoes()
