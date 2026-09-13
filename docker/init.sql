@@ -1,273 +1,20 @@
 -- ============================================================
--- INIT: DDL + Dados ficticios para testes (Farmacia de Manipulacao)
--- Ordem: tabelas -> funcoes/trigger -> vistas -> indices -> seed
--- ============================================================
-
--- ============================================================
--- TABELAS
--- ============================================================
-
-CREATE TABLE materias_primas (
-    id SERIAL PRIMARY KEY,
-    codigo VARCHAR(30) UNIQUE,
-    nome VARCHAR(200) NOT NULL,
-    unidade VARCHAR(20),
-    estoque_minimo NUMERIC(12,3),
-    estoque_maximo NUMERIC(12,3),
-    consumo_medio_mensal NUMERIC(12,3),
-    ativo BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE TABLE fornecedores (
-    id SERIAL PRIMARY KEY,
-    razao_social VARCHAR(200) NOT NULL,
-    nome_fantasia VARCHAR(200),
-    cnpj VARCHAR(20),
-    telefone VARCHAR(30),
-    email VARCHAR(150),
-    prazo_entrega_dias INTEGER,
-    ativo BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE TABLE lotes (
-    id SERIAL PRIMARY KEY,
-    materia_prima_id INTEGER
-        REFERENCES materias_primas(id),
-    fornecedor_id INTEGER
-        REFERENCES fornecedores(id),
-    numero_lote VARCHAR(80),
-    quantidade_inicial NUMERIC(12,3),
-    quantidade_atual NUMERIC(12,3),
-    data_fabricacao DATE,
-    data_validade DATE,
-    data_recebimento DATE,
-    valor_unitario NUMERIC(12,4)
-);
-
-CREATE TABLE formulas (
-    id SERIAL PRIMARY KEY,
-    codigo VARCHAR(30),
-    descricao VARCHAR(300),
-    categoria VARCHAR(100),
-    ativa BOOLEAN DEFAULT TRUE
-);
-
-CREATE TABLE formula_itens (
-    id SERIAL PRIMARY KEY,
-    formula_id INTEGER
-        REFERENCES formulas(id),
-    materia_prima_id INTEGER
-        REFERENCES materias_primas(id),
-    quantidade NUMERIC(12,4),
-    unidade VARCHAR(20)
-);
-
-CREATE TABLE clientes (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(200),
-    telefone VARCHAR(30),
-    email VARCHAR(150)
-);
-
-CREATE TABLE pedidos (
-    id SERIAL PRIMARY KEY,
-    cliente_id INTEGER REFERENCES clientes(id),
-    data_pedido TIMESTAMP,
-    status VARCHAR(30),
-    data_entrega DATE
-);
-
-CREATE TABLE pedido_itens (
-    id SERIAL PRIMARY KEY,
-    pedido_id INTEGER REFERENCES pedidos(id),
-    formula_id INTEGER REFERENCES formulas(id),
-    quantidade INTEGER
-);
-
-CREATE TABLE ordens_producao (
-    id SERIAL PRIMARY KEY,
-    pedido_id INTEGER REFERENCES pedidos(id),
-    data_inicio TIMESTAMP,
-    data_fim TIMESTAMP,
-    status VARCHAR(30)
-);
-
-CREATE TABLE consumo_producao (
-    id SERIAL PRIMARY KEY,
-    ordem_producao_id INTEGER
-        REFERENCES ordens_producao(id),
-    lote_id INTEGER
-        REFERENCES lotes(id),
-    quantidade NUMERIC(12,3)
-);
-
-CREATE TABLE movimentacoes_estoque (
-    id SERIAL PRIMARY KEY,
-    lote_id INTEGER REFERENCES lotes(id),
-    tipo VARCHAR(20),
-    quantidade NUMERIC(12,3),
-    data_movimento TIMESTAMP DEFAULT NOW(),
-    observacao TEXT
-);
-
-CREATE TABLE historico_consumo (
-    id SERIAL PRIMARY KEY,
-    materia_prima_id INTEGER
-        REFERENCES materias_primas(id),
-    data DATE,
-    quantidade NUMERIC(12,3)
-);
-
-CREATE TABLE sazonalidade (
-    id SERIAL PRIMARY KEY,
-    formula_id INTEGER REFERENCES formulas(id),
-    mes INTEGER,
-    fator NUMERIC(5,2)
-);
-
-CREATE TABLE previsoes_consumo (
-    id SERIAL PRIMARY KEY,
-    materia_prima_id INTEGER
-        REFERENCES materias_primas(id),
-    data_previsao DATE,
-    periodo_inicio DATE,
-    periodo_fim DATE,
-    consumo_previsto NUMERIC(12,3),
-    confianca NUMERIC(5,2),
-    modelo_utilizado VARCHAR(100)
-);
-
-CREATE TABLE sugestoes_compra (
-    id SERIAL PRIMARY KEY,
-    materia_prima_id INTEGER
-        REFERENCES materias_primas(id),
-    data_sugestao DATE,
-    quantidade_sugerida NUMERIC(12,3),
-    motivo TEXT,
-    status VARCHAR(20)
-);
-
-CREATE TABLE alertas (
-    id SERIAL PRIMARY KEY,
-    tipo VARCHAR(50),
-    materia_prima_id INTEGER
-        REFERENCES materias_primas(id),
-    lote_id INTEGER
-        REFERENCES lotes(id),
-    descricao TEXT,
-    prioridade VARCHAR(20),
-    resolvido BOOLEAN DEFAULT FALSE,
-    data_alerta TIMESTAMP DEFAULT NOW()
-);
-
-CREATE TABLE compras (
-    id SERIAL PRIMARY KEY,
-    fornecedor_id INTEGER
-        REFERENCES fornecedores(id),
-    data_compra DATE,
-    previsao_entrega DATE,
-    data_recebimento DATE,
-    status VARCHAR(30)
-);
-
-CREATE TABLE compra_itens (
-    id SERIAL PRIMARY KEY,
-    compra_id INTEGER REFERENCES compras(id),
-    materia_prima_id INTEGER REFERENCES materias_primas(id),
-    quantidade NUMERIC(12,3),
-    valor_unitario NUMERIC(12,2)
-);
-
--- ============================================================
--- VISTAS
--- ============================================================
-
-CREATE VIEW vw_consumo_mensal AS
-SELECT
-    materia_prima_id,
-    DATE_TRUNC('month', data) mes,
-    SUM(quantidade) consumo
-FROM historico_consumo
-GROUP BY materia_prima_id, DATE_TRUNC('month', data);
-
-CREATE VIEW vw_estoque_atual AS
-SELECT
-    mp.id,
-    mp.nome,
-    SUM(l.quantidade_atual) estoque
-FROM materias_primas mp
-LEFT JOIN lotes l ON mp.id = l.materia_prima_id
-GROUP BY mp.id, mp.nome;
-
-CREATE VIEW vw_vencimentos AS
-SELECT
-    mp.nome,
-    l.numero_lote,
-    l.data_validade,
-    l.quantidade_atual
-FROM lotes l
-JOIN materias_primas mp ON mp.id = l.materia_prima_id
-WHERE l.quantidade_atual > 0
-ORDER BY l.data_validade;
-
--- ============================================================
--- FUNCOES / TRIGGERS
--- ============================================================
-
-CREATE OR REPLACE FUNCTION atualizar_consumo_medio()
-RETURNS TRIGGER AS $$
-DECLARE
-    mp_id INTEGER;
-    media_calc NUMERIC(12,3);
-BEGIN
-    mp_id := COALESCE(NEW.materia_prima_id, OLD.materia_prima_id);
-
-    SELECT
-        ROUND(AVG(consumo), 3)
-    INTO media_calc
-    FROM vw_consumo_mensal
-    WHERE materia_prima_id = mp_id
-      AND mes >= date_trunc('month', CURRENT_DATE) - INTERVAL '6 months'
-      AND mes <  date_trunc('month', CURRENT_DATE);
-
-    IF media_calc IS NOT NULL THEN
-        UPDATE materias_primas
-        SET consumo_medio_mensal = media_calc
-        WHERE id = mp_id;
-    END IF;
-
-    RETURN COALESCE(NEW, OLD);
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trg_atualizar_consumo_medio
-    AFTER INSERT OR UPDATE OR DELETE
-    ON historico_consumo
-    FOR EACH ROW
-    EXECUTE FUNCTION atualizar_consumo_medio();
-
--- ============================================================
--- INDICES
--- ============================================================
-
-CREATE INDEX idx_lotes_validade ON lotes(data_validade);
-CREATE INDEX idx_lotes_mp ON lotes(materia_prima_id);
-CREATE INDEX idx_consumo_data ON historico_consumo(data);
-CREATE INDEX idx_movimentacao_data ON movimentacoes_estoque(data_movimento);
-CREATE INDEX idx_previsao_periodo ON previsoes_consumo(periodo_inicio);
-CREATE INDEX idx_ordem_status ON ordens_producao(status);
-CREATE INDEX idx_pedido_data ON pedidos(data_pedido);
-
--- ============================================================
 -- SEED: Dados ficticios para testes (Farmacia de Manipulacao)
 -- Execute apos rodar todos os scripts de criacao de tabelas.
 -- Ordem: materias_primas -> fornecedores -> lotes -> formulas
 --        -> clientes -> pedidos -> ordens_producao -> demais
 -- ============================================================
 
+-- Limpeza das tabelas (seguro para ambiente de teste)
+TRUNCATE TABLE alertas, compra_itens, compras, consumo_producao,
+    formula_itens, formulas, historico_consumo,
+    lotes, materias_primas, movimentacoes_estoque, ordens_producao,
+    pedidos, pedido_itens, previsoes_consumo, sazonalidade,
+    sugestoes_compra, clientes, fornecedores RESTART IDENTITY CASCADE;
+
+-- ------------------------------------------------------------
 -- MATERIAS PRIMAS (insumos farmaceuticos)
+-- ------------------------------------------------------------
 INSERT INTO materias_primas (codigo, nome, unidade, estoque_minimo, estoque_maximo, consumo_medio_mensal, ativo) VALUES
 ('MP-001', 'Omeprazol', 'g', 500.000, 4000.000, 2200.000, TRUE),
 ('MP-002', 'Sildenafil 100mg', 'un', 1000.000, 8000.000, 4500.000, TRUE),
@@ -290,7 +37,9 @@ INSERT INTO materias_primas (codigo, nome, unidade, estoque_minimo, estoque_maxi
 ('MP-019', 'Magnesio quelado', 'g', 300.000, 2500.000, 1100.000, TRUE),
 ('MP-020', 'Melatonina', 'g', 100.000, 800.000, 320.000, TRUE);
 
+-- ------------------------------------------------------------
 -- FORNECEDORES (distribuidores farmaceuticos)
+-- ------------------------------------------------------------
 INSERT INTO fornecedores (razao_social, nome_fantasia, cnpj, telefone, email, prazo_entrega_dias, ativo) VALUES
 ('Quimio Farma Distribuidora Ltda', 'Quimio Farma', '12.345.678/0001-90', '(11) 3123-4000', 'vendas@quimiofarma.com.br', 3, TRUE),
 ('FarmaInsumos S.A.', 'FarmaInsumos', '23.456.789/0001-01', '(11) 3456-7800', 'contato@farmainsumos.com.br', 5, TRUE),
@@ -303,7 +52,9 @@ INSERT INTO fornecedores (razao_social, nome_fantasia, cnpj, telefone, email, pr
 ('VitaBase Ingredientes', 'VitaBase', '90.123.456/0001-78', '(19) 3777-9012', 'pedidos@vitabase.com.br', 5, TRUE),
 ('DermoCaps Manipulacao', 'DermoCaps', '01.234.567/0001-89', '(11) 3888-3456', 'insumos@dermocaps.com.br', 2, TRUE);
 
+-- ------------------------------------------------------------
 -- LOTES (lotes dos insumos farmaceuticos)
+-- ------------------------------------------------------------
 INSERT INTO lotes (materia_prima_id, fornecedor_id, numero_lote, quantidade_inicial, quantidade_atual, data_fabricacao, data_validade, data_recebimento, valor_unitario) VALUES
 (1, 1, 'LOT-OME-001', 2500.000, 1450.000, '2026-03-01', '2028-03-01', '2026-06-03', 0.9500),
 (1, 1, 'LOT-OME-002', 2000.000, 2000.000, '2026-07-10', '2028-07-10', '2026-07-12', 0.9400),
@@ -335,7 +86,9 @@ INSERT INTO lotes (materia_prima_id, fornecedor_id, numero_lote, quantidade_inic
 (19, 9, 'LOT-MAG-001', 1200.000, 750.000, '2026-06-10', '2028-06-10', '2026-06-12', 1.8000),
 (20, 3, 'LOT-MEL-001', 400.000, 250.000, '2026-05-28', '2027-05-28', '2026-05-30', 4.5000);
 
+-- ------------------------------------------------------------
 -- HISTORICO DE CONSUMO (6 meses: abr a set/2026)
+-- ------------------------------------------------------------
 INSERT INTO historico_consumo (materia_prima_id, data, quantidade) VALUES
 (1, '2026-04-10', 2050.000), (1, '2026-05-10', 2100.000), (1, '2026-06-10', 2180.000),
 (1, '2026-07-10', 2250.000), (1, '2026-08-10', 2300.000), (1, '2026-09-10', 2350.000),
@@ -372,7 +125,9 @@ INSERT INTO historico_consumo (materia_prima_id, data, quantidade) VALUES
 (20, '2026-04-25', 300.000), (20, '2026-05-25', 310.000), (20, '2026-06-25', 320.000),
 (20, '2026-07-25', 330.000), (20, '2026-08-25', 340.000), (20, '2026-09-25', 350.000);
 
+-- ------------------------------------------------------------
 -- FORMULAS (formulas magistrais e oficinais)
+-- ------------------------------------------------------------
 INSERT INTO formulas (codigo, descricao, categoria, ativa) VALUES
 ('FML-001', 'Capsulas de Omeprazol 20mg', 'Gastroenterologia', TRUE),
 ('FML-002', 'Capsulas de Sildenafil 50mg', 'Andrologia', TRUE),
@@ -420,7 +175,9 @@ INSERT INTO formula_itens (formula_id, materia_prima_id, quantidade, unidade) VA
 (11, 3, 100.0000, 'mg/cap'),
 (11, 4, 1.0000, 'cap');
 
+-- ------------------------------------------------------------
 -- SAZONALIDADE
+-- ------------------------------------------------------------
 INSERT INTO sazonalidade (formula_id, mes, fator) VALUES
 (1, 3, 1.10), (1, 7, 1.05), (1, 12, 1.20),
 (2, 2, 1.15), (2, 6, 1.20), (2, 11, 1.10),
@@ -434,7 +191,9 @@ INSERT INTO sazonalidade (formula_id, mes, fator) VALUES
 (10, 1, 1.15), (10, 6, 1.10), (10, 12, 1.20),
 (11, 9, 1.05), (11, 10, 1.10), (11, 12, 1.15);
 
+-- ------------------------------------------------------------
 -- CLIENTES (clinicas, consultorios e outras farmacias)
+-- ------------------------------------------------------------
 INSERT INTO clientes (nome, telefone, email) VALUES
 ('Clinica Vida Plena', '(11) 98765-4321', 'compras@clinicavidaplena.com.br'),
 ('Consultorio Dra. Renata Alves', '(11) 91234-5678', 'contato@drenataalves.com.br'),
@@ -449,7 +208,9 @@ INSERT INTO clientes (nome, telefone, email) VALUES
 ('Farmacia Manipular Bem', '(19) 3890-1234', 'pedidos@manipularbem.com.br'),
 ('Gastro Center SP', '(11) 93456-7890', 'compras@gastrocentersp.com.br');
 
+-- ------------------------------------------------------------
 -- PEDIDOS
+-- ------------------------------------------------------------
 INSERT INTO pedidos (cliente_id, data_pedido, status, data_entrega) VALUES
 (1, '2026-07-01 09:15:00', 'CONCLUIDO', '2026-07-03'),
 (2, '2026-07-05 14:30:00', 'CONCLUIDO', '2026-07-07'),
@@ -488,7 +249,9 @@ INSERT INTO pedido_itens (pedido_id, formula_id, quantidade) VALUES
 (16, 9, 200), (16, 10, 300),
 (17, 2, 150), (17, 7, 250);
 
+-- ------------------------------------------------------------
 -- ORDENS DE PRODUCAO
+-- ------------------------------------------------------------
 INSERT INTO ordens_producao (pedido_id, data_inicio, data_fim, status) VALUES
 (1, '2026-07-01 10:00:00', '2026-07-02 18:00:00', 'CONCLUIDA'),
 (2, '2026-07-05 15:00:00', '2026-07-06 16:00:00', 'CONCLUIDA'),
@@ -505,7 +268,9 @@ INSERT INTO ordens_producao (pedido_id, data_inicio, data_fim, status) VALUES
 (13, NULL, NULL, 'AGENDADA'),
 (14, NULL, NULL, 'AGENDADA');
 
+-- ------------------------------------------------------------
 -- CONSUMO EM PRODUCAO
+-- ------------------------------------------------------------
 INSERT INTO consumo_producao (ordem_producao_id, lote_id, quantidade) VALUES
 (1, 1, 6.000),
 (1, 4, 84.000),
@@ -523,7 +288,9 @@ INSERT INTO consumo_producao (ordem_producao_id, lote_id, quantidade) VALUES
 (11, 1, 12.000),
 (11, 22, 30.000);
 
+-- ------------------------------------------------------------
 -- MOVIMENTACOES DE ESTOQUE
+-- ------------------------------------------------------------
 INSERT INTO movimentacoes_estoque (lote_id, tipo, quantidade, data_movimento, observacao) VALUES
 (1, 'ENTRADA', 2500.000, '2026-06-03 08:00:00', 'Recebimento nota fiscal 12345'),
 (1, 'SAIDA', 1050.000, '2026-06-10 09:00:00', 'Consumo producao'),
@@ -567,7 +334,9 @@ INSERT INTO movimentacoes_estoque (lote_id, tipo, quantidade, data_movimento, ob
 (29, 'SAIDA', 150.000, '2026-07-28 09:00:00', 'Consumo producao'),
 (6, 'ENTRADA', 40.000, '2026-07-22 08:00:00', 'Recebimento nota fiscal 12880');
 
+-- ------------------------------------------------------------
 -- PREVISOES DE CONSUMO (ago e set/2026)
+-- ------------------------------------------------------------
 INSERT INTO previsoes_consumo (materia_prima_id, data_previsao, periodo_inicio, periodo_fim, consumo_previsto, confianca, modelo_utilizado) VALUES
 (1, '2026-08-01', '2026-08-01', '2026-08-31', 2320.000, 92.50, 'media_movel'),
 (2, '2026-08-01', '2026-08-01', '2026-08-31', 4750.000, 90.10, 'media_movel'),
@@ -595,7 +364,9 @@ INSERT INTO previsoes_consumo (materia_prima_id, data_previsao, periodo_inicio, 
 (11, '2026-09-01', '2026-09-01', '2026-09-30', 5300.000, 89.80, 'suavizacao_exponencial'),
 (12, '2026-09-01', '2026-09-01', '2026-09-30', 7700.000, 92.50, 'media_movel');
 
+-- ------------------------------------------------------------
 -- SUGESTOES DE COMPRA
+-- ------------------------------------------------------------
 INSERT INTO sugestoes_compra (materia_prima_id, data_sugestao, quantidade_sugerida, motivo, status) VALUES
 (5, '2026-07-30', 20.000, 'Estoque abaixo do minimo', 'PENDENTE'),
 (7, '2026-07-30', 2000.000, 'Estoque abaixo do minimo', 'PENDENTE'),
@@ -613,7 +384,9 @@ INSERT INTO sugestoes_compra (materia_prima_id, data_sugestao, quantidade_sugeri
 (13, '2026-08-07', 1500.000, 'Estoque em nivel critico', 'PENDENTE'),
 (11, '2026-08-08', 2000.000, 'Previsao de alta demanda', 'APROVADA');
 
+-- ------------------------------------------------------------
 -- COMPRAS
+-- ------------------------------------------------------------
 INSERT INTO compras (fornecedor_id, data_compra, previsao_entrega, data_recebimento, status) VALUES
 (1, '2026-06-01', '2026-06-03', '2026-06-03', 'RECEBIDA'),
 (2, '2026-07-05', '2026-07-15', '2026-07-15', 'RECEBIDA'),
@@ -655,7 +428,9 @@ INSERT INTO compra_itens (compra_id, materia_prima_id, quantidade, valor_unitari
 (14, 19, 1200.000, 1.80),
 (15, 20, 400.000, 4.50);
 
+-- ------------------------------------------------------------
 -- ALERTAS
+-- ------------------------------------------------------------
 INSERT INTO alertas (tipo, materia_prima_id, lote_id, descricao, prioridade, resolvido, data_alerta) VALUES
 ('ESTOQUE_MINIMO', 5, NULL, 'Vaselina solida abaixo do estoque minimo', 'ALTA', FALSE, '2026-07-30 09:00:00'),
 ('ESTOQUE_MINIMO', 7, NULL, 'Dipirona sodica abaixo do estoque minimo', 'ALTA', FALSE, '2026-07-30 09:05:00'),

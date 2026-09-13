@@ -10,16 +10,11 @@ from os import getenv
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
-try:
-    from supabase import create_client, Client
-except ImportError:
-    create_client = None
-    Client = None
+from supabase import create_client, Client
 
 load_dotenv(verbose=True)
 
 logger = logging.getLogger(__name__)
-supabase_disponivel: bool = False
 
 # ── Engine primário (PostgreSQL local) ──────────────────────────────────
 
@@ -35,21 +30,10 @@ _primary_engine = create_engine(
 
 # ── Supabase REST client ───────────────────────────────────────────────
 
-_supabase = None
-
-if create_client and len(getenv("SUPABASE_URL")) > 0:
-    _supabase: Client = create_client(
-        getenv("SUPABASE_URL"),
-        getenv("SUPABASE_SECRET_KEY"),
-    )
-
-    supabase_disponivel = True
-
-elif not create_client:
-    logger.warn("supabase-py nao instalado! Sem Fail-over")
-
-else:
-    logger.warn("SUPABASE_URL nao definido! Sem Fail-over")
+_supabase: Client = create_client(
+    getenv("SUPABASE_URL"),
+    getenv("SUPABASE_SECRET_KEY"),
+)
 
 # ── SupabaseSession: wrapper que imita Session do SQLAlchemy ───────────
 
@@ -141,7 +125,7 @@ def _cast_value(val: str):
 
 
 class SupabaseSession:
-    def __init__(self, client):
+    def __init__(self, client: Client):
         self._client = client
 
     def execute(self, stmt):
@@ -457,14 +441,11 @@ def get_session():
             _last_primary_check = now
             _set_active_db("supabase")
 
-    if supabase_disponivel:
-        session = SupabaseSession(_supabase)
-        try:
-            yield session
-        finally:
-            session.close()
-    else:
-        raise RuntimeError("Nenhum banco de dados disponível (primary e supabase falharam)")
+    session = SupabaseSession(_supabase)
+    try:
+        yield session
+    finally:
+        session.close()
 
 
 def get_primary_engine():
