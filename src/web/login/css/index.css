@@ -13,3 +13,13 @@
 #btn-autenticar {
     width: 100%;
 }
+
+#btn-autenticar:disabled {
+    opacity: 0.7;
+}
+
+.btn-loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}

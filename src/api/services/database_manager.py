@@ -9,10 +9,12 @@ from os import getenv
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
+from pathlib import Path
 from dotenv import load_dotenv
 from supabase import create_client, Client
 
-load_dotenv(verbose=True)
+_env_path = Path(__file__).resolve().parent.parent.parent / ".env"
+load_dotenv(verbose=True, dotenv_path=_env_path)
 
 logger = logging.getLogger(__name__)
 
@@ -30,10 +32,21 @@ _primary_engine = create_engine(
 
 # ── Supabase REST client ───────────────────────────────────────────────
 
-_supabase: Client = create_client(
-    getenv("SUPABASE_URL"),
-    getenv("SUPABASE_SECRET_KEY"),
-)
+_supabase_url = getenv("SUPABASE_URL")
+_supabase_key = getenv("SUPABASE_SECRET_KEY")
+
+if not _supabase_url or not _supabase_key:
+    logger.warning(
+        "SUPABASE_URL ou SUPABASE_SECRET_KEY nao definidos. "
+        "Supabase indisponivel, apenas o banco primario sera utilizado."
+    )
+    _supabase = None
+else:
+    try:
+        _supabase = create_client(_supabase_url, _supabase_key)
+    except Exception as e:
+        logger.error("Falha ao conectar no Supabase: %s", e)
+        _supabase = None
 
 # ── SupabaseSession: wrapper que imita Session do SQLAlchemy ───────────
 
@@ -400,7 +413,8 @@ def _health_check_loop():
 
         if current == "primary":
             if not _check_primary_alive():
-                _set_active_db("supabase")
+                if _supabase is not None:
+                    _set_active_db("supabase")
         else:
             if _check_primary_alive():
                 _set_active_db("primary")
@@ -440,6 +454,16 @@ def get_session():
         except Exception:
             _last_primary_check = now
             _set_active_db("supabase")
+
+    if _supabase is None:
+        logger.warning("Supabase indisponivel, tentando banco primario")
+        try:
+            with Session(_primary_engine) as session:
+                yield session
+                return
+        except Exception as e:
+            logger.error("Banco primario e Supabase indisponiveis: %s", e)
+            raise
 
     session = SupabaseSession(_supabase)
     try:

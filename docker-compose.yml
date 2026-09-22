@@ -33,6 +33,8 @@ services:
       SEGREDO: ${SEGREDO}
       APP_HOST: ${APP_HOST:-0.0.0.0}
       APP_MODULE: ${APP_MODULE:-main:app}
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_SECRET_KEY: ${SUPABASE_SECRET_KEY}
     depends_on:
       db:
         condition: service_healthy

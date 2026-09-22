@@ -1,56 +1,71 @@
 let graficoConsumo = null;
 
 const CORES_GRAFICO = [
-    "rgba(75, 192, 192, 1)",
-    "rgba(54, 162, 235, 1)",
-    "rgba(255, 99, 132, 1)",
-    "rgba(255, 159, 64, 1)",
-    "rgba(153, 102, 255, 1)",
-    "rgba(255, 205, 86, 1)",
-    "rgba(201, 203, 207, 1)",
-    "rgba(75, 192, 192, 0.6)",
-    "rgba(54, 162, 235, 0.6)",
-    "rgba(255, 99, 132, 0.6)"
+    "#ef4444",
+    "#f97316",
+    "#eab308",
+    "#84cc16",
+    "#22c55e",
+    "#06b6d4",
+    "#3b82f6",
+    "#6366f1",
+    "#8b5cf6",
+    "#d946ef",
+    "#ec4899",
+    "#e11d48",
+    "#14b8a6",
+    "#0ea5e9",
+    "#64748b",
+    "#a855f7",
+    "#f472b6",
+    "#fbbf24",
+    "#78716c",
+    "#92400e"
 ];
 
 function coresCompletas(total) {
-    return Array.from({ length: total }, (_, i) => CORES_GRAFICO[i % CORES_GRAFICO.length]);
+    const n = CORES_GRAFICO.length;
+    if (total <= n) {
+        const passo = n / total;
+        return Array.from({ length: total }, (_, i) => CORES_GRAFICO[Math.floor(i * passo) % n]);
+    }
+    return Array.from({ length: total }, (_, i) => CORES_GRAFICO[i % n]);
 }
 
-function montarDatasetsTodas(materias) {
+function montarSeriesTodas(materias) {
     const meses = [...new Set(
         materias.flatMap(m => (m.consumo_mensal || []).map(x => x.mes))
     )].sort();
 
     const cores = coresCompletas(materias.length);
 
-    const datasets = materias.map((m, i) => ({
-        label: m.nome,
+    const comTotal = materias.map((m, i) => {
+        const total = (m.consumo_mensal || []).reduce((s, x) => s + (x.consumo || 0), 0);
+        return { m, total, i };
+    });
+
+    comTotal.sort((a, b) => b.total - a.total);
+
+    const series = comTotal.map((item, idx) => ({
+        name: item.m.nome,
         data: meses.map(mes => {
-            const item = (m.consumo_mensal || []).find(x => x.mes === mes);
-            return item ? item.consumo : null;
+            const x = (item.m.consumo_mensal || []).find(y => y.mes === mes);
+            return x ? x.consumo : null;
         }),
-        borderColor: cores[i],
-        backgroundColor: cores[i].replace(/1\)$/, "0.2)"),
-        fill: false,
-        tension: 0.1,
-        spanGaps: true
+        color: cores[item.i]
     }));
 
-    return { labels: meses, datasets };
+    return { categories: meses, series };
 }
 
 function montarDadosGrafico(mp) {
     const mensal = mp && mp.consumo_mensal ? mp.consumo_mensal : [];
     return {
-        labels: mensal.map(x => x.mes),
-        datasets: [{
-            label: mp ? mp.nome : "Consumo",
+        categories: mensal.map(x => x.mes),
+        series: [{
+            name: mp ? mp.nome : "Consumo",
             data: mensal.map(x => x.consumo),
-            borderColor: "rgba(75, 192, 192, 1)",
-            backgroundColor: "rgba(75, 192, 192, 0.2)",
-            fill: true,
-            tension: 0.4
+            color: "#3b82f6"
         }]
     };
 }
@@ -64,11 +79,11 @@ function mostrarErroGrafico(msg) {
 window.atualizarGrafico = function () {
     const select = document.getElementById("select-mp");
     const dataList = window.__materiasPrimas || [];
-    const ctx = document.getElementById("grafico-consumo");
-    if (!select || !ctx) return;
+    const chartContainer = document.getElementById("grafico-consumo");
+    if (!select || !chartContainer) return;
 
-    if (typeof Chart === "undefined") {
-        mostrarErroGrafico("Chart.js nao carregou. Verifique o CDN em app.html.");
+    if (typeof ApexCharts === "undefined") {
+        mostrarErroGrafico("ApexCharts nao carregou. Verifique o CDN em app.html.");
         return;
     }
     if (dataList.length === 0) {
@@ -76,133 +91,189 @@ window.atualizarGrafico = function () {
         return;
     }
 
-    if (graficoConsumo) graficoConsumo.destroy();
+    if (graficoConsumo) {
+        graficoConsumo.destroy();
+        graficoConsumo = null;
+    }
 
     const selecionado = select.value;
     const dados = selecionado === ""
-        ? montarDatasetsTodas(dataList)
+        ? montarSeriesTodas(dataList)
         : montarDadosGrafico(dataList.find(m => m.id === Number(selecionado)));
 
+    const isMulti = dados.series.length > 1;
+    const chartHeight = isMulti ? Math.max(350, Math.min(500, 300 + dados.series.length * 30)) : 320;
+
     try {
-        graficoConsumo = new Chart(ctx.getContext("2d"), {
-            type: "line",
-            data: {
-                labels: dados.labels,
-                datasets: dados.datasets
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    mode: "index",
-                    intersect: false
-                },
-                plugins: {
-                    htmlLegend: {
-                        containerID: "legend-container"
-                    },
-                    legend: {
-                        display: false
-                    },
-                    title: {
-                        display: true,
-                        text: "Consumo Mensal de Materias-Primas"
-                    }
-                },
-                scales: {
-                    y: { beginAtZero: true }
+        const options = {
+            series: dados.series,
+            chart: {
+                type: "line",
+                height: chartHeight,
+                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
+                toolbar: { show: false },
+                background: "transparent",
+                dropShadow: { enabled: false },
+                redrawOnWindowResize: true,
+                redrawOnParentResize: true,
+                animations: {
+                    enabled: true,
+                    easing: "easeinout",
+                    speed: 600,
+                    dynamicAnimation: { enabled: true, speed: 350 }
                 }
-            }
+            },
+            colors: dados.series.map(s => s.color),
+            stroke: {
+                curve: "smooth",
+                width: isMulti ? 3 : 3.5,
+                lineCap: "round"
+            },
+            markers: {
+                size: isMulti ? 5 : 6,
+                strokeWidth: 2,
+                strokeColors: "#1e2028",
+                fillColors: dados.series.map(s => s.color),
+                hover: {
+                    sizeOffset: 5,
+                    size: isMulti ? 9 : 11
+                },
+                discrete: []
+            },
+            fill: {
+                type: "solid",
+                opacity: 1
+            },
+            xaxis: {
+                categories: dados.categories,
+                labels: {
+                    style: {
+                        colors: "#8e99a4",
+                        fontSize: "11px",
+                        fontFamily: "inherit"
+                    },
+                    offsetX: 0,
+                    rotate: 0,
+                    maxHeight: 60
+                },
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false
+                },
+                crosshairs: {
+                    show: true,
+                    position: "front",
+                    stroke: {
+                        color: "#3b82f6",
+                        width: 1,
+                        dashArray: 4
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    style: {
+                        colors: "#8e99a4",
+                        fontSize: "11px",
+                        fontFamily: "inherit"
+                    },
+                    offsetX: 0,
+                    formatter: (val) => val !== null ? val.toFixed(0) : ""
+                },
+                min: 0,
+                forceNiceScale: true
+            },
+            grid: {
+                borderColor: "#2a2d35",
+                strokeDashArray: 4,
+                xaxis: { lines: { show: false } },
+                yaxis: { lines: { show: true } },
+                padding: { top: 10, bottom: 0 }
+            },
+            tooltip: {
+                shared: true,
+                intersect: false,
+                theme: "dark",
+                style: {
+                    fontSize: "11px",
+                    fontFamily: "inherit"
+                },
+                y: {
+                    formatter: (val) => val !== null ? val.toFixed(0) + " un" : ""
+                },
+                marker: {
+                    show: true
+                }
+            },
+            legend: {
+                show: true,
+                position: "bottom",
+                horizontalAlign: "center",
+                fontSize: "11px",
+                fontFamily: "inherit",
+                fontWeight: 500,
+                labels: {
+                    colors: "#d1d5db",
+                    useSeriesColors: false
+                },
+                markers: {
+                    fillColors: dados.series.map(s => s.color),
+                    width: 10,
+                    height: 10,
+                    strokeWidth: 0,
+                    radius: 2
+                },
+                itemMargin: {
+                    horizontal: 6,
+                    vertical: 4
+                },
+                onItemClick: {
+                    toggleDataSeries: true
+                },
+                onItemHover: {
+                    highlightDataSeries: true
+                }
+            },
+            states: {
+                active: {
+                    allowMultipleDataPointsSelection: true,
+                    filter: { type: "none" }
+                },
+                hover: { filter: { type: "none" } },
+                inactive: { filter: { type: "none" } }
+            },
+            title: {
+                text: "Consumo Mensal de Materias-Primas",
+                align: "left",
+                style: {
+                    color: "#e5e7eb",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    fontFamily: "inherit"
+                }
+            },
+            noData: { text: "Sem dados para exibir" }
+        };
+
+        graficoConsumo = new ApexCharts(chartContainer, options);
+        graficoConsumo.render().then(() => {
+            const legendItems = chartContainer.querySelectorAll('.apexcharts-legend-series');
+            legendItems.forEach((el, i) => {
+                el.addEventListener('mouseenter', () => {
+                    if (graficoConsumo) graficoConsumo.showTooltip([i]);
+                });
+                el.addEventListener('mouseleave', () => {
+                    if (graficoConsumo) graficoConsumo.hideTooltip();
+                });
+            });
         });
     } catch (e) {
         console.error("[Grafico] Erro ao criar o grafico:", e);
         mostrarErroGrafico("Erro ao criar o grafico: " + (e && e.message ? e.message : e));
     }
 };
-
-
-const getOrCreateLegendList = (chart, id) => {
-  const legendContainer = document.getElementById(id);
-  let listContainer = legendContainer.querySelector('ul');
-
-  if (!listContainer) {
-    listContainer = document.createElement('ul');
-    listContainer.style.display = 'flex';
-    listContainer.style.flexDirection = 'row';
-    listContainer.style.flexWrap = 'wrap';
-    listContainer.style.margin = 0;
-    listContainer.style.padding = 0;
-
-    legendContainer.appendChild(listContainer);
-  }
-
-  return listContainer;
-};
-
-const htmlLegendPlugin = {
-  id: 'htmlLegend',
-  afterUpdate(chart, args, options) {
-    const ul = getOrCreateLegendList(chart, options.containerID);
-
-    // Remove old legend items
-    while (ul.firstChild) {
-      ul.firstChild.remove();
-    }
-
-    // Reuse the built-in legendItems generator
-    const items = chart.options.plugins.legend.labels.generateLabels(chart);
-
-    items.forEach(item => {
-      const li = document.createElement('li');
-      li.style.alignItems = 'center';
-      li.style.cursor = 'pointer';
-      li.style.display = 'flex';
-      li.style.flexDirection = 'row';
-      li.style.margin = '2px 10px 2px 0';
-
-      li.onclick = () => {
-        const {type} = chart.config;
-        if (type === 'pie' || type === 'doughnut') {
-          // Pie and doughnut charts only have a single dataset and visibility is per item
-          chart.toggleDataVisibility(item.index);
-        } else {
-          chart.setDatasetVisibility(item.datasetIndex, !chart.isDatasetVisible(item.datasetIndex));
-        }
-        chart.update();
-      };
-
-      // Color box
-      const boxSpan = document.createElement('span');
-      boxSpan.style.background = item.fillStyle;
-      boxSpan.style.borderColor = item.strokeStyle;
-      boxSpan.style.borderWidth = item.lineWidth + 'px';
-      boxSpan.style.display = 'inline-block';
-      boxSpan.style.flexShrink = 0;
-      boxSpan.style.height = '14px';
-      boxSpan.style.marginRight = '6px';
-      boxSpan.style.width = '14px';
-
-      // Text
-      const textContainer = document.createElement('p');
-      textContainer.style.color = '#d7e4f0';
-      textContainer.style.fontSize = '12px';
-      textContainer.style.margin = 0;
-      textContainer.style.padding = 0;
-      textContainer.style.textDecoration = item.hidden ? 'line-through' : '';
-
-      const text = document.createTextNode(item.text);
-      textContainer.appendChild(text);
-
-      li.appendChild(boxSpan);
-      li.appendChild(textContainer);
-      ul.appendChild(li);
-    });
-  }
-};
-
-if (typeof Chart !== "undefined") {
-  Chart.register(htmlLegendPlugin);
-}
 
 async function renderMateriasPrimas() {
     const params = new URLSearchParams();
@@ -211,9 +282,7 @@ async function renderMateriasPrimas() {
     const fvenc = document.getElementById("filtro-mp-venc")?.value;
 
     if (fnome) params.set("nome", fnome);
-
     if (fbaixo) params.set("estoqueBaixo", fbaixo);
-
     if (fvenc) params.set("vencendo", fvenc);
 
     const res = await API.listarMateriasPrimas(params.toString());
@@ -245,16 +314,23 @@ async function renderMateriasPrimas() {
         <p></p>
         <button class="btn btn-primary btn-sm" onclick="mpForm(null)"><i class="bi bi-plus-lg"></i> Nova</button>
     </div>
-    <div class="mb-3" style="max-width:320px">
-        <label class="form-label small text-body-secondary">Material para o grafico</label>
-        <select class="form-select form-select-sm" id="select-mp" onchange="atualizarGrafico()">
-            ${opcoes}
-        </select>
-    </div>
-    <div id="msg-grafico" class="text-danger small mb-2"></div>
-    <div id="legend-container" class="mb-2"></div>
-    <div style="height:320px; margin-bottom:1rem">
-        <canvas id="grafico-consumo"></canvas>
+    <div class="chart-card mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-graph-up text-primary"></i>
+                    <label class="form-label mb-0 text-body-secondary small">Material</label>
+                </div>
+                <select class="form-select form-select-sm" id="select-mp" onchange="atualizarGrafico()" style="width:auto; min-width:220px">
+                    ${opcoes}
+                </select>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-body-secondary text-body-secondary small" id="chart-count">${data.length} materiais</span>
+            </div>
+        </div>
+        <div id="msg-grafico" class="text-danger small mb-2"></div>
+        <div id="grafico-consumo" style="min-height:320px"></div>
     </div>
     <div class="filters-bar">
         <input class="form-control form-control-sm" placeholder="Nome" id="filtro-mp-nome" value="${fnome || ""}">
@@ -264,7 +340,9 @@ async function renderMateriasPrimas() {
             <option value="true" ${fvenc == "true" ? "selected" : ""}>Vencendo</option></select>
         <button class="btn btn-sm btn-outline-secondary" onclick="renderMateriasPrimas()">Filtrar</button>
     </div>
-    ${tabela}`;
+    <div class="table-wrap mt-3">
+        ${tabela}
+    </div>`;
 
     document.getElementById("content-body").innerHTML = html;
 

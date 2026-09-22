@@ -18,11 +18,19 @@ async function login() {
     const email = document.getElementById("email").value.trim();
     const senha = document.getElementById("senha").value;
     const msg = document.getElementById("login-msg");
+    const btn = document.getElementById("btn-autenticar");
+    const btnText = btn.querySelector(".btn-text");
+    const btnLoading = btn.querySelector(".btn-loading");
 
     if (!email || !senha) {
         msg.textContent = "Preencha email e senha.";
         return;
     }
+
+    btn.disabled = true;
+    btnText.classList.add("d-none");
+    btnLoading.classList.remove("d-none");
+    msg.textContent = "";
 
     try {
         const res = await fetch("/auth/login", {
@@ -40,5 +48,9 @@ async function login() {
         }
     } catch (err) {
         msg.textContent = "Erro de conexao com o servidor.";
+    } finally {
+        btn.disabled = false;
+        btnText.classList.remove("d-none");
+        btnLoading.classList.add("d-none");
     }
 }
