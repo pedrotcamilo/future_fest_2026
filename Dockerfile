@@ -1,12 +1,8 @@
-<<<<<<< Updated upstream
 ARG PYTHON_VERSION=3.14
-=======
-ARG PYTHON_VERSION=3.12
 ARG UV_VERSION=latest
 
 FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv
 
->>>>>>> Stashed changes
 FROM python:${PYTHON_VERSION}-slim
 
 WORKDIR /app
