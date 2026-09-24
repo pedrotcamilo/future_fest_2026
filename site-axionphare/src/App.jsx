@@ -9,7 +9,7 @@ import HowItWorks from './components/HowItWorks.jsx';
 import Differentials from './components/Differentials.jsx';
 import NextSteps from './components/NextSteps.jsx';
 import Footer from './components/Footer.jsx';
-import heroImage from './assets/image.png';
+import heroImage from './assets/hero.png';
 
 function App() {
   const [hideLogo, setHideLogo] = useState(false);

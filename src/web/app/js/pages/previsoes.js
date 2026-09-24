@@ -7,17 +7,35 @@ async function renderPrevisoes() {
     const materias = mpList.ok ? mpList.data : [];
     let html = `<div class="d-flex justify-content-between mb-3">
         <p></p>
-        <button class="btn btn-primary btn-sm" onclick="previsaoForm()"><i class="bi bi-plus-lg"></i> Nova Previsao</button>
+        <div>
+            <button class="btn btn-success btn-sm me-2" onclick="previsaoAutomatica()"><i class="bi bi-magic"></i> Gerar Automatica</button>
+            <button class="btn btn-primary btn-sm" onclick="previsaoForm()"><i class="bi bi-plus-lg"></i> Nova Previsao</button>
+        </div>
     </div>`;
+    const mpNome = id => {
+        const m = materias.find(x => x.id === id);
+        return m ? m.nome : id;
+    };
     html += renderTable(
-        ["ID", "MP ID", "Data Previsao", "Periodo", "Consumo Previsto", "Confianca", "Modelo"],
-        data.map(p => [p.id, p.materia_prima_id, p.data_previsao,
+        ["ID", "Materia Prima", "Data Previsao", "Periodo", "Consumo Previsto", "Confianca", "Modelo"],
+        data.map(p => [p.id, mpNome(p.materia_prima_id), p.data_previsao,
             `${p.periodo_inicio} a ${p.periodo_fim}`,
             p.consumo_previsto, p.confianca ? p.confianca + "%" : "-", p.modelo_utilizado || "-"
         ])
     );
     document.getElementById("content-body").innerHTML = html;
 }
+
+window.previsaoAutomatica = async function () {
+    showModal("Gerar Previsao Automatica", "Gerar previsoes pela media movel dos ultimos 6 meses?",
+        async function () {
+            const res = await API.gerarPrevisaoAutomatica();
+            closeModal();
+            alert(res.ok ? res.data : "Erro ao gerar previsoes");
+            renderPrevisoes();
+        }
+    );
+};
 
 window.previsaoForm = function () {
     showModal("Gerar Previsao",

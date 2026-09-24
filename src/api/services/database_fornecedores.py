@@ -1,12 +1,11 @@
 from sqlalchemy import select, update, delete
 from sqlalchemy import insert
-from sqlalchemy.orm import Session
 
-from api.services.database import engine
+from api.services.database_manager import get_session
 from api.services.models import Fornecedores
 
 def listar_fornecedores(nome: str = None, ativo: bool = None):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Fornecedores)
 
         if nome is not None:
@@ -32,7 +31,7 @@ def listar_fornecedores(nome: str = None, ativo: bool = None):
         ]
 
 def listar_fornecedor_id(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = select(Fornecedores).where(Fornecedores.id == id)
         result = session.execute(stmt)
         fornecedor = result.scalar_one_or_none()
@@ -60,7 +59,7 @@ def criar_fornecedor(
     prazo_entrega_dias: int = None,
     ativo: bool = True
 ):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = (
             insert(Fornecedores)
             .values(
@@ -79,7 +78,7 @@ def criar_fornecedor(
         return "Ok"
 
 def editar_fornecedor(id: int, **kwargs):
-    with Session(engine) as session:
+    with get_session() as session:
         valores = {k: v for k, v in kwargs.items() if v is not None}
         if not valores:
             return "Ok"
@@ -95,7 +94,7 @@ def editar_fornecedor(id: int, **kwargs):
         return "Ok"
 
 def deletar_fornecedor(id: int):
-    with Session(engine) as session:
+    with get_session() as session:
         stmt = delete(Fornecedores).where(Fornecedores.id == id)
         session.execute(stmt)
         session.commit()

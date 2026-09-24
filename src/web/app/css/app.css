@@ -165,3 +165,210 @@
         display: flex;
     }
 }
+
+/* ApexCharts toolbar customization */
+.apexcharts-toolbar {
+    top: -4px !important;
+    right: 8px !important;
+}
+.apexcharts-toolbar .apexcharts-menu-icon,
+.apexcharts-toolbar .apexcharts-zoomin-icon,
+.apexcharts-toolbar .apexcharts-zoomout-icon,
+.apexcharts-toolbar .apexcharts-zoom-icon,
+.apexcharts-toolbar .apexcharts-pan-icon,
+.apexcharts-toolbar .apexcharts-reset-icon,
+.apexcharts-toolbar .apexcharts-selection-icon {
+    background: #252830 !important;
+    border: 1px solid #363a44 !important;
+    border-radius: 6px !important;
+    padding: 5px 7px !important;
+    color: #9ca3af !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+}
+.apexcharts-toolbar .apexcharts-menu-icon:hover,
+.apexcharts-toolbar .apexcharts-zoomin-icon:hover,
+.apexcharts-toolbar .apexcharts-zoomout-icon:hover,
+.apexcharts-toolbar .apexcharts-zoom-icon:hover,
+.apexcharts-toolbar .apexcharts-pan-icon:hover,
+.apexcharts-toolbar .apexcharts-reset-icon:hover,
+.apexcharts-toolbar .apexcharts-selection-icon:hover {
+    background: #363a44 !important;
+    border-color: #3b82f6 !important;
+    color: #e5e7eb !important;
+}
+.apexcharts-toolbar .apexcharts-selected .apexcharts-zoomin-icon,
+.apexcharts-toolbar .apexcharts-selected .apexcharts-zoomout-icon,
+.apexcharts-toolbar .apexcharts-selected .apexcharts-zoom-icon,
+.apexcharts-toolbar .apexcharts-selected .apexcharts-pan-icon,
+.apexcharts-toolbar .apexcharts-selected .apexcharts-selection-icon {
+    background: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    color: #fff !important;
+}
+.apexcharts-toolbar svg {
+    color: #9ca3af !important;
+}
+.apexcharts-toolbar svg:hover {
+    color: #e5e7eb !important;
+}
+.apexcharts-menu {
+    background: #1e2028 !important;
+    border: 1px solid #363a44 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+    padding: 4px !important;
+    min-width: 140px !important;
+}
+.apexcharts-menu-item {
+    color: #d1d5db !important;
+    padding: 7px 12px !important;
+    border-radius: 5px !important;
+    font-size: 12px !important;
+    font-family: inherit !important;
+    transition: all 0.15s ease !important;
+}
+.apexcharts-menu-item:hover {
+    background: #252830 !important;
+    color: #e5e7eb !important;
+}
+
+/* ApexCharts legend customization */
+.apexcharts-legend {
+    padding: 8px 0 !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 6px !important;
+}
+.apexcharts-legend-series {
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    margin: 0 !important;
+    padding: 3px 8px !important;
+    border-radius: 4px !important;
+    background: #252830 !important;
+    border: 1px solid #363a44 !important;
+    display: flex !important;
+    align-items: center !important;
+    white-space: nowrap !important;
+}
+.apexcharts-legend-series:hover {
+    border-color: #3b82f6 !important;
+    background: #2a2d35 !important;
+}
+.apexcharts-legend-series.inactive {
+    opacity: 0.45 !important;
+    background: #1a1d23 !important;
+    border-color: #2a2d35 !important;
+}
+.apexcharts-legend-series.inactive .apexcharts-legend-text {
+    color: #6b7280 !important;
+}
+.apexcharts-legend-series.inactive .apexcharts-legend-marker {
+    opacity: 0.35 !important;
+}
+.apexcharts-legend-text {
+    color: #d1d5db !important;
+    font-size: 11px !important;
+    font-family: inherit !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.2px !important;
+    white-space: nowrap !important;
+}
+.apexcharts-legend-marker {
+    border-radius: 2px !important;
+    margin-right: 5px !important;
+    width: 8px !important;
+    height: 8px !important;
+}
+
+/* ApexCharts tooltip customization */
+.apexcharts-tooltip {
+    background: #1e2028 !important;
+    border: 1px solid #363a44 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+    max-height: 280px !important;
+    overflow-y: auto !important;
+    color: #d1d5db !important;
+    font-family: inherit !important;
+    font-size: 11px !important;
+}
+.apexcharts-tooltip::-webkit-scrollbar {
+    width: 3px !important;
+}
+.apexcharts-tooltip::-webkit-scrollbar-track {
+    background: #252830 !important;
+}
+.apexcharts-tooltip::-webkit-scrollbar-thumb {
+    background: #4b5563 !important;
+    border-radius: 3px !important;
+}
+.apexcharts-tooltip-title {
+    background: #252830 !important;
+    border-bottom: 1px solid #363a44 !important;
+    color: #e5e7eb !important;
+    font-weight: 600 !important;
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+}
+.apexcharts-tooltip-series-group {
+    padding: 4px 10px !important;
+    border-bottom: 1px solid #2a2d35 !important;
+}
+.apexcharts-tooltip-series-group:last-child {
+    border-bottom: none !important;
+}
+.apexcharts-tooltip-text {
+    color: #d1d5db !important;
+    font-size: 11px !important;
+}
+.apexcharts-tooltip-text-y-value {
+    color: #e5e7eb !important;
+    font-weight: 600 !important;
+}
+.apexcharts-tooltip-series-dot {
+    border-radius: 50% !important;
+}
+
+/* ApexCharts crosshair */
+.apexcharts-xcrosshairs {
+    stroke: #3b82f6 !important;
+    stroke-dasharray: 4 !important;
+    opacity: 0.5 !important;
+}
+.apexcharts-xcrosshairs line {
+    stroke: #3b82f6 !important;
+}
+
+/* ApexCharts grid lines */
+.apexcharts-gridline {
+    stroke: #2a2d35 !important;
+}
+
+/* ApexCharts no data */
+.apexcharts-no-data {
+    color: #6b7280 !important;
+    font-size: 14px !important;
+}
+
+/* Chart container card style */
+.chart-card {
+    background: #1e2028;
+    border: 1px solid #2a2d35;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+.chart-card:hover {
+    border-color: #363a44;
+}
+.chart-card .apexcharts-canvas {
+    overflow: visible !important;
+}
+.chart-card .apexcharts-legend {
+    padding: 8px 4px !important;
+    margin: 0 !important;
+}
