@@ -6,6 +6,7 @@
         "app/js/api/analise.js",
         "app/js/api/dashboard.js",
         "app/js/core/ui.js",
+        "app/js/core/charts.js",
         "app/js/core/inactivity.js",
         "app/js/pages/dashboard.js",
         "app/js/pages/usuarios.js",
@@ -26,8 +27,8 @@
         "app/js/app.js"
     ];
 
-    const CACHE_NAME = "axionphare-assets-v2";
-    const LS_PREFIX = "axionphare-assets-v2:";
+    const CACHE_NAME = "axionphare-assets-v3";
+    const LS_PREFIX = "axionphare-assets-v3:";
 
     const splash = document.getElementById("app-splash");
     const statusEl = document.getElementById("app-splash-status");
@@ -36,11 +37,16 @@
     let loadFailed = false;
 
     if (typeof caches !== "undefined") {
-        try { caches.delete("axionphare-assets-v1"); } catch (e) { }
-        Object.keys(localStorage)
-            .filter(k => k.startsWith("axionphare-assets-v1:"))
-            .forEach(k => localStorage.removeItem(k));
+        try {
+            caches.delete("axionphare-assets-v1");
+            caches.delete("axionphare-assets-v2");
+        } catch (e) { }
     }
+    ["axionphare-assets-v1:", "axionphare-assets-v2:"].forEach(prefix => {
+        Object.keys(localStorage)
+            .filter(k => k.startsWith(prefix))
+            .forEach(k => localStorage.removeItem(k));
+    });
 
     function setStatus(text) {
         if (statusEl) statusEl.textContent = text;

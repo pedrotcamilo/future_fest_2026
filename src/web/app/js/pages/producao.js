@@ -1,13 +1,35 @@
 async function renderProducao() {
+    destruirGraficos();
+    const fstatus = document.getElementById("filtro-prod-status")?.value || "";
     const res = await API.listarOrdens();
     const data = res.ok ? res.data : [];
+    /* Opcoes do filtro geradas dos dados reais (nao dependem de enums fixos). */
+    const statuses = [...new Set(data.map(o => o.status).filter(Boolean))].sort();
+    const visiveis = fstatus ? data.filter(o => o.status === fstatus) : data;
+
     let html = `<div class="d-flex justify-content-between mb-3">
         <p></p>
         <button class="btn btn-primary btn-sm" onclick="ordemForm(null)"><i class="bi bi-plus-lg"></i> Nova</button>
+    </div>
+    <div class="row g-3 mb-4">
+        <div class="col-lg-6">${cartaoGrafico({
+            id: "graf-prod-status", icone: "bi-gear-wide-connected", label: "Ordens por status",
+            badge: `<span class="badge bg-body-secondary text-body-secondary small">${visiveis.length} ordens</span>`
+        })}</div>
+        <div class="col-lg-6">${cartaoGrafico({
+            id: "graf-prod-mes", label: "Ordens iniciadas por mes", badge: ""
+        })}</div>
+    </div>
+    <div class="filters-bar">
+        <select class="form-select form-select-sm" style="max-width:200px" id="filtro-prod-status">
+            <option value="">Todos os status</option>
+            ${statuses.map(s => `<option value="${s}" ${fstatus == s ? "selected" : ""}>${s}</option>`).join("")}
+        </select>
+        <button class="btn btn-sm btn-outline-secondary" onclick="renderProducao()">Filtrar</button>
     </div>`;
     html += renderTable(
         ["ID", "Pedido ID", "Inicio", "Fim", "Status"],
-        data.map(o => [o.id, o.pedido_id || "-", o.data_inicio || "-", o.data_fim || "-",
+        visiveis.map(o => [o.id, o.pedido_id || "-", o.data_inicio || "-", o.data_fim || "-",
             `<span class="badge ${statusBadge(o.status)}">${o.status}</span>`]),
         r => `<div class="text-nowrap">
             <button class="btn btn-sm btn-outline-info me-1" onclick="ordemForm(${r[0]})"><i class="bi bi-pencil"></i></button>
@@ -19,6 +41,27 @@ async function renderProducao() {
         </div>`
     );
     document.getElementById("content-body").innerHTML = html;
+
+    const agrupado = agruparPorCampo(visiveis, "status");
+    criarGraficoDonut("graf-prod-status", {
+        titulo: "Ordens de producao por status",
+        rotulos: agrupado.rotulos,
+        valores: agrupado.valores
+    });
+
+    const porMes = new Map();
+    visiveis.forEach(o => {
+        if (!o.data_inicio) return;
+        const m = String(o.data_inicio).slice(0, 7);
+        if (/^\d{4}-\d{2}$/.test(m)) porMes.set(m, (porMes.get(m) || 0) + 1);
+    });
+    const meses = [...porMes.keys()].sort();
+    criarGraficoLinha("graf-prod-mes", {
+        titulo: "Ordens iniciadas por mes",
+        categorias: meses,
+        series: [{ name: "Ordens", data: meses.map(m => porMes.get(m)), color: "#3b82f6" }],
+        altura: 320
+    });
 }
 
 window.ordemForm = async function (id) {

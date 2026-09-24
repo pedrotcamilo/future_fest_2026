@@ -1,4 +1,5 @@
 async function renderRelatorios() {
+    destruirGraficos();
     document.getElementById("content-body").innerHTML = `
     <h5 class="mb-3">Relatorios</h5>
     <div class="row g-3">
@@ -48,6 +49,7 @@ async function renderRelatorios() {
 }
 
 window.verRelatorio = async function (tipo) {
+    destruirGraficos();
     const params = new URLSearchParams();
     const apiCalls = {
         consumo: API.relatorioConsumo,
@@ -87,6 +89,67 @@ window.verRelatorio = async function (tipo) {
 
     let html = `<button class="btn btn-outline-secondary btn-sm mb-3" onclick="renderRelatorios()"><i class="bi bi-arrow-left"></i> Voltar</button>
     <h5 class="mb-3">Relatorio: ${tipo}</h5>`;
+    html += cartaoGrafico({ id: "graf-relatorio", icone: "bi-bar-chart", label: "Relatorio: " + tipo });
     html += renderTable(headers[tipo] || [], data.map(cols[tipo] || (d => Object.values(d))));
     document.getElementById("content-body").innerHTML = html;
+    desenharGraficoRelatorio(tipo, data);
 };
+
+/* Um grafico por tipo de relatorio, sempre a partir da mesma resposta
+   que alimenta a tabela (nenhuma chamada extra). */
+function desenharGraficoRelatorio(tipo, data) {
+    const registros = Array.isArray(data) ? data : [];
+
+    if (tipo === "consumo" || tipo === "estoque") {
+        const campo = tipo === "consumo" ? "total_consumido" : "estoque_atual";
+        const itens = registros
+            .map(d => ({ nome: d.nome || ("MP " + d.materia_prima_id), v: Number(d[campo]) || 0 }))
+            .sort((a, b) => b.v - a.v);
+        criarGraficoBarra("graf-relatorio", {
+            titulo: tipo === "consumo" ? "Total consumido por materia-prima" : "Estoque atual por materia-prima",
+            categorias: itens.map(i => i.nome),
+            series: [{ name: tipo === "consumo" ? "Consumido" : "Estoque", data: itens.map(i => i.v), color: "#3b82f6" }],
+            altura: alturaGraficoBarra(Math.max(itens.length, 1))
+        });
+        return;
+    }
+
+    if (tipo === "vencimentos") {
+        const itens = registros
+            .map(d => ({ rotulo: (d.nome || "-") + " · " + (d.numero_lote || "-"), dias: diasAteVencer(d.data_validade) }))
+            .filter(i => i.dias !== null);
+        criarGraficoBarra("graf-relatorio", {
+            titulo: "Dias ate o vencimento (negativo = ja vencido)",
+            categorias: itens.map(i => i.rotulo),
+            series: [{ name: "Dias", data: itens.map(i => i.dias), color: "#3b82f6" }],
+            distribuido: true,
+            coresDistribuidas: itens.map(i =>
+                i.dias < 0 ? "#ef4444" : i.dias <= 30 ? "#f97316" : i.dias <= 90 ? "#eab308" : "#22c55e"),
+            min0: false,
+            altura: alturaGraficoBarra(Math.max(itens.length, 1))
+        });
+        return;
+    }
+
+    if (tipo === "compras" || tipo === "producao") {
+        const agrupado = agruparPorCampo(registros, "status");
+        criarGraficoDonut("graf-relatorio", {
+            titulo: tipo === "compras" ? "Compras por status" : "Ordens de producao por status",
+            rotulos: agrupado.rotulos,
+            valores: agrupado.valores
+        });
+        return;
+    }
+
+    if (tipo === "previsoes") {
+        const itens = registros
+            .map(d => ({ nome: d.nome || ("MP " + d.materia_prima_id), v: Number(d.consumo_previsto) || 0 }))
+            .sort((a, b) => b.v - a.v);
+        criarGraficoBarra("graf-relatorio", {
+            titulo: "Consumo previsto por materia-prima",
+            categorias: itens.map(i => i.nome),
+            series: [{ name: "Previsto", data: itens.map(i => i.v), color: "#8b5cf6" }],
+            altura: alturaGraficoBarra(Math.max(itens.length, 1))
+        });
+    }
+}
