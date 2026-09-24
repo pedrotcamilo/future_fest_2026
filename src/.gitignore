@@ -1,5 +1,4 @@
 .idea
 .env
 .venv
-uv.lock
 *__pycache__*
