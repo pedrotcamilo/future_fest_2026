@@ -6,12 +6,12 @@ from api.services.models import Lotes, MovimentacoesEstoque, MateriasPrimas
 
 def consultar_estoque():
     with get_session() as session:
-        r_mp = session.execute(select(MateriasPrimas))
+        r_mp = session.scalars(select(MateriasPrimas)).all()
         materias = {}
         for row in r_mp:
             materias[row.id] = row.nome
 
-        r_lotes = session.execute(select(Lotes))
+        r_lotes = session.scalars(select(Lotes)).all()
         estoque_map = {}
         for row in r_lotes:
             mp_id = row.materia_prima_id
