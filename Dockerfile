@@ -12,6 +12,8 @@ COPY --from=uv /uv /usr/local/bin/uv
 COPY src/pyproject.toml src/uv.lock ./
 RUN uv sync --frozen --no-dev
 
+ENV PATH="/app/.venv/bin:$PATH"
+
 COPY src/ .
 
 ARG APP_PORT=80
