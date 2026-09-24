@@ -89,7 +89,7 @@ O `main.py` monta a aplicação registrando 18 routers com prefixes por domínio
 
 ## Banco de Dados (PostgreSQL)
 
-O schema é criado pelo `docker/init.sql` (executado no primeiro boot do container). Principais tabelas:
+O schema é criado pelos scripts SQL em `src/sql/` (um por tabela, executados manualmente — **não** há `CREATE TABLE` no `docker/init.sql`, que contém apenas o seed de dados fictícios; as views `vw_consumo_mensal`, `vw_estoque_atual` e `vw_vencimentos` são garantidas na subida da API e também estão em `src/sql/views.sql`). Principais tabelas:
 
 - `usuarios`, `fornecedores`, `materias_primas`, `clientes`, `formulas`, `formula_itens`
 - `lotes`, `movimentacoes_estoque`
@@ -98,7 +98,7 @@ O schema é criado pelo `docker/init.sql` (executado no primeiro boot do contain
 - `ordens_producao`, `consumo_producao`
 - `historico_consumo`, `previsoes_consumo`, `sugestoes_compra`, `sazonalidade`, `alertas`
 
-Views prontas: `vw_estoque_atual`, `vw_consumo_mensal`, `vw_vencimentos`.
+Views prontas: `vw_estoque_atual`, `vw_consumo_mensal`, `vw_vencimentos` (em `src/sql/views.sql` e criadas na subida da API).
 
 Índices criados para consultas frequentes: validade e matéria-prima de lotes, datas de consumo/movimentação/previsão/pedido e status de ordens.
 

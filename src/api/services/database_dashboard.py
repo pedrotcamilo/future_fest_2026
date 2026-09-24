@@ -13,9 +13,11 @@ def resumo_geral():
             select(func.count(Compras.id)).where(Compras.status == "PENDENTE")
         ) or 0
 
+        # O seed usa "EM_ANDAMENTO" (e o formulario usa "EM_PRODUCAO");
+        # considera as duas para o KPI refletir as ordens reais em andamento.
         ordens_em_producao = session.scalar(
             select(func.count(OrdensProducao.id)).where(
-                OrdensProducao.status == "EM_PRODUCAO"
+                OrdensProducao.status.in_(["EM_PRODUCAO", "EM_ANDAMENTO"])
             )
         ) or 0
 
