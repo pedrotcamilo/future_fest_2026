@@ -1,5 +1,18 @@
 const TIMEOUT_INATIVIDADE_MS = 60 * 1000;
 const AVISO_INATIVIDADE_MS = 30 * 1000;
+
+/* Tempo configuravel em Configuracoes > Sessao. O aviso aparece 30s antes
+   do logout (ou na metade do tempo, o que vier depois). */
+function tempoInatividadeMs() {
+    const min = typeof Preferencias !== "undefined" ? Number(Preferencias.ler().inatividadeMin) : 0;
+    return min > 0 ? min * 60 * 1000 : TIMEOUT_INATIVIDADE_MS;
+}
+
+function tempoAvisoInatividadeMs() {
+    const total = tempoInatividadeMs();
+    return Math.max(total - AVISO_INATIVIDADE_MS, total / 2);
+}
+
 let ultimaAtividade = Date.now();
 let avisoAtivo = false;
 
@@ -9,7 +22,7 @@ function criarAvisoInatividade() {
     overlay.style.cssText = "position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;";
     overlay.innerHTML = `<i class="bi bi-hourglass-split" style="font-size:4rem;color:#ffc107"></i>
         <h3 class="mt-3 text-white">Sessao inativa</h3>
-        <p class="text-body-secondary">Movimente o mouse ou pressione uma tecla para continuar.</p>
+        <p class="text-white-50">Movimente o mouse ou pressione uma tecla para continuar.</p>
         <div class="spinner-border text-warning" role="status"></div>`;
     document.body.appendChild(overlay);
     return overlay;
@@ -42,9 +55,9 @@ async function deslogarPorInatividade() {
 
 function verificarInatividade() {
     const inativo = Date.now() - ultimaAtividade;
-    if (inativo >= TIMEOUT_INATIVIDADE_MS) {
+    if (inativo >= tempoInatividadeMs()) {
         deslogarPorInatividade();
-    } else if (inativo >= AVISO_INATIVIDADE_MS) {
+    } else if (inativo >= tempoAvisoInatividadeMs()) {
         mostrarAvisoInatividade();
     }
 }

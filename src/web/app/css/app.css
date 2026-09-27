@@ -5,6 +5,88 @@
     --altura-tabela: 640px;
 }
 
+/* ───────────── Cores do tema ─────────────
+   Todas as cores do app saem destas variaveis. O escuro e o visual
+   original; o claro mantem a mesma identidade (azul var(--ax-primaria) de destaque,
+   cinzas azulados) invertendo apenas as superficies. O atributo
+   data-bs-theme fica no <html> e e definido pelo /web/tema.js. */
+:root,
+[data-bs-theme="dark"] {
+    --ax-fundo: #212529;
+    --ax-superficie: #1a1d23;
+    --ax-card: #1e2028;
+    --ax-borda: #2a2d35;
+    --ax-borda-forte: #363a44;
+    --ax-hover: #252830;
+    --ax-thead: #212529;
+    --ax-texto: #e5e7eb;
+    --ax-texto-2: #d1d5db;
+    --ax-texto-suave: #9ca3af;
+    --ax-texto-mudo: #6b7280;
+    --ax-scroll: #4b5563;
+    --ax-primaria: #3b82f6;
+    --ax-ativo-texto: #60a5fa;
+    --ax-ativo-fundo: #2563eb22;
+    --ax-roxo: #a78bfa;
+    --ax-overlay: rgba(10, 12, 16, 0.95);
+    --ax-sombra: rgba(0, 0, 0, 0.5);
+    --ax-logo-filtro: none;
+}
+[data-bs-theme="light"] {
+    --ax-fundo: #f1f4f9;
+    --ax-superficie: #ffffff;
+    --ax-card: #ffffff;
+    --ax-borda: #e2e7ef;
+    --ax-borda-forte: #cdd5e0;
+    --ax-hover: #eef2f8;
+    --ax-thead: #f4f6fa;
+    --ax-texto: #1f2937;
+    --ax-texto-2: #374151;
+    --ax-texto-suave: #5b6472;
+    --ax-texto-mudo: #7b8494;
+    --ax-scroll: #c3cad6;
+    --ax-primaria: #3b82f6;
+    --ax-ativo-texto: #2563eb;
+    --ax-ativo-fundo: #3b82f61a;
+    --ax-roxo: #7c3aed;
+    --ax-overlay: rgba(241, 244, 249, 0.96);
+    --ax-sombra: rgba(15, 23, 42, 0.12);
+    /* Logos sao PNG brancos com transparencia: no claro viram grafite. */
+    --ax-logo-filtro: brightness(0) opacity(0.82);
+}
+
+/* Tamanho da fonte (Configuracoes): o Bootstrap e todo em rem, entao
+   mudar o root escala o app inteiro. */
+html[data-fonte="pequena"] { font-size: 14px; }
+html[data-fonte="grande"] { font-size: 18px; }
+
+body {
+    background-color: var(--ax-fundo);
+}
+
+/* Aba ativa "funde" com o fundo da pagina (o padrao do Bootstrap e o
+   --bs-body-bg, que no claro e branco e destoa do fundo cinza-azulado). */
+.nav-tabs {
+    --bs-nav-tabs-link-active-bg: var(--ax-fundo);
+    --bs-nav-tabs-link-active-border-color: var(--ax-borda-forte) var(--ax-borda-forte) var(--ax-fundo);
+    --bs-nav-tabs-border-color: var(--ax-borda-forte);
+}
+
+/* Animacoes desligadas nas Configuracoes: corta as transicoes (hover,
+   modais, trocas de tema). As @keyframes ficam de fora de proposito — os
+   spinners de carregamento precisam continuar girando. */
+.sem-animacoes *,
+.sem-animacoes *::before,
+.sem-animacoes *::after {
+    transition: none !important;
+}
+
+/* Tabelas compactas (Configuracoes). */
+.tabelas-compactas .table > :not(caption) > * > * {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.875rem;
+}
+
 .app-layout {
     display: flex;
     min-height: 100vh;
@@ -18,12 +100,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(10, 12, 16, 0.95);
+    background: var(--ax-overlay);
 }
 .app-splash-card {
     width: min(90vw, 360px);
-    background: #1e2028;
-    border: 1px solid #2a2d35;
+    background: var(--ax-card);
+    border: 1px solid var(--ax-borda);
 }
 .app-splash.hidden {
     display: none;
@@ -31,8 +113,8 @@
 
 .sidebar {
     width: 240px;
-    background: #1a1d23;
-    border-right: 1px solid #2a2d35;
+    background: var(--ax-superficie);
+    border-right: 1px solid var(--ax-borda);
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
@@ -43,11 +125,12 @@
     align-items: center;
     gap: 10px;
     padding: 16px 18px;
-    border-bottom: 1px solid #2a2d35;
+    border-bottom: 1px solid var(--ax-borda);
 }
 .sidebar-logo {
     height: 36px;
     user-select: none;
+    filter: var(--ax-logo-filtro);
 }
 .sidebar-title {
     font-weight: 700;
@@ -62,26 +145,26 @@
     align-items: center;
     gap: 10px;
     padding: 10px 18px;
-    color: #9ca3af;
+    color: var(--ax-texto-suave);
     text-decoration: none;
     font-size: 0.9rem;
     transition: all 0.15s;
 }
 .nav-item:hover {
-    background: #252830;
-    color: #e5e7eb;
+    background: var(--ax-hover);
+    color: var(--ax-texto);
 }
 .nav-item.active {
-    background: #2563eb22;
-    color: #60a5fa;
-    border-right: 3px solid #3b82f6;
+    background: var(--ax-ativo-fundo);
+    color: var(--ax-ativo-texto);
+    border-right: 3px solid var(--ax-primaria);
 }
 .nav-divider {
     padding: 12px 18px 4px;
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: #6b7280;
+    color: var(--ax-texto-mudo);
 }
 
 .main-content {
@@ -94,8 +177,8 @@
     display: flex;
     align-items: center;
     padding: 16px 24px;
-    background: #1a1d23;
-    border-bottom: 1px solid #2a2d35;
+    background: var(--ax-superficie);
+    border-bottom: 1px solid var(--ax-borda);
 }
 .content-body {
     flex: 1;
@@ -105,14 +188,14 @@
 
 /* Cards */
 .card-dash {
-    background: #1e2028;
-    border: 1px solid #2a2d35;
+    background: var(--ax-card);
+    border: 1px solid var(--ax-borda);
     border-radius: 10px;
     padding: 20px;
     transition: border-color 0.2s;
 }
 .card-dash:hover {
-    border-color: #3b82f6;
+    border-color: var(--ax-primaria);
 }
 .card-dash .icon {
     font-size: 2rem;
@@ -124,13 +207,13 @@
 }
 .card-dash .label {
     font-size: 0.85rem;
-    color: #9ca3af;
+    color: var(--ax-texto-suave);
 }
 
 /* Table wrap */
 .table-wrap {
-    background: #1e2028;
-    border: 1px solid #2a2d35;
+    background: var(--ax-card);
+    border: 1px solid var(--ax-borda);
     border-radius: 10px;
     padding: 16px;
     overflow: auto;
@@ -159,7 +242,7 @@
     position: sticky;
     top: 0;
     z-index: 2;
-    background: #212529;
+    background: var(--ax-thead);
 }
 
 /* Titulo acima das tabelas */
@@ -179,7 +262,7 @@
 }
 .lista-contador {
     font-size: 0.8rem;
-    color: #9ca3af;
+    color: var(--ax-texto-suave);
 }
 .lista-acoes {
     display: flex;
@@ -210,7 +293,7 @@
 
 /* Badge styles */
 .badge-pendente { background: #f59e0b; color: #000; }
-.badge-em-producao { background: #3b82f6; }
+.badge-em-producao { background: var(--ax-primaria); }
 .badge-finalizada { background: #22c55e; }
 .badge-cancelada { background: #ef4444; }
 .badge-recebida { background: #22c55e; }
@@ -241,11 +324,11 @@
 .apexcharts-toolbar .apexcharts-pan-icon,
 .apexcharts-toolbar .apexcharts-reset-icon,
 .apexcharts-toolbar .apexcharts-selection-icon {
-    background: #252830 !important;
-    border: 1px solid #363a44 !important;
+    background: var(--ax-hover) !important;
+    border: 1px solid var(--ax-borda-forte) !important;
     border-radius: 6px !important;
     padding: 5px 7px !important;
-    color: #9ca3af !important;
+    color: var(--ax-texto-suave) !important;
     transition: all 0.2s ease !important;
     cursor: pointer !important;
 }
@@ -256,35 +339,35 @@
 .apexcharts-toolbar .apexcharts-pan-icon:hover,
 .apexcharts-toolbar .apexcharts-reset-icon:hover,
 .apexcharts-toolbar .apexcharts-selection-icon:hover {
-    background: #363a44 !important;
-    border-color: #3b82f6 !important;
-    color: #e5e7eb !important;
+    background: var(--ax-borda-forte) !important;
+    border-color: var(--ax-primaria) !important;
+    color: var(--ax-texto) !important;
 }
 .apexcharts-toolbar .apexcharts-selected .apexcharts-zoomin-icon,
 .apexcharts-toolbar .apexcharts-selected .apexcharts-zoomout-icon,
 .apexcharts-toolbar .apexcharts-selected .apexcharts-zoom-icon,
 .apexcharts-toolbar .apexcharts-selected .apexcharts-pan-icon,
 .apexcharts-toolbar .apexcharts-selected .apexcharts-selection-icon {
-    background: #3b82f6 !important;
-    border-color: #3b82f6 !important;
+    background: var(--ax-primaria) !important;
+    border-color: var(--ax-primaria) !important;
     color: #fff !important;
 }
 .apexcharts-toolbar svg {
-    color: #9ca3af !important;
+    color: var(--ax-texto-suave) !important;
 }
 .apexcharts-toolbar svg:hover {
-    color: #e5e7eb !important;
+    color: var(--ax-texto) !important;
 }
 .apexcharts-menu {
-    background: #1e2028 !important;
-    border: 1px solid #363a44 !important;
+    background: var(--ax-card) !important;
+    border: 1px solid var(--ax-borda-forte) !important;
     border-radius: 8px !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 8px 24px var(--ax-sombra) !important;
     padding: 4px !important;
     min-width: 140px !important;
 }
 .apexcharts-menu-item {
-    color: #d1d5db !important;
+    color: var(--ax-texto-2) !important;
     padding: 7px 12px !important;
     border-radius: 5px !important;
     font-size: 12px !important;
@@ -292,8 +375,8 @@
     transition: all 0.15s ease !important;
 }
 .apexcharts-menu-item:hover {
-    background: #252830 !important;
-    color: #e5e7eb !important;
+    background: var(--ax-hover) !important;
+    color: var(--ax-texto) !important;
 }
 
 /* ApexCharts legend customization */
@@ -310,29 +393,29 @@
     margin: 0 !important;
     padding: 3px 8px !important;
     border-radius: 4px !important;
-    background: #252830 !important;
-    border: 1px solid #363a44 !important;
+    background: var(--ax-hover) !important;
+    border: 1px solid var(--ax-borda-forte) !important;
     display: flex !important;
     align-items: center !important;
     white-space: nowrap !important;
 }
 .apexcharts-legend-series:hover {
-    border-color: #3b82f6 !important;
-    background: #2a2d35 !important;
+    border-color: var(--ax-primaria) !important;
+    background: var(--ax-hover) !important;
 }
 .apexcharts-legend-series.inactive {
     opacity: 0.45 !important;
-    background: #1a1d23 !important;
-    border-color: #2a2d35 !important;
+    background: var(--ax-superficie) !important;
+    border-color: var(--ax-borda) !important;
 }
 .apexcharts-legend-series.inactive .apexcharts-legend-text {
-    color: #6b7280 !important;
+    color: var(--ax-texto-mudo) !important;
 }
 .apexcharts-legend-series.inactive .apexcharts-legend-marker {
     opacity: 0.35 !important;
 }
 .apexcharts-legend-text {
-    color: #d1d5db !important;
+    color: var(--ax-texto-2) !important;
     font-size: 11px !important;
     font-family: inherit !important;
     font-weight: 500 !important;
@@ -348,13 +431,13 @@
 
 /* ApexCharts tooltip customization */
 .apexcharts-tooltip {
-    background: #1e2028 !important;
-    border: 1px solid #363a44 !important;
+    background: var(--ax-card) !important;
+    border: 1px solid var(--ax-borda-forte) !important;
     border-radius: 8px !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 8px 24px var(--ax-sombra) !important;
     max-height: 280px !important;
     overflow-y: auto !important;
-    color: #d1d5db !important;
+    color: var(--ax-texto-2) !important;
     font-family: inherit !important;
     font-size: 11px !important;
 }
@@ -362,33 +445,33 @@
     width: 3px !important;
 }
 .apexcharts-tooltip::-webkit-scrollbar-track {
-    background: #252830 !important;
+    background: var(--ax-hover) !important;
 }
 .apexcharts-tooltip::-webkit-scrollbar-thumb {
-    background: #4b5563 !important;
+    background: var(--ax-scroll) !important;
     border-radius: 3px !important;
 }
 .apexcharts-tooltip-title {
-    background: #252830 !important;
-    border-bottom: 1px solid #363a44 !important;
-    color: #e5e7eb !important;
+    background: var(--ax-hover) !important;
+    border-bottom: 1px solid var(--ax-borda-forte) !important;
+    color: var(--ax-texto) !important;
     font-weight: 600 !important;
     font-size: 12px !important;
     padding: 6px 10px !important;
 }
 .apexcharts-tooltip-series-group {
     padding: 4px 10px !important;
-    border-bottom: 1px solid #2a2d35 !important;
+    border-bottom: 1px solid var(--ax-borda) !important;
 }
 .apexcharts-tooltip-series-group:last-child {
     border-bottom: none !important;
 }
 .apexcharts-tooltip-text {
-    color: #d1d5db !important;
+    color: var(--ax-texto-2) !important;
     font-size: 11px !important;
 }
 .apexcharts-tooltip-text-y-value {
-    color: #e5e7eb !important;
+    color: var(--ax-texto) !important;
     font-weight: 600 !important;
 }
 .apexcharts-tooltip-series-dot {
@@ -397,22 +480,22 @@
 
 /* ApexCharts crosshair */
 .apexcharts-xcrosshairs {
-    stroke: #3b82f6 !important;
+    stroke: var(--ax-primaria) !important;
     stroke-dasharray: 4 !important;
     opacity: 0.5 !important;
 }
 .apexcharts-xcrosshairs line {
-    stroke: #3b82f6 !important;
+    stroke: var(--ax-primaria) !important;
 }
 
 /* ApexCharts grid lines */
 .apexcharts-gridline {
-    stroke: #2a2d35 !important;
+    stroke: var(--ax-borda) !important;
 }
 
 /* ApexCharts no data */
 .apexcharts-no-data {
-    color: #6b7280 !important;
+    color: var(--ax-texto-mudo) !important;
     font-size: 14px !important;
 }
 
@@ -426,8 +509,8 @@
     display: flex;
 }
 .chart-card {
-    background: #1e2028;
-    border: 1px solid #2a2d35;
+    background: var(--ax-card);
+    border: 1px solid var(--ax-borda);
     border-radius: 10px;
     padding: 20px;
     margin-bottom: 1rem;
@@ -435,7 +518,7 @@
     flex: 1;
 }
 .chart-card:hover {
-    border-color: #363a44;
+    border-color: var(--ax-borda-forte);
 }
 .chart-card .apexcharts-canvas {
     overflow: visible !important;
@@ -443,4 +526,175 @@
 .chart-card .apexcharts-legend {
     padding: 8px 4px !important;
     margin: 0 !important;
+}
+
+/* ───────────── Modo claro: ajustes finos ─────────────
+   Superficies brancas sobre fundo cinza-azulado precisam de uma sombra
+   leve para separar os blocos (no escuro a borda ja resolve). */
+[data-bs-theme="light"] .card-dash,
+[data-bs-theme="light"] .chart-card,
+[data-bs-theme="light"] .table-wrap,
+[data-bs-theme="light"] .config-card {
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+[data-bs-theme="light"] .content-header {
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02);
+}
+
+/* Botao sol/lua do cabecalho */
+.btn-tema {
+    border: 1px solid var(--ax-borda);
+    background: transparent;
+    color: var(--ax-texto-suave);
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+}
+.btn-tema:hover {
+    color: var(--ax-texto);
+    border-color: var(--ax-primaria);
+    background: var(--ax-hover);
+}
+
+/* ───────────── Pagina de Configuracoes ───────────── */
+.config-card {
+    background: var(--ax-card);
+    border: 1px solid var(--ax-borda);
+    border-radius: 10px;
+    padding: 20px;
+    height: 100%;
+}
+.config-card-titulo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+.config-card-titulo i {
+    color: var(--ax-primaria);
+}
+.config-card-desc {
+    font-size: 0.8rem;
+    color: var(--ax-texto-suave);
+    margin-bottom: 16px;
+}
+.config-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    padding: 12px 0;
+    border-top: 1px solid var(--ax-borda);
+}
+.config-item:first-of-type {
+    border-top: none;
+    padding-top: 0;
+}
+.config-item-texto {
+    flex: 1 1 200px;
+    min-width: 0;
+}
+.config-item-nome {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.config-item-ajuda {
+    font-size: 0.78rem;
+    color: var(--ax-texto-suave);
+}
+.config-item .form-select {
+    width: auto;
+    min-width: 170px;
+}
+.config-item .form-switch .form-check-input {
+    width: 2.6em;
+    height: 1.4em;
+    cursor: pointer;
+}
+
+/* Escolha de tema: tres cartoes com miniatura do layout */
+.tema-opcoes {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+}
+.tema-opcao {
+    border: 2px solid var(--ax-borda);
+    border-radius: 10px;
+    padding: 8px;
+    background: transparent;
+    color: var(--ax-texto);
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+}
+.tema-opcao:hover {
+    border-color: var(--ax-borda-forte);
+    background: var(--ax-hover);
+}
+.tema-opcao.ativo {
+    border-color: var(--ax-primaria);
+    background: var(--ax-ativo-fundo);
+}
+.tema-opcao-rotulo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-top: 8px;
+}
+.tema-opcao.ativo .tema-opcao-rotulo {
+    color: var(--ax-ativo-texto);
+}
+/* Miniatura: barra lateral + cabecalho + dois cards */
+.tema-mini {
+    display: flex;
+    height: 64px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid rgba(128, 128, 128, 0.25);
+}
+.tema-mini-lado { width: 26%; }
+.tema-mini-corpo { flex: 1; padding: 6px; display: flex; flex-direction: column; gap: 5px; }
+.tema-mini-topo { height: 8px; border-radius: 2px; }
+.tema-mini-cards { flex: 1; display: flex; gap: 5px; }
+.tema-mini-cards span { flex: 1; border-radius: 3px; border-top: 3px solid #3b82f6; }
+.tema-mini.escuro { background: #212529; }
+.tema-mini.escuro .tema-mini-lado,
+.tema-mini.escuro .tema-mini-topo { background: #1a1d23; }
+.tema-mini.escuro .tema-mini-cards span { background: #2a2d35; }
+.tema-mini.claro { background: #f1f4f9; }
+.tema-mini.claro .tema-mini-lado,
+.tema-mini.claro .tema-mini-topo { background: #ffffff; }
+.tema-mini.claro .tema-mini-cards span { background: #ffffff; box-shadow: 0 0 0 1px #e2e7ef; }
+.tema-mini.sistema { background: linear-gradient(135deg, #212529 50%, #f1f4f9 50%); }
+.tema-mini.sistema .tema-mini-lado { background: #1a1d23; }
+.tema-mini.sistema .tema-mini-topo { background: linear-gradient(90deg, #1a1d23 40%, #ffffff 40%); }
+.tema-mini.sistema .tema-mini-cards span:first-child { background: #2a2d35; }
+.tema-mini.sistema .tema-mini-cards span:last-child { background: #ffffff; }
+
+.config-salvo {
+    font-size: 0.8rem;
+    color: var(--bs-success-text-emphasis);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.config-salvo.visivel {
+    opacity: 1;
+}
+
+@media (max-width: 576px) {
+    .tema-opcoes { gap: 8px; }
+    .tema-mini { height: 48px; }
+    .config-item .form-select { width: 100%; }
 }

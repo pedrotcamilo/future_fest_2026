@@ -20,10 +20,10 @@ async function renderFornecedores() {
     </div>`;
     html += tituloTabela("Fornecedores") + renderTable(
         ["ID", "Razao Social", "Fantasia", "CNPJ", "Telefone", "Email", "Prazo Entrega", "Ativo"],
-        data.map(f => [f.id, f.razao_social, f.nome_fantasia || "-", f.cnpj || "-", f.telefone || "-", f.email || "-", f.prazo_entrega_dias || "-", f.ativo ? "Sim" : "Nao"]),
+        data.map(f => [f.id, f.razao_social, f.nome_fantasia || "-", formatarCnpjCpf(f.cnpj), f.telefone || "-", f.email || "-", f.prazo_entrega_dias || "-", f.ativo ? "Sim" : "Nao"]),
         r => `<button class="btn btn-sm btn-outline-info me-1" onclick="fornForm(${r[0]})"><i class="bi bi-pencil"></i></button>
               <button class="btn btn-sm btn-outline-danger" onclick="fornDelete(${r[0]})"><i class="bi bi-trash"></i></button>`,
-        { chave: "fornecedores" }
+        { chave: "fornecedores", ocultar: [0] }
     );
     document.getElementById("content-body").innerHTML = html;
 }
@@ -34,13 +34,13 @@ window.fornForm = async function (id) {
     showModal(id ? "Editar Fornecedor" : "Novo Fornecedor",
         formGroup("Razao Social", "f-razao", "text", f.razao_social) +
         formGroup("Nome Fantasia", "f-fantasia", "text", f.nome_fantasia || "") +
-        formGroup("CNPJ", "f-cnpj", "text", f.cnpj || "") +
+        formGroup("CNPJ", "f-cnpj", "text", soDigitos(f.cnpj) ? formatarCnpjCpf(f.cnpj) : "", 'placeholder="00.000.000/0000-00"') +
         formGroup("Telefone", "f-tel", "text", f.telefone || "") +
         formGroup("Email", "f-email", "email", f.email || "") +
         formGroup("Prazo Entrega (dias)", "f-prazo", "number", f.prazo_entrega_dias || "") +
         selGroup("Ativo", "f-ativo", [{ value: "true", label: "Sim" }, { value: "false", label: "Nao" }], f.ativo ? "true" : "false"),
         async function () {
-            const d = { razao_social: val("f-razao"), nome_fantasia: val("f-fantasia"), cnpj: val("f-cnpj"), telefone: val("f-tel"), email: val("f-email"), prazo_entrega_dias: val("f-prazo") ? Number(val("f-prazo")) : null, ativo: val("f-ativo") === "true" };
+            const d = { razao_social: val("f-razao"), nome_fantasia: val("f-fantasia"), cnpj: soDigitos(val("f-cnpj")), telefone: val("f-tel"), email: val("f-email"), prazo_entrega_dias: val("f-prazo") ? Number(val("f-prazo")) : null, ativo: val("f-ativo") === "true" };
             if (id) await API.atualizarFornecedor(id, d); else await API.criarFornecedor(d);
             closeModal(); renderFornecedores();
         }

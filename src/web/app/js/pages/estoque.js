@@ -1,16 +1,18 @@
-let estoqueCache = { estoque: [], movs: [], materias: [] };
+let estoqueCache = { estoque: [], movs: [], materias: [], lotes: [] };
 
 async function renderEstoque() {
     destruirGraficos();
-    const [eRes, mRes, mpRes] = await Promise.all([
+    const [eRes, mRes, mpRes, lRes] = await Promise.all([
         API.consultarEstoque(),
         API.listarMovimentacoes(),
-        API.listarMateriasPrimas()
+        API.listarMateriasPrimas(),
+        API.listarLotes()
     ]);
     estoqueCache = {
         estoque: eRes.ok ? eRes.data : [],
         movs: mRes.ok ? mRes.data : [],
-        materias: mpRes.ok ? mpRes.data : []
+        materias: mpRes.ok ? mpRes.data : [],
+        lotes: lRes.ok ? lRes.data : []
     };
     desenharEstoque();
 }
@@ -18,6 +20,13 @@ async function renderEstoque() {
 function estoqueMinimoDe(id) {
     const mp = (estoqueCache.materias || []).find(m => m.id === id);
     return mp && mp.estoque_minimo != null ? Number(mp.estoque_minimo) : null;
+}
+
+/* Rotulo do lote na tela: o numero do lote; sem numero, "Lote <id>". */
+function rotuloLote(id) {
+    if (id == null || id === "") return "-";
+    const l = (estoqueCache.lotes || []).find(x => x.id === id);
+    return (l && l.numero_lote) || ("Lote " + id);
 }
 
 /* Re-renderiza graficos + abas + tabela a partir do cache (filtros locais). */
@@ -75,8 +84,8 @@ function desenharEstoque() {
                 <button class="btn btn-sm btn-outline-secondary" onclick="desenharEstoque()">Filtrar</button>
             </div>
             <div class="mt-3">${tituloTabela("Estoque")}${renderTable(
-                ["MP ID", "Nome", "Estoque", "Estoque Min", "Status"],
-                linhas.map(e => [e.id, e.nome, e.estoque,
+                ["Nome", "Estoque", "Estoque Min", "Status"],
+                linhas.map(e => [e.nome, e.estoque,
                     e.min !== null ? e.min : "-",
                     e.min === null ? "-" : (e.abaixo
                         ? '<span class="badge bg-danger">Abaixo do minimo</span>'
@@ -86,15 +95,20 @@ function desenharEstoque() {
             )}</div>
         </div>
         <div class="tab-pane fade" id="tab-mov">
-            ${tituloTabela("Movimentacoes")}${renderTable(["ID", "Lote ID", "Tipo", "Quantidade", "Data", "Observacao"],
-                movs.map(m => [m.id, m.lote_id, m.tipo, m.quantidade, m.data_movimento, m.observacao || "-"]),
+            ${tituloTabela("Movimentacoes")}${renderTable(["Lote", "Tipo", "Quantidade", "Data", "Observacao"],
+                movs.map(m => [rotuloLote(m.lote_id), m.tipo, m.quantidade, m.data_movimento, m.observacao || "-"]),
                 null,
                 { chave: "est-movs" }
             )}
         </div>
         <div class="tab-pane fade" id="tab-mov-nova">
             <div class="card-dash p-3" style="max-width:500px">
-                ${formGroup("Lote ID", "f-lote", "number", "")}
+                ${selGroup("Lote", "f-lote",
+                    opcoesSelect(estoqueCache.lotes,
+                        l => l.id,
+                        l => l.numero_lote || ("Lote " + l.id),
+                        "Selecione o lote"),
+                    "")}
                 <div class="mb-3"><label class="form-label">Tipo</label>
                     <select class="form-select" id="f-tipo"><option value="ENTRADA">Entrada</option><option value="SAIDA">Saida</option></select></div>
                 ${formGroup("Quantidade", "f-qtd", "number", "")}

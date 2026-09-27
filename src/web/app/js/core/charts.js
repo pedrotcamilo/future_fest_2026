@@ -31,6 +31,37 @@ const CORES_GRAFICO = [
     "#92400e"
 ];
 
+/* Cores "de interface" dos graficos (texto, grade, bordas) conforme o tema
+   atual. As cores das series (CORES_GRAFICO) sao as mesmas nos dois temas.
+   Lido a cada criacao de grafico; ao trocar o tema o app re-renderiza a
+   pagina, entao os graficos sao recriados ja com a paleta nova. */
+function paletaGrafico() {
+    const claro = typeof Preferencias !== "undefined" && Preferencias.claro();
+    return claro ? {
+        modo: "light",
+        grade: "#e2e7ef",
+        texto: "#1f2937",
+        eixo: "#475569",
+        legenda: "#374151",
+        suave: "#64748b",
+        card: "#ffffff"
+    } : {
+        modo: "dark",
+        grade: "#2a2d35",
+        texto: "#e5e7eb",
+        /* Cor clara + fonte 12px: os numeros do eixo precisam ser legiveis a
+           primeira vista (antes era #8e99a4 / 11px, apagado demais). */
+        eixo: "#cbd5e1",
+        legenda: "#d1d5db",
+        suave: "#8e99a4",
+        card: "#1e2028"
+    };
+}
+
+function animacoesGraficoLigadas() {
+    return typeof Preferencias === "undefined" || Preferencias.ler().animacoes !== false;
+}
+
 /* Instancias ativas por id de container (evita canvases duplicados e orfaos
    quando a pagina re-renderiza o content-body). */
 const GRAFICOS_ATIVOS = {};
@@ -83,6 +114,54 @@ function destruirGrafico(id) {
     delete GRAFICOS_ATIVOS[id];
 }
 
+/* Troca de tema com a pagina aberta: repinta os graficos ja criados com a
+   paleta nova, sem recarregar dados nem perder filtros/selecoes da tela.
+   yaxis/xaxis vao completos (copia do config atual) porque o updateOptions
+   do ApexCharts substitui o array de yaxis em vez de mesclar. */
+function aplicarTemaGraficos() {
+    const p = paletaGrafico();
+    Object.keys(GRAFICOS_ATIVOS).forEach(id => {
+        const instancia = GRAFICOS_ATIVOS[id];
+        try {
+            const cfg = instancia.w.config;
+            const comCorEixo = eixo => Object.assign({}, eixo, {
+                labels: Object.assign({}, eixo.labels, {
+                    style: Object.assign({}, eixo.labels && eixo.labels.style, { colors: p.eixo })
+                })
+            });
+            const novas = {
+                theme: { mode: p.modo },
+                grid: { borderColor: p.grade },
+                legend: { labels: { colors: p.legenda } },
+                title: { style: { color: p.texto } },
+                tooltip: { theme: p.modo },
+                xaxis: comCorEixo(cfg.xaxis || {}),
+                yaxis: (Array.isArray(cfg.yaxis) ? cfg.yaxis : [cfg.yaxis || {}]).map(comCorEixo)
+            };
+            if (cfg.chart.type === "line") {
+                novas.markers = { strokeColors: p.card };
+            } else if (cfg.chart.type === "bar" && cfg.dataLabels && cfg.dataLabels.textAnchor === "start") {
+                /* So o rotulo externo (mostrarValores) segue o tema; o de
+                   dentro da barra fica no branco padrao do ApexCharts. */
+                novas.dataLabels = { style: { colors: [p.texto] } };
+            } else if (cfg.chart.type === "donut") {
+                novas.stroke = { colors: [p.card] };
+                novas.plotOptions = { pie: { donut: { labels: {
+                    name: { color: p.suave },
+                    value: { color: p.texto },
+                    total: { color: p.suave }
+                } } } };
+            }
+            /* theme.mode reaplica a paleta padrao do ApexCharts: as cores das
+               series precisam voltar explicitamente. */
+            novas.colors = cfg.colors;
+            instancia.updateOptions(novas, false, false);
+        } catch (e) {
+            console.warn("[Grafico] Falha ao aplicar tema em " + id + ":", e);
+        }
+    });
+}
+
 /* Chamada no inicio de toda renderizacao que reescreve o content-body. */
 function destruirGraficos() {
     Object.keys(GRAFICOS_ATIVOS).forEach(destruirGrafico);
@@ -119,6 +198,7 @@ function cartaoGrafico(opcoes) {
 }
 
 function _opcoesBase(titulo, altura) {
+    const p = paletaGrafico();
     return {
         chart: {
             height: altura || ALTURA_GRAFICO_PADRAO,
@@ -129,15 +209,15 @@ function _opcoesBase(titulo, altura) {
             redrawOnWindowResize: true,
             redrawOnParentResize: true,
             animations: {
-                enabled: true,
+                enabled: animacoesGraficoLigadas(),
                 easing: "easeinout",
                 speed: 600,
                 dynamicAnimation: { enabled: true, speed: 350 }
             }
         },
-        theme: { mode: "dark" },
+        theme: { mode: p.modo },
         grid: {
-            borderColor: "#2a2d35",
+            borderColor: p.grade,
             strokeDashArray: 4,
             xaxis: { lines: { show: false } },
             yaxis: { lines: { show: true } },
@@ -150,7 +230,7 @@ function _opcoesBase(titulo, altura) {
             fontSize: "11px",
             fontFamily: "inherit",
             fontWeight: 500,
-            labels: { colors: "#d1d5db", useSeriesColors: false },
+            labels: { colors: p.legenda, useSeriesColors: false },
             itemMargin: { horizontal: 6, vertical: 4 },
             onItemClick: { toggleDataSeries: true },
             onItemHover: { highlightDataSeries: true }
@@ -163,16 +243,14 @@ function _opcoesBase(titulo, altura) {
         title: {
             text: titulo || "",
             align: "left",
-            style: { color: "#e5e7eb", fontSize: "14px", fontWeight: 600, fontFamily: "inherit" }
+            style: { color: p.texto, fontSize: "14px", fontWeight: 600, fontFamily: "inherit" }
         },
         noData: { text: "Sem dados para exibir" }
     };
 }
 
 function _estiloTextoEixo() {
-    /* Cor clara + fonte 12px: os numeros do eixo precisam ser legiveis a
-       primeira vista (antes era #8e99a4 / 11px, apagado demais). */
-    return { colors: "#cbd5e1", fontSize: "12px", fontFamily: "inherit" };
+    return { colors: paletaGrafico().eixo, fontSize: "12px", fontFamily: "inherit" };
 }
 
 function _casasDosDados(series) {
@@ -203,7 +281,7 @@ function _opcoesLinha(o) {
     op.markers = {
         size: isMulti ? 5 : 6,
         strokeWidth: 2,
-        strokeColors: "#1e2028",
+        strokeColors: paletaGrafico().card,
         fillColors: cores,
         hover: { sizeOffset: 5, size: isMulti ? 9 : 11 },
         discrete: []
@@ -226,7 +304,7 @@ function _opcoesLinha(o) {
     op.tooltip = {
         shared: true,
         intersect: false,
-        theme: "dark",
+        theme: paletaGrafico().modo,
         style: { fontSize: "11px", fontFamily: "inherit" },
         y: { formatter: formatarTooltip },
         marker: { show: true }
@@ -286,7 +364,7 @@ function _opcoesBarra(o) {
         offsetX: 6,
         /* Zero nao ganha rotulo: segmento invisivel nao precisa de numero. */
         formatter: v => (Number(v) ? formatarValor(v, casas) : ""),
-        style: { colors: ["#e5e7eb"], fontSize: "11px", fontWeight: 600 },
+        style: { colors: [paletaGrafico().texto], fontSize: "11px", fontWeight: 600 },
         dropShadow: { enabled: false }
     } : { show: false };
     op.fill = { opacity: 1 };
@@ -331,7 +409,7 @@ function _opcoesBarra(o) {
         /* Linha com valor 0 (ou null) na categoria sob o cursor nao aparece:
            numa barra empilhada so mostra o segmento que tem valor real. */
         hideEmptySeries: true,
-        theme: "dark",
+        theme: paletaGrafico().modo,
         style: { fontSize: "11px", fontFamily: "inherit" },
         y: { formatter: formatarTooltip },
         marker: { show: true }
@@ -355,7 +433,8 @@ function _opcoesDonut(o) {
     op.series = valores;
     op.labels = rotulos;
     op.colors = cores;
-    op.stroke = { width: 2, colors: ["#1e2028"] };
+    const p = paletaGrafico();
+    op.stroke = { width: 2, colors: [p.card] };
     op.dataLabels = { formatter: v => Math.round(v) + "%" };
     op.plotOptions = {
         pie: {
@@ -363,18 +442,18 @@ function _opcoesDonut(o) {
                 size: "68%",
                 labels: {
                     show: true,
-                    name: { show: true, color: "#8e99a4", fontSize: "12px", offsetY: -4 },
+                    name: { show: true, color: p.suave, fontSize: "12px", offsetY: -4 },
                     value: {
-                        show: true, color: "#e5e7eb", fontSize: "18px", fontWeight: 600,
+                        show: true, color: p.texto, fontSize: "18px", fontWeight: 600,
                         formatter: v => formatarValor(v, casasDecimais([v]))
                     },
-                    total: { show: true, label: "Total", color: "#8e99a4", formatter: () => formatarValor(total, casasDecimais(valores)) }
+                    total: { show: true, label: "Total", color: p.suave, formatter: () => formatarValor(total, casasDecimais(valores)) }
                 }
             }
         }
     };
     op.tooltip = {
-        theme: "dark",
+        theme: paletaGrafico().modo,
         style: { fontSize: "11px", fontFamily: "inherit" },
         y: {
             formatter: (valor, ctx) => {

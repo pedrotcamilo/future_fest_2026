@@ -57,8 +57,8 @@ async function renderPrevisoes() {
         return m ? m.nome : id;
     };
     html += tituloTabela("Previsoes") + renderTable(
-        ["ID", "Materia Prima", "Data Previsao", "Periodo", "Consumo Previsto", "Confianca", "Modelo"],
-        visiveis.map(p => [p.id, mpNome(p.materia_prima_id), p.data_previsao,
+        ["Materia Prima", "Data Previsao", "Periodo", "Consumo Previsto", "Confianca", "Modelo"],
+        visiveis.map(p => [mpNome(p.materia_prima_id), p.data_previsao,
             `${p.periodo_inicio} a ${p.periodo_fim}`,
             p.consumo_previsto, p.confianca ? p.confianca + "%" : "-", p.modelo_utilizado || "-"
         ]),
@@ -113,9 +113,16 @@ window.previsaoAutomatica = async function () {
     );
 };
 
-window.previsaoForm = function () {
+window.previsaoForm = async function () {
+    const mpRes = await API.listarMateriasPrimas();
+    const materias = mpRes.ok ? mpRes.data : [];
     showModal("Gerar Previsao",
-        formGroup("Materia-Prima ID", "f-mp", "number", "") +
+        selGroup("Materia-Prima", "f-mp",
+            opcoesSelect(materias,
+                m => m.id,
+                m => m.codigo ? `${m.nome} (${m.codigo})` : m.nome,
+                "Selecione a materia-prima"),
+            "") +
         formGroup("Inicio Periodo", "f-inicio", "date", "") +
         formGroup("Fim Periodo", "f-fim", "date", "") +
         formGroup("Consumo Previsto", "f-consumo", "number", "") +

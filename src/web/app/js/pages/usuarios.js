@@ -15,7 +15,7 @@ async function renderUsuarios() {
             ? r => `<button class="btn btn-sm btn-outline-info me-1" onclick="usuarioForm(${r[0]})"><i class="bi bi-pencil"></i></button>
                     <button class="btn btn-sm btn-outline-danger" onclick="usuarioDelete(${r[0]})"><i class="bi bi-trash"></i></button>`
             : null,
-        { chave: "usuarios" }
+        { chave: "usuarios", ocultar: [0] }
     );
     document.getElementById("content-body").innerHTML = html;
 }

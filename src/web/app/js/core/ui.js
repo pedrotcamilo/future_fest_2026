@@ -28,6 +28,28 @@ function selGroup(label, id, options, selected = "") {
 
 function val(id) { return (document.getElementById(id) || {}).value || ""; }
 
+/* Opcoes de <select> a partir de uma lista de registros: valor vira o id
+   (o que a API espera) e rotulo o que aparece na tela (nome/codigo). */
+function opcoesSelect(itens, valor, rotulo, vazio = "") {
+    const opts = (itens || []).map(i => ({ value: String(valor(i)), label: String(rotulo(i)) }));
+    return vazio ? [{ value: "", label: vazio }, ...opts] : opts;
+}
+
+/* ───────────────── CNPJ / CPF ─────────────────
+   Clientes guardam os dois documentos na mesma coluna ("cnpj"): a separacao
+   e pelo comprimento — 14 digitos = CNPJ, 11 digitos = CPF. O banco guarda
+   apenas os digitos; a mascara existe so na tela (exibicao e digitacao). */
+function soDigitos(valor) { return String(valor || "").replace(/\D/g, ""); }
+
+function formatarCnpjCpf(valor) {
+    const d = soDigitos(valor);
+    if (!d) return "-";
+    if (d.length === 14) return d.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5");
+    if (d.length === 11) return d.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "$1.$2.$3-$4");
+    /* Tamanho fora do esperado: mostra o valor original em vez de esconder. */
+    return valor;
+}
+
 /* ───────────────── Listas com "Ver mais" ─────────────────
    Todas as tabelas do site passam por renderTable, entao a paginacao
    visual e feita aqui (client-side): os dados completos ficam em LISTAS
@@ -42,16 +64,24 @@ function val(id) { return (document.getElementById(id) || {}).value || ""; }
 const LISTAS = {};
 const PASSO_LISTA_PADRAO = 15;
 
+/* "Itens por lista" das Configuracoes; sem preferencia valida usa o padrao. */
+function passoListaPadrao() {
+    const n = typeof Preferencias !== "undefined" ? Number(Preferencias.ler().itensPorLista) : 0;
+    return n > 0 ? n : PASSO_LISTA_PADRAO;
+}
+
 /* Renderiza a parte da lista referente ao limite atual. */
 function desenharLista(chave) {
     const estado = LISTAS[chave];
     if (!estado) return "";
-    const { headers, rows, actions, limite } = estado;
+    const { headers, rows, actions, limite, ocultar } = estado;
     const visiveis = rows.slice(0, limite);
-
-    const h = headers.map(x => `<th>${x}</th>`).join("");
+    /* Colunas ocultas (ex.: o ID): some do cabecalho e das celulas, mas o
+       objeto linha continua completo — os botoes de acao leem r[0]. */
+    const escondida = i => (ocultar || []).includes(i);
+    const h = headers.map((x, i) => escondida(i) ? "" : `<th>${x}</th>`).join("");
     const r = visiveis.map(row => {
-        const cells = row.map(c => `<td>${c}</td>`).join("");
+        const cells = row.map((c, i) => escondida(i) ? "" : `<td>${c}</td>`).join("");
         return `<tr>${cells}${actions ? `<td class="text-nowrap">${actions(row)}</td>` : ""}</tr>`;
     }).join("");
 
@@ -71,7 +101,7 @@ function desenharLista(chave) {
         </div>`;
     }
 
-    return `<div class="table-wrap"><table class="table table-dark table-hover table-striped mb-0">
+    return `<div class="table-wrap"><table class="table table-hover table-striped mb-0">
         <thead><tr>${h}${actions ? "<th>Acoes</th>" : ""}</tr></thead><tbody>${r}</tbody></table></div>${rodape}`;
 }
 
@@ -113,13 +143,17 @@ function renderTable(headers, rows, actions, opcoes) {
        e remove caracteres que nao servem de id de elemento. */
     const chave = o.chave ||
         ("tb-" + headers.join("-").replace(/[^A-Za-z0-9_-]+/g, "-"));
-    const passo = o.passo || PASSO_LISTA_PADRAO;
+    const passo = o.passo || passoListaPadrao();
+    /* ocultar: indices de colunas que nao aparecem na tela (ID e afins),
+       mantidas no row para as acoes continuarem recebendo o id. */
+    const ocultar = o.ocultar || [];
     const anterior = LISTAS[chave];
     LISTAS[chave] = {
         headers,
         rows,
         actions,
         passo,
+        ocultar,
         /* Mantem o nivel de expansao entre re-renders da mesma tela
            (filtro/edicao/exclusao), limitado ao total atual. */
         limite: anterior

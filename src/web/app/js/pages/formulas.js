@@ -10,7 +10,7 @@ async function renderFormulas() {
         r => `<button class="btn btn-sm btn-outline-info me-1" onclick="formulaForm(${r[0]})"><i class="bi bi-pencil"></i></button>
               <button class="btn btn-sm btn-outline-warning me-1" onclick="verItensFormula(${r[0]})"><i class="bi bi-list-ul"></i></button>
               <button class="btn btn-sm btn-outline-danger" onclick="formulaDelete(${r[0]})"><i class="bi bi-trash"></i></button>`,
-        { chave: "formulas" }
+        { chave: "formulas", ocultar: [0] }
     );
     document.getElementById("content-body").innerHTML = html;
 }
@@ -34,22 +34,38 @@ window.formulaForm = async function (id) {
 window.formulaDelete = async function (id) { if (confirm("Deletar formula?")) { await API.deletarFormula(id); renderFormulas(); } };
 
 window.verItensFormula = async function (id) {
-    const res = await API.listarItensFormula(id);
+    const [res, mpRes] = await Promise.all([
+        API.listarItensFormula(id),
+        API.listarMateriasPrimas()
+    ]);
     const itens = res.ok ? res.data : [];
-    let rows = itens.map(i => `<tr><td>${i.id}</td><td>${i.materia_prima_id}</td><td>${i.quantidade}</td><td>${i.unidade || "-"}</td>
+    const materias = mpRes.ok ? mpRes.data : [];
+    const nomeMateria = mpId => {
+        const m = materias.find(x => x.id === mpId);
+        if (!m) return "Materia-prima " + mpId;
+        return m.codigo ? `${m.nome} (${m.codigo})` : m.nome;
+    };
+    let rows = itens.map(i => `<tr><td>${nomeMateria(i.materia_prima_id)}</td><td>${i.quantidade}</td><td>${i.unidade || "-"}</td>
         <td><button class="btn btn-sm btn-outline-danger" onclick="delItemFormula(${id},${i.id})"><i class="bi bi-trash"></i></button></td></tr>`).join("");
     showModal("Itens da Formula",
         `<button class="btn btn-sm btn-primary mb-2" onclick="addItemFormula(${id})"><i class="bi bi-plus-lg"></i> Adicionar</button>
-        <div class="table-wrap"><table class="table table-dark table-sm">
-        <thead><tr><th>ID</th><th>MP ID</th><th>Quantidade</th><th>Unidade</th><th>Acao</th></tr></thead>
-        <tbody>${rows || '<tr><td colspan="5" class="text-center text-muted">Nenhum item</td></tr>'}</tbody></table></div>`,
+        <div class="table-wrap"><table class="table table-sm">
+        <thead><tr><th>Materia-Prima</th><th>Quantidade</th><th>Unidade</th><th>Acao</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="4" class="text-center text-muted">Nenhum item</td></tr>'}</tbody></table></div>`,
         null
     );
 };
 
 window.addItemFormula = async function (formulaId) {
+    const mpRes = await API.listarMateriasPrimas();
+    const materias = mpRes.ok ? mpRes.data : [];
     showModal("Adicionar Item",
-        formGroup("Materia-Prima ID", "f-mp", "number", "") +
+        selGroup("Materia-Prima", "f-mp",
+            opcoesSelect(materias,
+                m => m.id,
+                m => m.codigo ? `${m.nome} (${m.codigo})` : m.nome,
+                "Selecione a materia-prima"),
+            "") +
         formGroup("Quantidade", "f-qtd", "number", "") +
         formGroup("Unidade", "f-und", "text", ""),
         async function () {

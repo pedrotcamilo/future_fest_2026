@@ -90,6 +90,22 @@ class _SupabaseResult:
             return vals[0] if vals else None
         return row
 
+    def scalar_one_or_none(self):
+        """Espelha Session.scalar_one_or_none() do SQLAlchemy.
+
+        Sem este metodo os endpoints "buscar por id" (clientes, fornecedores,
+        pedidos, formulas, lotes, compras, producao) lancavam AttributeError
+        durante o failover para o Supabase -> HTTP 500 -> modal de edicao
+        nao abria.
+        """
+        if not self._rows:
+            return None
+        if len(self._rows) > 1:
+            from sqlalchemy.exc import MultipleResultsFound
+            raise MultipleResultsFound(f"{len(self._rows)} linhas retornadas")
+        row = self._rows[0]
+        return row[0] if isinstance(row, (list, tuple)) else row
+
     def first(self):
         return self._rows[0] if self._rows else None
 

@@ -6,7 +6,7 @@ const PAGE_TITLES = {
     formulas: "Formulas", estoque: "Estoque", compras: "Compras",
     pedidos: "Pedidos", producao: "Producao", consumo: "Historico de Consumo",
     previsoes: "Previsoes de Consumo", sugestoes: "Sugestoes de Compra",
-    alertas: "Alertas", relatorios: "Relatorios"
+    alertas: "Alertas", relatorios: "Relatorios", configuracoes: "Configuracoes"
 };
 
 const PAGE_RENDERERS = {
@@ -26,6 +26,7 @@ const PAGE_RENDERERS = {
     sugestoes: renderSugestoes,
     alertas: renderAlertas,
     relatorios: renderRelatorios,
+    configuracoes: renderConfiguracoes,
 };
 
 async function navigateTo(page) {
@@ -45,6 +46,24 @@ async function navigateTo(page) {
 
     if (PAGE_RENDERERS[page]) await PAGE_RENDERERS[page]();
     else document.getElementById("content-body").innerHTML = "<h3>Pagina nao encontrada</h3>";
+}
+
+/* Icone do botao do cabecalho mostra para qual tema ele vai trocar. */
+function atualizarBotaoTema() {
+    const btn = document.getElementById("btn-alternar-tema");
+    if (!btn) return;
+    const claro = Preferencias.claro();
+    btn.innerHTML = `<i class="bi ${claro ? "bi-moon-stars" : "bi-sun"}"></i>`;
+    btn.title = claro ? "Mudar para o tema escuro" : "Mudar para o tema claro";
+    btn.setAttribute("aria-label", btn.title);
+}
+
+/* Pagina inicial salva nas Configuracoes, se ainda for valida para o usuario. */
+function paginaInicial() {
+    const p = Preferencias.ler().paginaInicial;
+    if (!PAGE_RENDERERS[p]) return "dashboard";
+    if (p === "usuarios" && !(currentUser && currentUser.admin)) return "dashboard";
+    return p;
 }
 
 async function initApp() {
@@ -79,7 +98,27 @@ async function initApp() {
         document.getElementById("sidebar").classList.toggle("open");
     });
 
-    navigateTo("dashboard");
+    document.getElementById("btn-alternar-tema").addEventListener("click", function () {
+        Preferencias.salvar({ tema: Preferencias.claro() ? "escuro" : "claro" });
+    });
+
+    /* O CSS troca sozinho pelas variaveis; os graficos (ApexCharts guarda
+       as cores na criacao) sao repintados no lugar, sem perder o estado da
+       tela. Se a mudanca veio do botao/outra aba com a tela de Configuracoes
+       aberta, sincroniza a selecao do tema. */
+    document.addEventListener("preferencias-alteradas", function (e) {
+        atualizarBotaoTema();
+        if (!e.detail || !e.detail.temaMudou) return;
+        aplicarTemaGraficos();
+        const cfg = Preferencias.ler();
+        document.querySelectorAll(".tema-opcao").forEach(b => {
+            b.classList.toggle("ativo", b.dataset.tema === cfg.tema);
+            b.setAttribute("aria-pressed", String(b.dataset.tema === cfg.tema));
+        });
+    });
+    atualizarBotaoTema();
+
+    navigateTo(paginaInicial());
 }
 
 if (document.readyState === "loading") {

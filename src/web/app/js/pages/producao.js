@@ -1,8 +1,21 @@
 async function renderProducao() {
     destruirGraficos();
     const fstatus = document.getElementById("filtro-prod-status")?.value || "";
-    const res = await API.listarOrdens();
+    const [res, pedRes, cliRes] = await Promise.all([
+        API.listarOrdens(),
+        API.listarPedidos(),
+        API.listarClientes()
+    ]);
     const data = res.ok ? res.data : [];
+    const pedidos = pedRes.ok ? pedRes.data : [];
+    const clientes = cliRes.ok ? cliRes.data : [];
+    /* Nome do cliente dono do pedido da ordem (no lugar do pedido_id). */
+    const clienteDoPedido = pedidoId => {
+        const p = pedidos.find(x => x.id === pedidoId);
+        if (!p) return "-";
+        const c = clientes.find(x => x.id === p.cliente_id);
+        return c ? c.nome : "-";
+    };
     /* Opcoes do filtro geradas dos dados reais (nao dependem de enums fixos). */
     const statuses = [...new Set(data.map(o => o.status).filter(Boolean))].sort();
     const visiveis = fstatus ? data.filter(o => o.status === fstatus) : data;
@@ -28,8 +41,8 @@ async function renderProducao() {
         <button class="btn btn-sm btn-outline-secondary" onclick="renderProducao()">Filtrar</button>
     </div>`;
     html += tituloTabela("Ordens de producao") + renderTable(
-        ["ID", "Pedido ID", "Inicio", "Fim", "Status"],
-        visiveis.map(o => [o.id, o.pedido_id || "-", o.data_inicio || "-", o.data_fim || "-",
+        ["ID", "Cliente", "Inicio", "Fim", "Status"],
+        visiveis.map(o => [o.id, clienteDoPedido(o.pedido_id), o.data_inicio || "-", o.data_fim || "-",
             `<span class="badge ${statusBadge(o.status)}">${o.status}</span>`]),
         r => `<div class="text-nowrap">
             <button class="btn btn-sm btn-outline-info me-1" onclick="ordemForm(${r[0]})"><i class="bi bi-pencil"></i></button>
@@ -39,7 +52,7 @@ async function renderProducao() {
             <button class="btn btn-sm btn-outline-secondary me-1" onclick="consumirOrdem(${r[0]})"><i class="bi bi-arrow-down"></i></button>
             <button class="btn btn-sm btn-outline-danger" onclick="ordemDelete(${r[0]})"><i class="bi bi-trash"></i></button>
         </div>`,
-        { chave: "producao" }
+        { chave: "producao", ocultar: [0] }
     );
     document.getElementById("content-body").innerHTML = html;
 
@@ -67,8 +80,23 @@ async function renderProducao() {
 window.ordemForm = async function (id) {
     let o = { pedido_id: "", status: "PENDENTE" };
     if (id) { const r = await API.buscarOrdem(id); if (r.ok && r.data) o = r.data; }
+    const [pedRes, cliRes] = await Promise.all([
+        API.listarPedidos(),
+        API.listarClientes()
+    ]);
+    const pedidos = pedRes.ok ? pedRes.data : [];
+    const clientes = cliRes.ok ? cliRes.data : [];
+    const clienteDe = cid => {
+        const c = clientes.find(x => x.id === cid);
+        return c ? c.nome : "";
+    };
     showModal(id ? "Editar Ordem" : "Nova Ordem",
-        formGroup("Pedido ID", "f-ped", "number", o.pedido_id || "") +
+        selGroup("Pedido", "f-ped",
+            opcoesSelect(pedidos,
+                p => p.id,
+                p => `Pedido #${p.id} — ${clienteDe(p.cliente_id) || "sem cliente"}`,
+                "Selecione o pedido"),
+            o.pedido_id || "") +
         selGroup("Status", "f-status", [
             { value: "PENDENTE", label: "Pendente" }, { value: "EM_PRODUCAO", label: "Em Producao" },
             { value: "FINALIZADA", label: "Finalizada" }, { value: "CANCELADA", label: "Cancelada" }
@@ -87,8 +115,15 @@ window.finalizarOrdem = async function (id) { if (confirm("Finalizar producao?")
 window.cancelarOrdem = async function (id) { if (confirm("Cancelar ordem?")) { await API.cancelarOrdem(id); renderProducao(); } };
 
 window.consumirOrdem = async function (id) {
+    const lRes = await API.listarLotes();
+    const lotes = lRes.ok ? lRes.data : [];
     showModal("Registrar Consumo - Ordem #" + id,
-        formGroup("Lote ID", "f-lote", "number", "") +
+        selGroup("Lote", "f-lote",
+            opcoesSelect(lotes,
+                l => l.id,
+                l => l.numero_lote || ("Lote " + l.id),
+                "Selecione o lote"),
+            "") +
         formGroup("Quantidade", "f-qtd", "number", ""),
         async function () {
             const d = { lote_id: Number(val("f-lote")), quantidade: Number(val("f-qtd")) };

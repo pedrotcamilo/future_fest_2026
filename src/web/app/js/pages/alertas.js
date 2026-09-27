@@ -7,8 +7,25 @@ async function renderAlertas() {
     if (ftipo) params.set("tipo", ftipo);
     if (fprio) params.set("prioridade", fprio);
     if (fres) params.set("resolvido", fres);
-    const res = await API.listarAlertas(params.toString());
+    const [res, mpRes, lRes] = await Promise.all([
+        API.listarAlertas(params.toString()),
+        API.listarMateriasPrimas(),
+        API.listarLotes()
+    ]);
     const data = res.ok ? res.data : [];
+    const materias = mpRes.ok ? mpRes.data : [];
+    const lotes = lRes.ok ? lRes.data : [];
+    const nomeMateria = id => {
+        if (id == null) return "-";
+        const m = materias.find(x => x.id === id);
+        if (!m) return "-";
+        return m.codigo ? `${m.nome} (${m.codigo})` : m.nome;
+    };
+    const rotuloLote = id => {
+        if (id == null) return "-";
+        const l = lotes.find(x => x.id === id);
+        return (l && l.numero_lote) || ("Lote " + id);
+    };
     const nNaoResolvidos = data.filter(a => !a.resolvido).length;
 
     let html = `
@@ -41,12 +58,12 @@ async function renderAlertas() {
         <button class="btn btn-sm btn-outline-secondary" onclick="renderAlertas()">Filtrar</button>
     </div>`;
     html += tituloTabela("Alertas") + renderTable(
-        ["ID", "Tipo", "MP ID", "Lote ID", "Descricao", "Prioridade", "Resolvido", "Data"],
-        data.map(a => [a.id, a.tipo, a.materia_prima_id || "-", a.lote_id || "-", a.descricao || "-",
+        ["ID", "Tipo", "Materia-Prima", "Lote", "Descricao", "Prioridade", "Resolvido", "Data"],
+        data.map(a => [a.id, a.tipo, nomeMateria(a.materia_prima_id), rotuloLote(a.lote_id), a.descricao || "-",
             `<span class="badge ${a.prioridade == "ALTA" ? "bg-danger" : a.prioridade == "MEDIA" ? "bg-warning text-dark" : "bg-secondary"}">${a.prioridade}</span>`,
             a.resolvido ? "Sim" : "Nao", a.data_alerta]),
         r => !r[6] || r[6] === "Nao" ? `<button class="btn btn-sm btn-outline-success" onclick="resolverAlerta(${r[0]})"><i class="bi bi-check-lg"></i> Resolver</button>` : "",
-        { chave: "alertas" }
+        { chave: "alertas", ocultar: [0] }
     );
     document.getElementById("content-body").innerHTML = html;
 

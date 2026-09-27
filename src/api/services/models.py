@@ -107,6 +107,9 @@ class Clientes(Base):
     nome: Mapped[str] = mapped_column()
     telefone: Mapped[str] = mapped_column()
     email: Mapped[str] = mapped_column()
+    # Mesma coluna guarda CNPJ (14 digitos) e CPF (11 digitos); a separacao
+    # e feita pelo comprimento na hora de exibir (formatarCnpjCpf).
+    cnpj: Mapped[str | None] = mapped_column(nullable=True)
 
 class Pedidos(Base):
     __tablename__ = "pedidos"
