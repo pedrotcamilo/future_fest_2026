@@ -8,6 +8,8 @@ class BaseCliente(BaseModel):
     nome: str
     telefone: str | None = None
     email: str | None = None
+    # CNPJ (14) e CPF (11) compartilham a mesma coluna no banco.
+    cnpj: str | None = None
 
 @router.get("/")
 async def listar_clientes():
@@ -26,7 +28,8 @@ async def criar_cliente(body: BaseCliente):
     resultado = database_clientes.criar_cliente(
         nome=body.nome,
         telefone=body.telefone,
-        email=body.email
+        email=body.email,
+        cnpj=body.cnpj
     )
     return responses.PlainTextResponse(content=resultado, status_code=200)
 
@@ -36,7 +39,8 @@ async def atualizar_cliente(id: int, body: BaseCliente):
         id=id,
         nome=body.nome,
         telefone=body.telefone,
-        email=body.email
+        email=body.email,
+        cnpj=body.cnpj
     )
     return responses.PlainTextResponse(content=resultado, status_code=200)
 

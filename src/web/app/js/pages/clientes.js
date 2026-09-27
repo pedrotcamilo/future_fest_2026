@@ -5,24 +5,33 @@ async function renderClientes() {
         <p></p>
         <button class="btn btn-primary btn-sm" onclick="clienteForm(null)"><i class="bi bi-plus-lg"></i> Novo</button>
     </div>`;
-    html += tituloTabela("Clientes") + renderTable(["ID", "Nome", "Telefone", "Email"],
-        data.map(c => [c.id, c.nome, c.telefone || "-", c.email || "-"]),
+    html += tituloTabela("Clientes") + renderTable(["ID", "Nome", "Telefone", "CNPJ/CPF", "Email"],
+        data.map(c => [c.id, c.nome, c.telefone || "-", formatarCnpjCpf(c.cnpj), c.email || "-"]),
         r => `<button class="btn btn-sm btn-outline-info me-1" onclick="clienteForm(${r[0]})"><i class="bi bi-pencil"></i></button>
               <button class="btn btn-sm btn-outline-danger" onclick="clienteDelete(${r[0]})"><i class="bi bi-trash"></i></button>`,
-        { chave: "clientes" }
+        { chave: "clientes", ocultar: [0] }
     );
     document.getElementById("content-body").innerHTML = html;
 }
 
 window.clienteForm = async function (id) {
-    let c = { nome: "", telefone: "", email: "" };
+    let c = { nome: "", telefone: "", email: "", cnpj: "" };
     if (id) { const r = await API.buscarCliente(id); if (r.ok && r.data) c = r.data; }
     showModal(id ? "Editar Cliente" : "Novo Cliente",
         formGroup("Nome", "f-nome", "text", c.nome) +
         formGroup("Telefone", "f-tel", "text", c.telefone || "") +
+        formGroup("CNPJ/CPF", "f-cnpj", "text", soDigitos(c.cnpj) ? formatarCnpjCpf(c.cnpj) : "",
+            'placeholder="00.000.000/0000-00 ou 000.000.000-00"') +
         formGroup("Email", "f-email", "email", c.email || ""),
         async function () {
-            const d = { nome: val("f-nome"), telefone: val("f-tel"), email: val("f-email") };
+            /* Na tela aparece mascarado; na API vai so com os digitos — o banco
+               guarda CNPJ e CPF na mesma coluna e separa pelo comprimento. */
+            const d = {
+                nome: val("f-nome"),
+                telefone: val("f-tel"),
+                cnpj: soDigitos(val("f-cnpj")),
+                email: val("f-email")
+            };
             if (id) await API.atualizarCliente(id, d); else await API.criarCliente(d);
             closeModal(); renderClientes();
         }

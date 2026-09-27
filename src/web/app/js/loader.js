@@ -24,11 +24,12 @@
         "app/js/pages/sugestoes.js",
         "app/js/pages/alertas.js",
         "app/js/pages/relatorios.js",
+        "app/js/pages/configuracoes.js",
         "app/js/app.js"
     ];
 
-    const CACHE_NAME = "axionphare-assets-v11";
-    const LS_PREFIX = "axionphare-assets-v11:";
+    const CACHE_NAME = "axionphare-assets-v13";
+    const LS_PREFIX = "axionphare-assets-v13:";
 
     const splash = document.getElementById("app-splash");
     const statusEl = document.getElementById("app-splash-status");
@@ -48,9 +49,11 @@
             caches.delete("axionphare-assets-v8");
             caches.delete("axionphare-assets-v9");
             caches.delete("axionphare-assets-v10");
+            caches.delete("axionphare-assets-v11");
+            caches.delete("axionphare-assets-v12");
         } catch (e) { }
     }
-    ["axionphare-assets-v1:", "axionphare-assets-v2:", "axionphare-assets-v3:", "axionphare-assets-v4:", "axionphare-assets-v5:", "axionphare-assets-v6:", "axionphare-assets-v7:", "axionphare-assets-v8:", "axionphare-assets-v9:", "axionphare-assets-v10:"].forEach(prefix => {
+    ["axionphare-assets-v1:", "axionphare-assets-v2:", "axionphare-assets-v3:", "axionphare-assets-v4:", "axionphare-assets-v5:", "axionphare-assets-v6:", "axionphare-assets-v7:", "axionphare-assets-v8:", "axionphare-assets-v9:", "axionphare-assets-v10:", "axionphare-assets-v11:", "axionphare-assets-v12:"].forEach(prefix => {
         Object.keys(localStorage)
             .filter(k => k.startsWith(prefix))
             .forEach(k => localStorage.removeItem(k));

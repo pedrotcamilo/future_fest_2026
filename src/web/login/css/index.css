@@ -2,6 +2,15 @@
     max-height: 35vh;
 }
 
+/* Logo e um PNG branco: no tema claro vira grafite (mesmo filtro do app). */
+[data-bs-theme="light"] .logo-axionphare {
+    filter: brightness(0) opacity(0.82);
+}
+
+[data-bs-theme="light"] body {
+    background-color: #f1f4f9;
+}
+
 .corpo-login {
     margin-top: 35vh;
 }

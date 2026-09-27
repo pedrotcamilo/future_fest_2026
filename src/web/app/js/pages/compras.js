@@ -1,8 +1,16 @@
 async function renderCompras() {
     destruirGraficos();
     const fstatus = document.getElementById("filtro-compra-status")?.value || "";
-    const res = await API.listarCompras();
+    const [res, fornRes] = await Promise.all([
+        API.listarCompras(),
+        API.listarFornecedores()
+    ]);
     const data = res.ok ? res.data : [];
+    const fornecedores = fornRes.ok ? fornRes.data : [];
+    const nomeFornecedor = id => {
+        const f = fornecedores.find(x => x.id === id);
+        return f ? (f.nome_fantasia || f.razao_social) : "-";
+    };
     /* Opcoes do filtro geradas dos dados reais (nao dependem de enums fixos). */
     const statuses = [...new Set(data.map(c => c.status).filter(Boolean))].sort();
     const visiveis = fstatus ? data.filter(c => c.status === fstatus) : data;
@@ -28,14 +36,14 @@ async function renderCompras() {
         <button class="btn btn-sm btn-outline-secondary" onclick="renderCompras()">Filtrar</button>
     </div>`;
     html += tituloTabela("Compras") + renderTable(
-        ["ID", "Fornecedor ID", "Data", "Previsao Entrega", "Recebimento", "Status"],
-        visiveis.map(c => [c.id, c.fornecedor_id, c.data_compra, c.previsao_entrega || "-", c.data_recebimento || "-",
+        ["ID", "Fornecedor", "Data", "Previsao Entrega", "Recebimento", "Status"],
+        visiveis.map(c => [c.id, nomeFornecedor(c.fornecedor_id), c.data_compra, c.previsao_entrega || "-", c.data_recebimento || "-",
             `<span class="badge ${statusBadge(c.status)}">${c.status}</span>`]),
         r => `<button class="btn btn-sm btn-outline-info me-1" onclick="compraForm(${r[0]})"><i class="bi bi-pencil"></i></button>
               <button class="btn btn-sm btn-outline-success me-1" onclick="receberCompra(${r[0]})"><i class="bi bi-check-lg"></i></button>
               <button class="btn btn-sm btn-outline-warning me-1" onclick="cancelarCompra(${r[0]})"><i class="bi bi-x-lg"></i></button>
               <button class="btn btn-sm btn-outline-danger" onclick="compraDelete(${r[0]})"><i class="bi bi-trash"></i></button>`,
-        { chave: "compras" }
+        { chave: "compras", ocultar: [0] }
     );
     document.getElementById("content-body").innerHTML = html;
 
@@ -62,8 +70,15 @@ async function renderCompras() {
 window.compraForm = async function (id) {
     let c = { fornecedor_id: "", data_compra: "", previsao_entrega: "", status: "PENDENTE" };
     if (id) { const r = await API.buscarCompra(id); if (r.ok && r.data) c = r.data; }
+    const fornRes = await API.listarFornecedores();
+    const fornecedores = fornRes.ok ? fornRes.data : [];
     showModal(id ? "Editar Compra" : "Nova Compra",
-        formGroup("Fornecedor ID", "f-forn", "number", c.fornecedor_id) +
+        selGroup("Fornecedor", "f-forn",
+            opcoesSelect(fornecedores,
+                f => f.id,
+                f => (f.nome_fantasia || f.razao_social),
+                "Selecione o fornecedor"),
+            c.fornecedor_id || "") +
         formGroup("Data Compra", "f-data", "date", c.data_compra || "") +
         formGroup("Previsao Entrega", "f-prev", "date", c.previsao_entrega || "") +
         selGroup("Status", "f-status", [
@@ -86,8 +101,15 @@ window.compraForm = async function (id) {
 };
 
 window.adicionarItensCompra = async function (compraId) {
+    const mpRes = await API.listarMateriasPrimas();
+    const materias = mpRes.ok ? mpRes.data : [];
     showModal("Adicionar Item a Compra #" + compraId,
-        formGroup("Materia-Prima ID", "f-mp", "number", "") +
+        selGroup("Materia-Prima", "f-mp",
+            opcoesSelect(materias,
+                m => m.id,
+                m => m.codigo ? `${m.nome} (${m.codigo})` : m.nome,
+                "Selecione a materia-prima"),
+            "") +
         formGroup("Quantidade", "f-qtd", "number", "") +
         formGroup("Valor Unitario", "f-vlr", "number", ""),
         async function () {

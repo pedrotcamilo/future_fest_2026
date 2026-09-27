@@ -47,8 +47,8 @@ async function renderConsumo() {
         <select class="form-select form-select-sm" style="max-width:240px" id="filtro-cons-mp">${opcoesMp}</select>
         <button class="btn btn-sm btn-outline-secondary" onclick="renderConsumo()">Filtrar</button>
     </div>`;
-    html += tituloTabela("Consumos") + renderTable(["ID", "Materia-Prima", "Data", "Quantidade"],
-        data.map(c => [c.id, nomeDe(c.materia_prima_id), c.data, c.quantidade]),
+    html += tituloTabela("Consumos") + renderTable(["Materia-Prima", "Data", "Quantidade"],
+        data.map(c => [nomeDe(c.materia_prima_id), c.data, c.quantidade]),
         null,
         { chave: "consumo" }
     );

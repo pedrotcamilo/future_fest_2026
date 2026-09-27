@@ -15,6 +15,7 @@ def listar_clientes():
                 "id": c.id,
                 "nome": c.nome,
                 "telefone": c.telefone,
+                "cnpj": c.cnpj,
                 "email": c.email
             }
             for c in clientes
@@ -33,13 +34,15 @@ def listar_cliente_id(id: int):
             "id": cliente.id,
             "nome": cliente.nome,
             "telefone": cliente.telefone,
+            "cnpj": cliente.cnpj,
             "email": cliente.email
         }
 
 def criar_cliente(
     nome: str,
     telefone: str = None,
-    email: str = None
+    email: str = None,
+    cnpj: str = None
 ):
     with get_session() as session:
         stmt = (
@@ -47,7 +50,8 @@ def criar_cliente(
             .values(
                 nome=nome,
                 telefone=telefone,
-                email=email
+                email=email,
+                cnpj=cnpj
             )
         )
 

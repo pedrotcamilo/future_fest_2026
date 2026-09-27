@@ -40,7 +40,7 @@ async function renderRelatorios() {
         </div>
         <div class="col-md-4">
             <div class="card-dash" onclick="verRelatorio('previsoes')" style="cursor:pointer">
-                <div class="icon bi bi-graph-up text-purple" style="color:#a78bfa"></div>
+                <div class="icon bi bi-graph-up" style="color:var(--ax-roxo)"></div>
                 <div class="fw-bold">Previsoes</div>
                 <div class="label small">Previsoes de consumo geradas</div>
             </div>
@@ -67,24 +67,49 @@ window.verRelatorio = async function (tipo) {
     }
     const fn = apiCalls[tipo];
     if (!fn) return;
-    const res = await fn(params.toString());
+    /* call(API): os metodos usam this.get; solto do objeto o this se perde. */
+    const [res, refRes] = await Promise.all([
+        fn.call(API, params.toString()),
+        /* Listas de referencia para mostrar nome no lugar de id. */
+        tipo === "compras" ? API.listarFornecedores()
+            : tipo === "producao" ? API.listarPedidos()
+                : Promise.resolve({ ok: false, data: [] })
+    ]);
     const data = res.ok ? res.data : [];
+    const referencias = refRes.ok ? refRes.data : [];
+
+    const nomeFornecedor = id => {
+        const f = referencias.find(x => x.id === id);
+        return f ? (f.nome_fantasia || f.razao_social) : "-";
+    };
+    /* Producao: nome do cliente dono do pedido da ordem. */
+    let nomeCliente = () => "-";
+    if (tipo === "producao") {
+        const cliRes = await API.listarClientes();
+        const clientes = cliRes.ok ? cliRes.data : [];
+        nomeCliente = pedidoId => {
+            const p = referencias.find(x => x.id === pedidoId);
+            if (!p) return "-";
+            const c = clientes.find(x => x.id === p.cliente_id);
+            return c ? c.nome : "-";
+        };
+    }
 
     const headers = {
-        consumo: ["MP ID", "Nome", "Unidade", "Total Consumido"],
-        estoque: ["MP ID", "Nome", "Unidade", "Estoque Atual"],
+        consumo: ["Nome", "Unidade", "Total Consumido"],
+        estoque: ["Nome", "Unidade", "Estoque Atual"],
         vencimentos: ["Nome", "Lote", "Validade", "Quantidade"],
-        compras: ["ID", "Fornecedor", "Data", "Status"],
-        producao: ["ID", "Pedido", "Inicio", "Fim", "Status"],
-        previsoes: ["MP ID", "Nome", "Periodo", "Consumo Previsto", "Confianca"]
+        compras: ["Fornecedor", "Data", "Status"],
+        producao: ["Cliente", "Inicio", "Fim", "Status"],
+        previsoes: ["Nome", "Periodo", "Consumo Previsto", "Confianca"]
     };
     const cols = {
-        consumo: d => [d.materia_prima_id, d.nome, d.unidade, d.total_consumido],
-        estoque: d => [d.materia_prima_id, d.nome, d.unidade, d.estoque_atual],
+        consumo: d => [d.nome, d.unidade, d.total_consumido],
+        estoque: d => [d.nome, d.unidade, d.estoque_atual],
         vencimentos: d => [d.nome, d.numero_lote, d.data_validade, d.quantidade_atual],
-        compras: d => [d.id, d.fornecedor_id, d.data_compra, d.status],
-        producao: d => [d.id, d.pedido_id, d.data_inicio || "-", d.data_fim || "-", d.status],
-        previsoes: d => [d.materia_prima_id, d.nome, `${d.periodo_inicio} a ${d.periodo_fim}`, d.consumo_previsto, d.confianca || "-"]
+        compras: d => [nomeFornecedor(d.fornecedor_id), d.data_compra, d.status],
+        producao: d => [nomeCliente(d.pedido_id), d.data_inicio || "-", d.data_fim || "-", d.status],
+        previsoes: d => [d.nome, `${d.periodo_inicio} a ${d.periodo_fim}`, d.consumo_previsto, d.confianca || "-"]
     };
 
     let html = `<button class="btn btn-outline-secondary btn-sm mb-3" onclick="renderRelatorios()"><i class="bi bi-arrow-left"></i> Voltar</button>

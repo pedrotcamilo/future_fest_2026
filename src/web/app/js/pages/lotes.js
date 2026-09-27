@@ -7,8 +7,23 @@ async function renderLotes() {
     if (fvenc) params.set("vencimento", fvenc);
     if (fmp) params.set("materiaPrima", fmp);
     if (fforn) params.set("fornecedor", fforn);
-    const res = await API.listarLotes(params.toString());
+    const [res, mpRes, fornRes] = await Promise.all([
+        API.listarLotes(params.toString()),
+        API.listarMateriasPrimas(),
+        API.listarFornecedores()
+    ]);
     const data = res.ok ? res.data : [];
+    const materias = mpRes.ok ? mpRes.data : [];
+    const fornecedores = fornRes.ok ? fornRes.data : [];
+    const nomeMateria = id => {
+        const m = materias.find(x => x.id === id);
+        if (!m) return "-";
+        return m.codigo ? `${m.nome} (${m.codigo})` : m.nome;
+    };
+    const nomeFornecedor = id => {
+        const f = fornecedores.find(x => x.id === id);
+        return f ? (f.nome_fantasia || f.razao_social) : "-";
+    };
     let html = `<div class="d-flex justify-content-between mb-3">
         <p></p>
         <button class="btn btn-primary btn-sm" onclick="loteForm(null)"><i class="bi bi-plus-lg"></i> Novo</button>
@@ -24,16 +39,22 @@ async function renderLotes() {
     </div>
     <div class="filters-bar">
         <input class="form-control form-control-sm" style="width:140px" placeholder="Dias vencimento" id="filtro-lote-venc" value="${fvenc||""}">
-        <input class="form-control form-control-sm" style="width:120px" placeholder="MP ID" id="filtro-lote-mp" value="${fmp||""}">
-        <input class="form-control form-control-sm" style="width:120px" placeholder="Fornecedor ID" id="filtro-lote-forn" value="${fforn||""}">
+        <select class="form-select form-select-sm" style="max-width:220px" id="filtro-lote-mp">
+            <option value="">Todas as materias-primas</option>
+            ${materias.map(m => `<option value="${m.id}" ${fmp == m.id ? "selected" : ""}>${m.nome}</option>`).join("")}
+        </select>
+        <select class="form-select form-select-sm" style="max-width:220px" id="filtro-lote-forn">
+            <option value="">Todos os fornecedores</option>
+            ${fornecedores.map(f => `<option value="${f.id}" ${fforn == f.id ? "selected" : ""}>${f.nome_fantasia || f.razao_social}</option>`).join("")}
+        </select>
         <button class="btn btn-sm btn-outline-secondary" onclick="renderLotes()">Filtrar</button>
     </div>`;
     html += tituloTabela("Lotes") + renderTable(
-        ["ID", "MP ID", "Fornecedor ID", "Numero Lote", "Qtd Inicial", "Qtd Atual", "Fabricacao", "Validade", "Valor Unit."],
-        data.map(l => [l.id, l.materia_prima_id, l.fornecedor_id || "-", l.numero_lote || "-", l.quantidade_inicial, l.quantidade_atual, l.data_fabricacao || "-", l.data_validade || "-", l.valor_unitario || "-"]),
+        ["ID", "Materia-Prima", "Fornecedor", "Numero Lote", "Qtd Inicial", "Qtd Atual", "Fabricacao", "Validade", "Valor Unit."],
+        data.map(l => [l.id, nomeMateria(l.materia_prima_id), nomeFornecedor(l.fornecedor_id), l.numero_lote || "-", l.quantidade_inicial, l.quantidade_atual, l.data_fabricacao || "-", l.data_validade || "-", l.valor_unitario || "-"]),
         r => `<button class="btn btn-sm btn-outline-info me-1" onclick="loteForm(${r[0]})"><i class="bi bi-pencil"></i></button>
               <button class="btn btn-sm btn-outline-danger" onclick="loteDelete(${r[0]})"><i class="bi bi-trash"></i></button>`,
-        { chave: "lotes" }
+        { chave: "lotes", ocultar: [0] }
     );
     document.getElementById("content-body").innerHTML = html;
 
@@ -63,9 +84,25 @@ async function renderLotes() {
 window.loteForm = async function (id) {
     let l = { materia_prima_id: "", fornecedor_id: "", numero_lote: "", quantidade_inicial: "", quantidade_atual: "", data_fabricacao: "", data_validade: "", data_recebimento: "", valor_unitario: "" };
     if (id) { const r = await API.buscarLote(id); if (r.ok && r.data) l = r.data; }
+    const [mpRes, fornRes] = await Promise.all([
+        API.listarMateriasPrimas(),
+        API.listarFornecedores()
+    ]);
+    const materias = mpRes.ok ? mpRes.data : [];
+    const fornecedores = fornRes.ok ? fornRes.data : [];
     showModal(id ? "Editar Lote" : "Novo Lote",
-        formGroup("Materia-Prima ID", "f-mp", "number", l.materia_prima_id) +
-        formGroup("Fornecedor ID", "f-forn", "number", l.fornecedor_id || "") +
+        selGroup("Materia-Prima", "f-mp",
+            opcoesSelect(materias,
+                m => m.id,
+                m => m.codigo ? `${m.nome} (${m.codigo})` : m.nome,
+                "Selecione a materia-prima"),
+            l.materia_prima_id || "") +
+        selGroup("Fornecedor", "f-forn",
+            opcoesSelect(fornecedores,
+                f => f.id,
+                f => f.nome_fantasia || f.razao_social,
+                "Sem fornecedor"),
+            l.fornecedor_id || "") +
         formGroup("Numero Lote", "f-num", "text", l.numero_lote || "") +
         formGroup("Quantidade Inicial", "f-qtd-ini", "number", l.quantidade_inicial || "") +
         formGroup("Quantidade Atual", "f-qtd-atual", "number", l.quantidade_atual || "") +
