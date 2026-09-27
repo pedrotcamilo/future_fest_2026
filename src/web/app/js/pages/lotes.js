@@ -28,11 +28,12 @@ async function renderLotes() {
         <input class="form-control form-control-sm" style="width:120px" placeholder="Fornecedor ID" id="filtro-lote-forn" value="${fforn||""}">
         <button class="btn btn-sm btn-outline-secondary" onclick="renderLotes()">Filtrar</button>
     </div>`;
-    html += renderTable(
+    html += tituloTabela("Lotes") + renderTable(
         ["ID", "MP ID", "Fornecedor ID", "Numero Lote", "Qtd Inicial", "Qtd Atual", "Fabricacao", "Validade", "Valor Unit."],
         data.map(l => [l.id, l.materia_prima_id, l.fornecedor_id || "-", l.numero_lote || "-", l.quantidade_inicial, l.quantidade_atual, l.data_fabricacao || "-", l.data_validade || "-", l.valor_unitario || "-"]),
         r => `<button class="btn btn-sm btn-outline-info me-1" onclick="loteForm(${r[0]})"><i class="bi bi-pencil"></i></button>
-              <button class="btn btn-sm btn-outline-danger" onclick="loteDelete(${r[0]})"><i class="bi bi-trash"></i></button>`
+              <button class="btn btn-sm btn-outline-danger" onclick="loteDelete(${r[0]})"><i class="bi bi-trash"></i></button>`,
+        { chave: "lotes" }
     );
     document.getElementById("content-body").innerHTML = html;
 
@@ -45,8 +46,7 @@ async function renderLotes() {
     criarGraficoBarra("graf-lotes-top", {
         titulo: "Lotes com maior quantidade atual",
         categorias: top.map(t => t.rotulo),
-        series: [{ name: "Quantidade", data: top.map(t => t.v), color: "#3b82f6" }],
-        altura: alturaGraficoBarra(Math.max(top.length, 1))
+        series: [{ name: "Quantidade", data: top.map(t => t.v), color: "#3b82f6" }]
     });
 
     const faixas = faixasDeValidade(data);
@@ -56,7 +56,6 @@ async function renderLotes() {
         series: [{ name: "Lotes", data: faixas.valores, color: "#3b82f6" }],
         distribuido: true,
         coresDistribuidas: ["#ef4444", "#f97316", "#eab308", "#22c55e"],
-        altura: 300,
         rotacionar: false
     });
 }

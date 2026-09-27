@@ -5,11 +5,12 @@ async function renderFormulas() {
         <p></p>
         <button class="btn btn-primary btn-sm" onclick="formulaForm(null)"><i class="bi bi-plus-lg"></i> Nova</button>
     </div>`;
-    html += renderTable(["ID", "Codigo", "Descricao", "Categoria", "Ativa"],
+    html += tituloTabela("Formulas") + renderTable(["ID", "Codigo", "Descricao", "Categoria", "Ativa"],
         data.map(f => [f.id, f.codigo || "-", f.descricao || "-", f.categoria || "-", f.ativa ? "Sim" : "Nao"]),
         r => `<button class="btn btn-sm btn-outline-info me-1" onclick="formulaForm(${r[0]})"><i class="bi bi-pencil"></i></button>
               <button class="btn btn-sm btn-outline-warning me-1" onclick="verItensFormula(${r[0]})"><i class="bi bi-list-ul"></i></button>
-              <button class="btn btn-sm btn-outline-danger" onclick="formulaDelete(${r[0]})"><i class="bi bi-trash"></i></button>`
+              <button class="btn btn-sm btn-outline-danger" onclick="formulaDelete(${r[0]})"><i class="bi bi-trash"></i></button>`,
+        { chave: "formulas" }
     );
     document.getElementById("content-body").innerHTML = html;
 }

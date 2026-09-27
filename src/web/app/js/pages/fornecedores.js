@@ -18,11 +18,12 @@ async function renderFornecedores() {
         </select>
         <button class="btn btn-sm btn-outline-secondary" onclick="renderFornecedores()">Filtrar</button>
     </div>`;
-    html += renderTable(
+    html += tituloTabela("Fornecedores") + renderTable(
         ["ID", "Razao Social", "Fantasia", "CNPJ", "Telefone", "Email", "Prazo Entrega", "Ativo"],
         data.map(f => [f.id, f.razao_social, f.nome_fantasia || "-", f.cnpj || "-", f.telefone || "-", f.email || "-", f.prazo_entrega_dias || "-", f.ativo ? "Sim" : "Nao"]),
         r => `<button class="btn btn-sm btn-outline-info me-1" onclick="fornForm(${r[0]})"><i class="bi bi-pencil"></i></button>
-              <button class="btn btn-sm btn-outline-danger" onclick="fornDelete(${r[0]})"><i class="bi bi-trash"></i></button>`
+              <button class="btn btn-sm btn-outline-danger" onclick="fornDelete(${r[0]})"><i class="bi bi-trash"></i></button>`,
+        { chave: "fornecedores" }
     );
     document.getElementById("content-body").innerHTML = html;
 }

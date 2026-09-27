@@ -167,6 +167,16 @@ class SupabaseSession:
 
         return _SupabaseResult([])
 
+    def scalars(self, stmt):
+        """Espelha Session.scalars() (plural) do SQLAlchemy.
+
+        Chamado por database_estoque.consultar_estoque e
+        database_dashboard.dashboard_estoque. Sem este metodo o failover para
+        o Supabase lancava AttributeError -> HTTP 500 -> tela de estoque e
+        grafico "Estoque atual" do dashboard apareciam vazios.
+        """
+        return self.execute(stmt).scalars()
+
     def scalar(self, stmt):
         result = self.execute(stmt)
         rows = result.scalars().all()
@@ -201,10 +211,24 @@ class SupabaseSession:
             return _SupabaseResult([])
         table = m.group(1)
 
+        where_match = re.search(r"WHERE\s+(.+?)(?:\s+ORDER\s|\s+LIMIT\s|\s+GROUP\s|$)", sql, re.IGNORECASE)
+
+        # Agregado simples: SELECT count(t.col) AS label FROM ...
+        # Sem este tratamento o select("*") devolvia linhas cruas e scalar()
+        # retornava o id da primeira linha no lugar do total (KPIs errados).
+        agg = re.match(
+            r"\s*SELECT\s+(count|sum|avg|min|max)\((?:\w+\.)?(\w+|\*)\)\s+AS\s+(\w+)\s+FROM\s",
+            sql, re.IGNORECASE,
+        )
+        if agg:
+            return self._exec_aggregate(
+                table, agg.group(1).lower(), agg.group(2), agg.group(3),
+                where_match.group(1) if where_match else None,
+            )
+
         query = self._client.table(table).select("*")
 
         # WHERE
-        where_match = re.search(r"WHERE\s+(.+?)(?:\s+ORDER\s|\s+LIMIT\s|\s+GROUP\s|$)", sql, re.IGNORECASE)
         if where_match:
             query = self._apply_where(query, where_match.group(1))
 
@@ -223,6 +247,38 @@ class SupabaseSession:
         resp = query.execute()
         return _SupabaseResult(resp.data or [])
 
+    def _exec_aggregate(self, table: str, func: str, col: str, label: str, where_str):
+        if func == "count":
+            query = self._client.table(table).select("*", count="exact", head=True)
+            if where_str:
+                query = self._apply_where(query, where_str)
+            return _SupabaseResult([{label: query.execute().count or 0}])
+
+        # sum/avg/min/max: PostgREST nao agrega sem habilitar aggregates,
+        # entao busca a coluna filtrada e calcula no Python (ignora NULL como o SQL).
+        values, start, page = [], 0, 1000
+        while True:
+            query = self._client.table(table).select(col)
+            if where_str:
+                query = self._apply_where(query, where_str)
+            data = query.range(start, start + page - 1).execute().data or []
+            values += [float(r[col]) for r in data if r.get(col) is not None]
+            if len(data) < page:
+                break
+            start += page
+
+        if not values:
+            result = None
+        elif func == "sum":
+            result = sum(values)
+        elif func == "avg":
+            result = sum(values) / len(values)
+        elif func == "min":
+            result = min(values)
+        else:
+            result = max(values)
+        return _SupabaseResult([{label: result}])
+
     def _apply_where(self, query, where_str: str):
         parts = re.split(r"\s+AND\s+", where_str, flags=re.IGNORECASE)
         for part in parts:
@@ -230,8 +286,27 @@ class SupabaseSession:
             if not part:
                 continue
 
+            # col IN (...) / col NOT IN (...)
+            m = re.match(r"(\w+(?:\.\w+)?)\s+(NOT\s+)?IN\s*\((.*)\)\s*$", part, re.IGNORECASE)
+            if m:
+                col = m.group(1).split(".")[-1]
+                vals = [_cast_value(v.strip()) for v in m.group(3).split(",") if v.strip()]
+                if m.group(2):
+                    query = query.not_.in_(col, vals)
+                else:
+                    query = query.in_(col, vals)
+                continue
+
+            # .ilike() compila para: lower(col) LIKE lower('padrao')
+            m = re.match(r"lower\((\w+(?:\.\w+)?)\)\s+LIKE\s+lower\('(.*)'\)\s*$", part, re.IGNORECASE)
+            if m:
+                col = m.group(1).split(".")[-1]
+                query = query.ilike(col, m.group(2).replace("''", "'").replace("%", "*"))
+                continue
+
             m = re.match(r"(\w+(?:\.\w+)?)\s*(=|!=|<>|>=|<=|>|<|LIKE|ILIKE|IS)\s*'?([^']*?)'?\s*$", part, re.IGNORECASE)
             if not m:
+                logger.warning("Supabase: condicao WHERE nao suportada, ignorada: %s", part)
                 continue
 
             col = m.group(1).split(".")[-1]

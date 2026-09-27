@@ -37,65 +37,83 @@ async function renderDashboard() {
             <div class="number">${d.alertas_ativos || 0}</div><div class="label">Alertas Ativos</div></div></div>
     </div>`;
 
+    /* Todos os cards do dashboard usam a mesma altura (ALTURA_GRAFICO_PADRAO)
+       para o grid ficar alinhado; a altura tambem e repassada a cada grafico. */
     html += `<div class="row g-3 mb-4">
         <div class="col-lg-6">${cartaoGrafico({
-            id: "dash-estoque", icone: "bi-box-seam", label: "Estoque atual",
+            id: "dash-estoque", icone: "bi-box-seam", label: "Estoque atual", altura: ALTURA_GRAFICO_PADRAO,
             badge: `<span class="badge bg-body-secondary text-body-secondary small">${estoque.length} materias</span>`
         })}</div>
         <div class="col-lg-6">${cartaoGrafico({
-            id: "dash-consumo", label: "Consumo mensal",
+            id: "dash-consumo", label: "Consumo mensal", altura: ALTURA_GRAFICO_PADRAO,
             badge: `<span class="badge bg-body-secondary text-body-secondary small">${listaConsumos.length} lancamentos</span>`
         })}</div>
         <div class="col-lg-6">${cartaoGrafico({
-            id: "dash-compras", icone: "bi-cart3", label: "Compras por status",
+            id: "dash-compras", icone: "bi-cart3", label: "Compras por status", altura: ALTURA_GRAFICO_PADRAO,
             badge: `<span class="badge bg-body-secondary text-body-secondary small">${listaCompras.length} compras</span>`
         })}</div>
         <div class="col-lg-6">${cartaoGrafico({
-            id: "dash-ordens", icone: "bi-gear-wide-connected", label: "Ordens de producao",
+            id: "dash-ordens", icone: "bi-gear-wide-connected", label: "Ordens de producao", altura: ALTURA_GRAFICO_PADRAO,
             badge: `<span class="badge bg-body-secondary text-body-secondary small">${listaOrdens.length} ordens</span>`
         })}</div>
         <div class="col-lg-6">${cartaoGrafico({
-            id: "dash-alertas-prio", icone: "bi-exclamation-triangle", label: "Alertas por prioridade",
+            id: "dash-alertas-prio", icone: "bi-exclamation-triangle", label: "Alertas por prioridade", altura: ALTURA_GRAFICO_PADRAO,
             badge: `<span class="badge bg-body-secondary text-body-secondary small">${listaAlertas.length} alertas</span>`
         })}</div>
         <div class="col-lg-6">${cartaoGrafico({
-            id: "dash-alertas-tipo", icone: "bi-tags", label: "Alertas por tipo", badge: ""
+            id: "dash-alertas-tipo", icone: "bi-tags", label: "Alertas por tipo", altura: ALTURA_GRAFICO_PADRAO,
+            badge: ""
         })}</div>
         <div class="col-12">${cartaoGrafico({
-            id: "dash-previsoes", icone: "bi-clipboard-data", label: "Consumo previsto por materia-prima",
+            id: "dash-previsoes", icone: "bi-clipboard-data", label: "Consumo previsto por materia-prima", altura: ALTURA_GRAFICO_PADRAO,
             badge: `<span class="badge bg-body-secondary text-body-secondary small">${listaPrevisoes.length} previsoes</span>`
         })}</div>
     </div>`;
 
     if (estoque.length) {
-        html += `<h6 class="mb-2">Estoque Atual</h6>${renderTable(
+        html += `${tituloTabela("Estoque Atual")}${renderTable(
             ["Materia-Prima", "Estoque"],
-            estoque.map(i => [i.nome, i.estoque])
+            estoque.map(i => [i.nome, i.estoque]),
+            null,
+            { chave: "dash-estoque" }
         )}`;
     }
     const ativos = listaAlertas.filter(a => !a.resolvido);
     if (ativos.length) {
-        html += `<h6 class="mt-4 mb-2">Alertas Ativos</h6>${renderTable(
+        html += `<div class="mt-4">${tituloTabela("Alertas Ativos")}${renderTable(
             ["Tipo", "Descricao", "Prioridade", "Data"],
             ativos.map(a => [a.tipo, a.descricao || "-",
                 `<span class="badge ${a.prioridade == "ALTA" ? "bg-danger" : a.prioridade == "MEDIA" ? "bg-warning text-dark" : "bg-secondary"}">${a.prioridade}</span>`,
-                a.data_alerta])
-        )}`;
+                a.data_alerta]),
+            null,
+            { chave: "dash-alertas-ativos" }
+        )}</div>`;
     }
 
     document.getElementById("content-body").innerHTML = html;
 
-    /* 1) Estoque por MP, destacando as abaixo do minimo em vermelho. */
+    /* 1) Estoque por MP em barras horizontais, destacando as abaixo do
+          minimo em vermelho. Top 12 + "Demais (N)" para o eixo de nomes
+          nao ficar espremido. */
     const ordenados = estoque.slice().sort((a, b) => Number(b.estoque || 0) - Number(a.estoque || 0));
-    criarGraficoBarra("dash-estoque", {
-        titulo: "Estoque por materia-prima (vermelho = abaixo do minimo)",
-        categorias: ordenados.map(e => e.nome),
-        series: [
-            { name: "Estoque normal", data: ordenados.map(e => abaixoDoMinimo(e) ? 0 : Number(e.estoque) || 0), color: "#3b82f6" },
-            { name: "Abaixo do minimo", data: ordenados.map(e => abaixoDoMinimo(e) ? Number(e.estoque) || 0 : 0), color: "#ef4444" }
+    const reduzido = topEOutros(
+        ordenados.map(e => e.nome),
+        [
+            { name: "Estoque normal", color: "#3b82f6", data: ordenados.map(e => abaixoDoMinimo(e) ? 0 : Number(e.estoque) || 0) },
+            { name: "Abaixo do minimo", color: "#ef4444", data: ordenados.map(e => abaixoDoMinimo(e) ? Number(e.estoque) || 0 : 0) }
         ],
+        12
+    );
+    criarGraficoBarra("dash-estoque", {
+        titulo: ordenados.length > 12
+            ? "Estoque por materia-prima - Top 12 (vermelho = abaixo do minimo)"
+            : "Estoque por materia-prima (vermelho = abaixo do minimo)",
+        categorias: reduzido.categorias,
+        series: reduzido.series,
         empilhado: true,
-        altura: alturaGraficoBarra(Math.max(ordenados.length, 1))
+        horizontal: true,
+        mostrarValores: true,
+        altura: ALTURA_GRAFICO_PADRAO
     });
 
     /* 2) Consumo mensal: ultimos 6 meses fechados + mes corrente (parcial),
@@ -110,7 +128,8 @@ async function renderDashboard() {
     criarGraficoLinha("dash-consumo", {
         titulo: "Ultimos 6 meses fechados + mes corrente (parcial)",
         categorias: serieConsumo.categories,
-        series: serieConsumo.series
+        series: serieConsumo.series,
+        altura: ALTURA_GRAFICO_PADRAO
     });
 
     /* 3/4/5) Donuts com agrupamento dinamico (nao dependem de enums fixos). */
@@ -118,21 +137,24 @@ async function renderDashboard() {
     criarGraficoDonut("dash-compras", {
         titulo: "Compras por status",
         rotulos: comp.rotulos,
-        valores: comp.valores
+        valores: comp.valores,
+        altura: ALTURA_GRAFICO_PADRAO
     });
 
     const ord = agruparPorCampo(listaOrdens, "status");
     criarGraficoDonut("dash-ordens", {
         titulo: "Ordens de producao por status",
         rotulos: ord.rotulos,
-        valores: ord.valores
+        valores: ord.valores,
+        altura: ALTURA_GRAFICO_PADRAO
     });
 
     const prio = agruparPorCampo(listaAlertas, "prioridade");
     criarGraficoDonut("dash-alertas-prio", {
         titulo: "Alertas por prioridade",
         rotulos: prio.rotulos,
-        valores: prio.valores
+        valores: prio.valores,
+        altura: ALTURA_GRAFICO_PADRAO
     });
 
     /* 6) Alertas por tipo (barras distribuidas). */
@@ -143,7 +165,7 @@ async function renderDashboard() {
         series: [{ name: "Alertas", data: tipos.valores, color: "#3b82f6" }],
         distribuido: true,
         coresDistribuidas: coresCompletas(Math.max(tipos.rotulos.length, 1)).slice(0, tipos.rotulos.length),
-        altura: 300,
+        altura: ALTURA_GRAFICO_PADRAO,
         rotacionar: false
     });
 
@@ -155,10 +177,22 @@ async function renderDashboard() {
     const itensPrev = [...prevPorMp.entries()]
         .map(([id, total]) => ({ nome: nomeDe(id), total }))
         .sort((a, b) => b.total - a.total);
+    /* Mesmo tratamento do Estoque atual: barras horizontais, Top 12 +
+       "Demais (N)" e valor ao lado de cada barra. (Nome reduzidoPrev porque
+       "reduzido" ja existe neste escopo — o do grafico de estoque.) */
+    const reduzidoPrev = topEOutros(
+        itensPrev.map(i => i.nome),
+        [{ name: "Previsto", color: "#8b5cf6", data: itensPrev.map(i => i.total) }],
+        12
+    );
     criarGraficoBarra("dash-previsoes", {
-        titulo: "Consumo previsto por materia-prima",
-        categorias: itensPrev.map(i => i.nome),
-        series: [{ name: "Previsto", data: itensPrev.map(i => i.total), color: "#8b5cf6" }],
-        altura: alturaGraficoBarra(Math.max(itensPrev.length, 1))
+        titulo: itensPrev.length > 12
+            ? "Consumo previsto por materia-prima - Top 12"
+            : "Consumo previsto por materia-prima",
+        categorias: reduzidoPrev.categorias,
+        series: reduzidoPrev.series,
+        horizontal: true,
+        mostrarValores: true,
+        altura: ALTURA_GRAFICO_PADRAO
     });
 }

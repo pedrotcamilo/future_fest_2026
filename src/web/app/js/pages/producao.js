@@ -27,7 +27,7 @@ async function renderProducao() {
         </select>
         <button class="btn btn-sm btn-outline-secondary" onclick="renderProducao()">Filtrar</button>
     </div>`;
-    html += renderTable(
+    html += tituloTabela("Ordens de producao") + renderTable(
         ["ID", "Pedido ID", "Inicio", "Fim", "Status"],
         visiveis.map(o => [o.id, o.pedido_id || "-", o.data_inicio || "-", o.data_fim || "-",
             `<span class="badge ${statusBadge(o.status)}">${o.status}</span>`]),
@@ -38,7 +38,8 @@ async function renderProducao() {
             <button class="btn btn-sm btn-outline-warning me-1" onclick="cancelarOrdem(${r[0]})"><i class="bi bi-x-lg"></i></button>
             <button class="btn btn-sm btn-outline-secondary me-1" onclick="consumirOrdem(${r[0]})"><i class="bi bi-arrow-down"></i></button>
             <button class="btn btn-sm btn-outline-danger" onclick="ordemDelete(${r[0]})"><i class="bi bi-trash"></i></button>
-        </div>`
+        </div>`,
+        { chave: "producao" }
     );
     document.getElementById("content-body").innerHTML = html;
 
@@ -59,8 +60,7 @@ async function renderProducao() {
     criarGraficoLinha("graf-prod-mes", {
         titulo: "Ordens iniciadas por mes",
         categorias: meses,
-        series: [{ name: "Ordens", data: meses.map(m => porMes.get(m)), color: "#3b82f6" }],
-        altura: 320
+        series: [{ name: "Ordens", data: meses.map(m => porMes.get(m)), color: "#3b82f6" }]
     });
 }
 

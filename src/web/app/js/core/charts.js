@@ -48,7 +48,13 @@ function formatarValor(valor, casas) {
     if (valor === null || valor === undefined) return "";
     const n = Number(valor);
     if (isNaN(n)) return String(valor);
-    return n.toFixed(casas || 0);
+    const c = casas || 0;
+    /* Separador de milhar pt-BR: 4500 => "4.500", 1450.5 => "1.450,5".
+       Usado no eixo, no tooltip, nos donuts e nos rotulos de barra. */
+    return n.toLocaleString("pt-BR", {
+        minimumFractionDigits: c,
+        maximumFractionDigits: c
+    });
 }
 
 /* Casas decimais "naturais" dos dados (inteiro => 0, 8.5 => 1, 0.043 => 3). */
@@ -62,13 +68,13 @@ function casasDecimais(valores) {
     return casas;
 }
 
-function alturaGraficoLinha(nSeries) {
-    return nSeries > 1 ? Math.max(350, Math.min(500, 300 + nSeries * 30)) : 320;
-}
+/* Altura unica de TODOS os graficos e de TODOS os cards (cartaoGrafico), em
+   qualquer tela: todos usam este mesmo valor para os cards lado a lado ficarem
+   com a mesma altura e as linhas do grid alinhadas.
 
-function alturaGraficoBarra(nCategorias) {
-    return Math.max(300, Math.min(560, 120 + Math.max(nCategorias, 1) * 24));
-}
+   (Nao calcular altura em funcao do numero de series/categorias: era o que
+   fazia o "Top 15" de lotes ter ~480px ao lado de um card de 300px.) */
+const ALTURA_GRAFICO_PADRAO = 340;
 
 function destruirGrafico(id) {
     const instancia = GRAFICOS_ATIVOS[id];
@@ -94,7 +100,7 @@ function cartaoGrafico(opcoes) {
     opcoes = opcoes || {};
     const id = opcoes.id;
     const msgId = opcoes.msgId || ("msg-" + id);
-    const altura = opcoes.altura || 320;
+    const altura = opcoes.altura || ALTURA_GRAFICO_PADRAO;
     const icone = opcoes.icone || "bi-graph-up";
     const esquerda = opcoes.label
         ? `<div class="d-flex align-items-center gap-2">
@@ -115,7 +121,7 @@ function cartaoGrafico(opcoes) {
 function _opcoesBase(titulo, altura) {
     return {
         chart: {
-            height: altura || 320,
+            height: altura || ALTURA_GRAFICO_PADRAO,
             fontFamily: FONTE_GRAFICO,
             toolbar: { show: false },
             background: "transparent",
@@ -164,7 +170,9 @@ function _opcoesBase(titulo, altura) {
 }
 
 function _estiloTextoEixo() {
-    return { colors: "#8e99a4", fontSize: "11px", fontFamily: "inherit" };
+    /* Cor clara + fonte 12px: os numeros do eixo precisam ser legiveis a
+       primeira vista (antes era #8e99a4 / 11px, apagado demais). */
+    return { colors: "#cbd5e1", fontSize: "12px", fontFamily: "inherit" };
 }
 
 function _casasDosDados(series) {
@@ -174,7 +182,7 @@ function _casasDosDados(series) {
 }
 
 function _opcoesLinha(o) {
-    const altura = o.altura || alturaGraficoLinha((o.series || []).length);
+    const altura = o.altura || ALTURA_GRAFICO_PADRAO;
     const op = _opcoesBase(o.titulo, altura);
     const series = (o.series || []).map(s => ({ name: s.name, data: s.data }));
     const cores = (o.series || []).map(s => s.color || "#3b82f6");
@@ -211,7 +219,9 @@ function _opcoesLinha(o) {
     op.yaxis = {
         labels: { style: _estiloTextoEixo(), offsetX: 0, formatter: formatarEixo },
         min: 0,
-        forceNiceScale: true
+        forceNiceScale: true,
+        /* Marcas do eixo de valores: ~6 para os numeros nao ficarem empilhados. */
+        tickAmount: 5
     };
     op.tooltip = {
         shared: true,
@@ -228,11 +238,24 @@ function _opcoesLinha(o) {
 }
 
 function _opcoesBarra(o) {
-    const altura = o.altura || alturaGraficoBarra((o.categorias || []).length);
+    const altura = o.altura || ALTURA_GRAFICO_PADRAO;
     const op = _opcoesBase(o.titulo, altura);
-    const series = (o.series || []).map(s => ({ name: s.name, data: s.data }));
-    const cores = (o.series || []).map(s => s.color || "#3b82f6");
+    /* Serie inteiramente zerada nao desenha nada: sai do grafico, da legenda
+       e do tooltip (ex.: "Abaixo do minimo" quando nenhuma materia-prima esta
+       abaixo do minimo). Se TODAS zerarem, mantem as originais para nao
+       entregar series vazia ao ApexCharts. */
+    const comDados = (o.series || []).filter(s => (s.data || []).some(v => Number(v) !== 0));
+    const visiveis = comDados.length ? comDados : (o.series || []);
+    const series = visiveis.map(s => ({ name: s.name, data: s.data }));
+    const cores = visiveis.map(s => s.color || "#3b82f6");
     const distribuido = !!o.distribuido;
+    /* Barras horizontais: as categorias (nomes) ficam empilhadas no eixo Y,
+       sem rotacao, e os valores vao para o eixo X — leitura bem melhor quando
+       ha muitas categorias (ex.: estoque por materia-prima). */
+    const horizontal = !!o.horizontal;
+    /* Rotulo com o valor no fim de cada barra (fora da barra). So faz sentido
+       no horizontal, onde ha espaco a direita de cada barra. */
+    const mostrarValores = !!o.mostrarValores && horizontal;
     const sufixo = o.sufixo || "";
     const casas = o.decimais !== undefined ? o.decimais : _casasDosDados(series);
 
@@ -248,15 +271,30 @@ function _opcoesBarra(o) {
         ? (o.coresDistribuidas || coresCompletas((o.categorias || []).length))
         : cores;
     op.plotOptions = {
-        bar: { horizontal: false, columnWidth: "55%", borderRadius: 3, distributed: distribuido, stacked: !!o.empilhado }
+        bar: Object.assign(
+            horizontal
+                ? { horizontal: true, barHeight: "60%" }
+                : { horizontal: false, columnWidth: "55%" },
+            { borderRadius: 3, distributed: distribuido, stacked: !!o.empilhado },
+            /* No horizontal, "top" posiciona o rotulo na ponta da barra. */
+            mostrarValores ? { dataLabels: { position: "top" } } : {}
+        )
     };
-    op.dataLabels = { show: false };
+    op.dataLabels = mostrarValores ? {
+        enabled: true,
+        textAnchor: "start",
+        offsetX: 6,
+        /* Zero nao ganha rotulo: segmento invisivel nao precisa de numero. */
+        formatter: v => (Number(v) ? formatarValor(v, casas) : ""),
+        style: { colors: ["#e5e7eb"], fontSize: "11px", fontWeight: 600 },
+        dropShadow: { enabled: false }
+    } : { show: false };
     op.fill = { opacity: 1 };
     op.xaxis = {
         categories: o.categorias || [],
         labels: {
             style: _estiloTextoEixo(),
-            rotate: o.rotacionar === false ? 0 : -20,
+            rotate: (horizontal || o.rotacionar === false) ? 0 : -20,
             maxHeight: 70,
             hideOverlappingLabels: true
         },
@@ -266,11 +304,33 @@ function _opcoesBarra(o) {
     op.yaxis = {
         labels: { style: _estiloTextoEixo(), formatter: formatarEixo },
         min: o.min0 === false ? undefined : 0,
-        forceNiceScale: true
+        forceNiceScale: true,
+        /* Marcas do eixo de valores: ~6 para os numeros nao ficarem empilhados
+           (tanto no eixo Y das barras verticais quanto no X das horizontais). */
+        tickAmount: 5
     };
+    /* Espaco reservado no eixo de valores: a barra mais longa nao chega ate a
+       borda e o rotulo de valor cai na folga — sem isso o numero da maior
+       barra encosta/estoura a direita (apexcharts #4679). */
+    if (mostrarValores) {
+        const maximo = series.reduce((m, se) =>
+            Math.max(m, ...(se.data || []).map(v => Number(v) || 0)), 0);
+        if (maximo > 0) op.yaxis.max = Math.ceil(maximo * 1.15);
+    }
+    /* Com barras horizontais as linhas do grid acompanham o eixo de valores
+       (que passa a ser o horizontal). */
+    if (horizontal) {
+        op.grid = Object.assign({}, op.grid, {
+            xaxis: { lines: { show: true } },
+            yaxis: { lines: { show: false } }
+        });
+    }
     op.tooltip = {
         shared: !distribuido,
         intersect: false,
+        /* Linha com valor 0 (ou null) na categoria sob o cursor nao aparece:
+           numa barra empilhada so mostra o segmento que tem valor real. */
+        hideEmptySeries: true,
         theme: "dark",
         style: { fontSize: "11px", fontFamily: "inherit" },
         y: { formatter: formatarTooltip },
@@ -284,7 +344,7 @@ function _opcoesBarra(o) {
 }
 
 function _opcoesDonut(o) {
-    const altura = o.altura || 300;
+    const altura = o.altura || ALTURA_GRAFICO_PADRAO;
     const op = _opcoesBase(o.titulo, altura);
     const rotulos = (o.rotulos || []).map(String);
     const valores = (o.valores || []).map(v => Number(v) || 0);
@@ -384,6 +444,43 @@ function criarGraficoDonut(containerId, opcoes, msgId) {
 }
 
 /* ─────────────────────────── Agregadores ─────────────────────────── */
+
+/* Reduz a quantidade de categorias de um grafico de barras: mantem as
+   `limite` maiores (pela soma de todas as series) e agrega o restante em
+   "Demais (N)" — a soma por serie, preservando o empilhado e as cores.
+
+   - categorias: string[]; series: [{ name, color?, data: number[] }]
+   - tambem trunca rotulos longos para o eixo nao estourar o card.
+   Retorna { categorias, series } prontos para criarGraficoBarra. */
+const TAMANHO_ROTULO_GRAFICO = 28;
+
+function topEOutros(categorias, series, limite) {
+    const cats = (categorias || []).map(String);
+    const originais = (series || []).map(s => Object.assign({}, s, {
+        data: (s.data || []).map(v => Number(v) || 0)
+    }));
+    const totalDe = i => originais.reduce((soma, se) => soma + (se.data[i] || 0), 0);
+    const ordem = cats.map((_, i) => i).sort((a, b) => totalDe(b) - totalDe(a));
+    const manter = ordem.slice(0, limite);
+    const resto = ordem.slice(limite);
+    const trunca = t => (t.length > TAMANHO_ROTULO_GRAFICO
+        ? t.slice(0, TAMANHO_ROTULO_GRAFICO) + "..."
+        : t);
+
+    const novasCategorias = manter.map(i => trunca(cats[i]));
+    const novasSeries = originais.map(se => Object.assign({}, se, {
+        data: manter.map(i => se.data[i] || 0)
+    }));
+
+    if (resto.length) {
+        novasCategorias.push("Demais (" + resto.length + ")");
+        originais.forEach((se, k) => {
+            const soma = resto.reduce((acc, i) => acc + (se.data[i] || 0), 0);
+            novasSeries[k].data.push(soma);
+        });
+    }
+    return { categorias: novasCategorias, series: novasSeries };
+}
 
 /* Serie mensal a partir de registros "flat" (ex.: /consumos, /estoque/movimentacoes).
    opcoes: { campoData, campoQtd, extrairRotulo, ordemRotulos, nomeGrupo, ultimos, marcarParcial }

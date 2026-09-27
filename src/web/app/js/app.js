@@ -37,6 +37,8 @@ async function navigateTo(page) {
     document.getElementById("page-title").textContent = PAGE_TITLES[page] || page;
 
     if (typeof destruirGraficos === "function") destruirGraficos();
+    /* Cada tela comeca com as listas no limite padrao do "Ver mais". */
+    if (typeof resetListas === "function") resetListas();
 
     document.getElementById("content-body").innerHTML =
         '<div class="text-center py-5"><div class="spinner-border"></div></div>';

@@ -5,10 +5,11 @@ async function renderClientes() {
         <p></p>
         <button class="btn btn-primary btn-sm" onclick="clienteForm(null)"><i class="bi bi-plus-lg"></i> Novo</button>
     </div>`;
-    html += renderTable(["ID", "Nome", "Telefone", "Email"],
+    html += tituloTabela("Clientes") + renderTable(["ID", "Nome", "Telefone", "Email"],
         data.map(c => [c.id, c.nome, c.telefone || "-", c.email || "-"]),
         r => `<button class="btn btn-sm btn-outline-info me-1" onclick="clienteForm(${r[0]})"><i class="bi bi-pencil"></i></button>
-              <button class="btn btn-sm btn-outline-danger" onclick="clienteDelete(${r[0]})"><i class="bi bi-trash"></i></button>`
+              <button class="btn btn-sm btn-outline-danger" onclick="clienteDelete(${r[0]})"><i class="bi bi-trash"></i></button>`,
+        { chave: "clientes" }
     );
     document.getElementById("content-body").innerHTML = html;
 }

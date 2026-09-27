@@ -1,3 +1,10 @@
+/* Altura unica de todas as tabelas de pagina: uma constante so, do mesmo
+   jeito que ALTURA_GRAFICO_PADRAO faz com os cards e graficos de todas as
+   telas. */
+:root {
+    --altura-tabela: 640px;
+}
+
 .app-layout {
     display: flex;
     min-height: 100vh;
@@ -126,10 +133,66 @@
     border: 1px solid #2a2d35;
     border-radius: 10px;
     padding: 16px;
-    overflow-x: auto;
+    overflow: auto;
+    /* Scroll interno: mantem os filtros/titulo visiveis e habilita o
+       cabecalho fixo (thead sticky) em listas longas. */
+    max-height: 70vh;
+}
+/* Tabelas das paginas: altura fixa identica em todas as telas (as
+   mini-tabelas dos modais ficam com a altura natural). */
+.content-body .table-wrap {
+    height: var(--altura-tabela);
+    max-height: var(--altura-tabela);
 }
 .table-wrap table {
     margin-bottom: 0;
+}
+.content-body .table-wrap table {
+    margin-bottom: 0;
+    /* Preenche a altura fixa quando ha poucas linhas: em tabela o height
+       vale como minimo, entao listas longas continuam rolando. */
+    height: 100%;
+}
+/* Cabecalho fixo: as linhas passam por baixo dele durante a rolagem.
+   Fundo opaco obrigatorio (celulas do .table-dark sao transparentes). */
+.table-wrap thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #212529;
+}
+
+/* Titulo acima das tabelas */
+.titulo-tabela {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+/* Rodape das listas com "Ver mais" / "Ver menos" */
+.lista-rodape {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+}
+.lista-contador {
+    font-size: 0.8rem;
+    color: #9ca3af;
+}
+.lista-acoes {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+@media (max-width: 576px) {
+    .lista-rodape {
+        justify-content: center;
+    }
+    .lista-acoes {
+        margin-left: 0;
+    }
 }
 
 /* Filters bar */
@@ -354,6 +417,14 @@
 }
 
 /* Chart container card style */
+
+/* Colunas que tem um card de grafico direto como filho viram flex: o card
+   ocupa toda a altura da coluna, entao cards lado a lado ficam sempre com a
+   mesma altura mesmo quando o titulo/badge quebra em mais de uma linha.
+   Browsers sem suporte a :has() mantem a coluna block e ignoram o flex:1. */
+.row > [class*="col-"]:has(> .chart-card) {
+    display: flex;
+}
 .chart-card {
     background: #1e2028;
     border: 1px solid #2a2d35;
@@ -361,6 +432,7 @@
     padding: 20px;
     margin-bottom: 1rem;
     overflow: hidden;
+    flex: 1;
 }
 .chart-card:hover {
     border-color: #363a44;

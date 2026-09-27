@@ -1,5 +1,4 @@
-from api.services.database import engine
-from sqlalchemy.orm import Session
+from api.services.database_manager import get_session
 from sqlalchemy import select
 
 from api.services.models import HistoricoConsumo
@@ -8,7 +7,11 @@ from fastapi import APIRouter, responses, Header
 
 import pandas as pd
 import io
-import matplotlib.pyplot as plt 
+import matplotlib
+# Backend sem janela: com o padrao (TkAgg) o servidor criava objetos Tk em
+# threads de worker e logava "RuntimeError: main thread is not in main loop".
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 router = APIRouter()
 
@@ -17,7 +20,9 @@ def consumo():
 
     data_fin = []
 
-    with Session(engine) as session:
+    # get_session() faz o failover (Postgres -> Supabase); Session(engine)
+    # amarrava o endpoint ao primario e retornava 500 com ele fora do ar.
+    with get_session() as session:
         stmt = select(HistoricoConsumo)
         stmt = stmt.order_by(HistoricoConsumo.materia_prima_id.desc())
 

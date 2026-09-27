@@ -5,14 +5,15 @@ async function renderPedidos() {
         <p></p>
         <button class="btn btn-primary btn-sm" onclick="pedidoForm(null)"><i class="bi bi-plus-lg"></i> Novo</button>
     </div>`;
-    html += renderTable(
+    html += tituloTabela("Pedidos") + renderTable(
         ["ID", "Cliente ID", "Data Pedido", "Status", "Data Entrega"],
         data.map(p => [p.id, p.cliente_id, p.data_pedido,
             `<span class="badge ${statusBadge(p.status)}">${p.status}</span>`,
             p.data_entrega || "-"]),
         r => `<button class="btn btn-sm btn-outline-info me-1" onclick="pedidoForm(${r[0]})"><i class="bi bi-pencil"></i></button>
               <button class="btn btn-sm btn-outline-warning me-1" onclick="verItensPedido(${r[0]})"><i class="bi bi-list-ul"></i></button>
-              <button class="btn btn-sm btn-outline-danger" onclick="pedidoDelete(${r[0]})"><i class="bi bi-trash"></i></button>`
+              <button class="btn btn-sm btn-outline-danger" onclick="pedidoDelete(${r[0]})"><i class="bi bi-trash"></i></button>`,
+        { chave: "pedidos" }
     );
     document.getElementById("content-body").innerHTML = html;
 }

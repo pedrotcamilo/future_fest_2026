@@ -27,8 +27,8 @@
         "app/js/app.js"
     ];
 
-    const CACHE_NAME = "axionphare-assets-v3";
-    const LS_PREFIX = "axionphare-assets-v3:";
+    const CACHE_NAME = "axionphare-assets-v11";
+    const LS_PREFIX = "axionphare-assets-v11:";
 
     const splash = document.getElementById("app-splash");
     const statusEl = document.getElementById("app-splash-status");
@@ -40,9 +40,17 @@
         try {
             caches.delete("axionphare-assets-v1");
             caches.delete("axionphare-assets-v2");
+            caches.delete("axionphare-assets-v3");
+            caches.delete("axionphare-assets-v4");
+            caches.delete("axionphare-assets-v5");
+            caches.delete("axionphare-assets-v6");
+            caches.delete("axionphare-assets-v7");
+            caches.delete("axionphare-assets-v8");
+            caches.delete("axionphare-assets-v9");
+            caches.delete("axionphare-assets-v10");
         } catch (e) { }
     }
-    ["axionphare-assets-v1:", "axionphare-assets-v2:"].forEach(prefix => {
+    ["axionphare-assets-v1:", "axionphare-assets-v2:", "axionphare-assets-v3:", "axionphare-assets-v4:", "axionphare-assets-v5:", "axionphare-assets-v6:", "axionphare-assets-v7:", "axionphare-assets-v8:", "axionphare-assets-v9:", "axionphare-assets-v10:"].forEach(prefix => {
         Object.keys(localStorage)
             .filter(k => k.startsWith(prefix))
             .forEach(k => localStorage.removeItem(k));

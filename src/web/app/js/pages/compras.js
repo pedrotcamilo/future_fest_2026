@@ -27,14 +27,15 @@ async function renderCompras() {
         </select>
         <button class="btn btn-sm btn-outline-secondary" onclick="renderCompras()">Filtrar</button>
     </div>`;
-    html += renderTable(
+    html += tituloTabela("Compras") + renderTable(
         ["ID", "Fornecedor ID", "Data", "Previsao Entrega", "Recebimento", "Status"],
         visiveis.map(c => [c.id, c.fornecedor_id, c.data_compra, c.previsao_entrega || "-", c.data_recebimento || "-",
             `<span class="badge ${statusBadge(c.status)}">${c.status}</span>`]),
         r => `<button class="btn btn-sm btn-outline-info me-1" onclick="compraForm(${r[0]})"><i class="bi bi-pencil"></i></button>
               <button class="btn btn-sm btn-outline-success me-1" onclick="receberCompra(${r[0]})"><i class="bi bi-check-lg"></i></button>
               <button class="btn btn-sm btn-outline-warning me-1" onclick="cancelarCompra(${r[0]})"><i class="bi bi-x-lg"></i></button>
-              <button class="btn btn-sm btn-outline-danger" onclick="compraDelete(${r[0]})"><i class="bi bi-trash"></i></button>`
+              <button class="btn btn-sm btn-outline-danger" onclick="compraDelete(${r[0]})"><i class="bi bi-trash"></i></button>`,
+        { chave: "compras" }
     );
     document.getElementById("content-body").innerHTML = html;
 
@@ -54,8 +55,7 @@ async function renderCompras() {
     criarGraficoLinha("graf-compras-mes", {
         titulo: "Compras por mes",
         categorias: meses,
-        series: [{ name: "Compras", data: meses.map(m => porMes.get(m)), color: "#3b82f6" }],
-        altura: 320
+        series: [{ name: "Compras", data: meses.map(m => porMes.get(m)), color: "#3b82f6" }]
     });
 }
 
