@@ -9,6 +9,10 @@ document.getElementById("senha").addEventListener("keydown", function(e) {
     if (e.key === "Enter") login();
 });
 
+document.getElementById("email").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") login();
+});
+
 document.getElementById("btn-esconder-senha").addEventListener("click", function() {
     const s = document.getElementById("senha");
     s.type = s.type === "password" ? "text" : "password";
