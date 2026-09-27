@@ -34,13 +34,10 @@ async def realizar_login(body: PromptLogin):
 
 @router.post("/logout")
 async def realizar_logout(authorization: str = Header(None)):
-    if authorization and authorization.startswith("Bearer "):
-        token = authorization[7:]
-        tokens = database_auth.obter_tokens()
-        for email, tok in list(tokens.items()):
-            if tok == token:
-                database_auth.remover_token(email)
-                break
+    token = database_auth.token_do_header(authorization)
+    email = database_auth.email_por_token(token) if token else None
+    if email is not None:
+        database_auth.remover_token(email)
 
     return responses.JSONResponse(
         content={"status": "Sessao encerrada"},
@@ -49,20 +46,14 @@ async def realizar_logout(authorization: str = Header(None)):
 
 @router.post("/refresh")
 async def refresh_token(authorization: str = Header(None)):
-    if not authorization or not authorization.startswith("Bearer "):
+    token = database_auth.token_do_header(authorization)
+    if token is None:
         return responses.JSONResponse(
             content={"status": "Token nao informado"},
             status_code=401
         )
 
-    token = authorization[7:]
-    tokens = database_auth.obter_tokens()
-    email = None
-    for em, tk in tokens.items():
-        if tk == token:
-            email = em
-            break
-
+    email = database_auth.email_por_token(token)
     if email is None:
         return responses.JSONResponse(
             content={"status": "Token invalido"},
@@ -77,20 +68,8 @@ async def refresh_token(authorization: str = Header(None)):
 
 @router.get("/me")
 async def usuario_atual(authorization: str = Header(None)):
-    if not authorization or not authorization.startswith("Bearer "):
-        return responses.JSONResponse(
-            content={"status": "Nao autorizado"},
-            status_code=401
-        )
-
-    token = authorization[7:]
-    tokens = database_auth.obter_tokens()
-    email = None
-    for em, tk in tokens.items():
-        if tk == token:
-            email = em
-            break
-
+    token = database_auth.token_do_header(authorization)
+    email = database_auth.email_por_token(token) if token else None
     if email is None:
         return responses.JSONResponse(
             content={"status": "Nao autorizado"},

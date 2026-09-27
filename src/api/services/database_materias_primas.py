@@ -1,5 +1,6 @@
 from sqlalchemy import select, update, delete, func, text
 from sqlalchemy import insert
+from sqlalchemy.orm import Session
 from datetime import date
 
 from api.services.database_manager import get_session
