@@ -90,7 +90,8 @@ window.verRelatorio = async function (tipo) {
     let html = `<button class="btn btn-outline-secondary btn-sm mb-3" onclick="renderRelatorios()"><i class="bi bi-arrow-left"></i> Voltar</button>
     <h5 class="mb-3">Relatorio: ${tipo}</h5>`;
     html += cartaoGrafico({ id: "graf-relatorio", icone: "bi-bar-chart", label: "Relatorio: " + tipo });
-    html += renderTable(headers[tipo] || [], data.map(cols[tipo] || (d => Object.values(d))));
+    html += tituloTabela("Resultados") + renderTable(headers[tipo] || [], data.map(cols[tipo] || (d => Object.values(d))),
+        null, { chave: "rel-" + tipo });
     document.getElementById("content-body").innerHTML = html;
     desenharGraficoRelatorio(tipo, data);
 };
@@ -108,8 +109,7 @@ function desenharGraficoRelatorio(tipo, data) {
         criarGraficoBarra("graf-relatorio", {
             titulo: tipo === "consumo" ? "Total consumido por materia-prima" : "Estoque atual por materia-prima",
             categorias: itens.map(i => i.nome),
-            series: [{ name: tipo === "consumo" ? "Consumido" : "Estoque", data: itens.map(i => i.v), color: "#3b82f6" }],
-            altura: alturaGraficoBarra(Math.max(itens.length, 1))
+            series: [{ name: tipo === "consumo" ? "Consumido" : "Estoque", data: itens.map(i => i.v), color: "#3b82f6" }]
         });
         return;
     }
@@ -125,8 +125,7 @@ function desenharGraficoRelatorio(tipo, data) {
             distribuido: true,
             coresDistribuidas: itens.map(i =>
                 i.dias < 0 ? "#ef4444" : i.dias <= 30 ? "#f97316" : i.dias <= 90 ? "#eab308" : "#22c55e"),
-            min0: false,
-            altura: alturaGraficoBarra(Math.max(itens.length, 1))
+            min0: false
         });
         return;
     }
@@ -145,11 +144,21 @@ function desenharGraficoRelatorio(tipo, data) {
         const itens = registros
             .map(d => ({ nome: d.nome || ("MP " + d.materia_prima_id), v: Number(d.consumo_previsto) || 0 }))
             .sort((a, b) => b.v - a.v);
+        /* Mesmo tratamento do Estoque atual: barras horizontais, Top 12 +
+           "Demais (N)" e valor ao lado de cada barra. */
+        const reduzido = topEOutros(
+            itens.map(i => i.nome),
+            [{ name: "Previsto", color: "#8b5cf6", data: itens.map(i => i.v) }],
+            12
+        );
         criarGraficoBarra("graf-relatorio", {
-            titulo: "Consumo previsto por materia-prima",
-            categorias: itens.map(i => i.nome),
-            series: [{ name: "Previsto", data: itens.map(i => i.v), color: "#8b5cf6" }],
-            altura: alturaGraficoBarra(Math.max(itens.length, 1))
+            titulo: itens.length > 12
+                ? "Consumo previsto por materia-prima - Top 12"
+                : "Consumo previsto por materia-prima",
+            categorias: reduzido.categorias,
+            series: reduzido.series,
+            horizontal: true,
+            mostrarValores: true
         });
     }
 }

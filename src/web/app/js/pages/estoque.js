@@ -74,18 +74,23 @@ function desenharEstoque() {
                 </select>
                 <button class="btn btn-sm btn-outline-secondary" onclick="desenharEstoque()">Filtrar</button>
             </div>
-            <div class="mt-3">${renderTable(
+            <div class="mt-3">${tituloTabela("Estoque")}${renderTable(
                 ["MP ID", "Nome", "Estoque", "Estoque Min", "Status"],
                 linhas.map(e => [e.id, e.nome, e.estoque,
                     e.min !== null ? e.min : "-",
                     e.min === null ? "-" : (e.abaixo
                         ? '<span class="badge bg-danger">Abaixo do minimo</span>'
-                        : '<span class="badge bg-success">OK</span>')])
+                        : '<span class="badge bg-success">OK</span>')]),
+                null,
+                { chave: "est-saldo" }
             )}</div>
         </div>
         <div class="tab-pane fade" id="tab-mov">
-            ${renderTable(["ID", "Lote ID", "Tipo", "Quantidade", "Data", "Observacao"],
-                movs.map(m => [m.id, m.lote_id, m.tipo, m.quantidade, m.data_movimento, m.observacao || "-"]))}
+            ${tituloTabela("Movimentacoes")}${renderTable(["ID", "Lote ID", "Tipo", "Quantidade", "Data", "Observacao"],
+                movs.map(m => [m.id, m.lote_id, m.tipo, m.quantidade, m.data_movimento, m.observacao || "-"]),
+                null,
+                { chave: "est-movs" }
+            )}
         </div>
         <div class="tab-pane fade" id="tab-mov-nova">
             <div class="card-dash p-3" style="max-width:500px">
@@ -102,28 +107,37 @@ function desenharEstoque() {
 
     document.getElementById("content-body").innerHTML = html;
 
-    /* Barra empilhada: vermelho marca as MPs abaixo do estoque minimo.
+    /* Barra empilhada horizontal: vermelho marca as MPs abaixo do estoque
+       minimo. Top 12 + "Demais (N)" para os nomes das categorias nao ficarem
+       espremidos no eixo (20 materias-primas em um card de metade da tela).
        (O donut de movimentacoes usa todos os registros, nao os filtrados.) */
     const ordenados = linhas
         .filter(e => e.estoque != null)
         .slice()
         .sort((a, b) => Number(b.estoque) - Number(a.estoque));
-    criarGraficoBarra("graf-estoque-atual", {
-        titulo: "Estoque por materia-prima (vermelho = abaixo do minimo)",
-        categorias: ordenados.map(e => e.nome),
-        series: [
-            { name: "Estoque normal", data: ordenados.map(e => e.abaixo ? 0 : Number(e.estoque) || 0), color: "#3b82f6" },
-            { name: "Abaixo do minimo", data: ordenados.map(e => e.abaixo ? Number(e.estoque) || 0 : 0), color: "#ef4444" }
+    const reduzido = topEOutros(
+        ordenados.map(e => e.nome),
+        [
+            { name: "Estoque normal", color: "#3b82f6", data: ordenados.map(e => e.abaixo ? 0 : Number(e.estoque) || 0) },
+            { name: "Abaixo do minimo", color: "#ef4444", data: ordenados.map(e => e.abaixo ? Number(e.estoque) || 0 : 0) }
         ],
+        12
+    );
+    criarGraficoBarra("graf-estoque-atual", {
+        titulo: ordenados.length > 12
+            ? "Estoque por materia-prima - Top 12 (vermelho = abaixo do minimo)"
+            : "Estoque por materia-prima (vermelho = abaixo do minimo)",
+        categorias: reduzido.categorias,
+        series: reduzido.series,
         empilhado: true,
-        altura: alturaGraficoBarra(Math.max(ordenados.length, 1))
+        horizontal: true,
+        mostrarValores: true
     });
 
     criarGraficoDonut("graf-estoque-mov", {
         titulo: "Movimentacoes por tipo (soma das quantidades)",
         rotulos: [...somaTipo.keys()],
-        valores: [...somaTipo.values()],
-        altura: 320
+        valores: [...somaTipo.values()]
     });
 }
 

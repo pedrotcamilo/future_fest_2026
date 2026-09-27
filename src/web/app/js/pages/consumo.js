@@ -47,8 +47,11 @@ async function renderConsumo() {
         <select class="form-select form-select-sm" style="max-width:240px" id="filtro-cons-mp">${opcoesMp}</select>
         <button class="btn btn-sm btn-outline-secondary" onclick="renderConsumo()">Filtrar</button>
     </div>`;
-    html += renderTable(["ID", "Materia-Prima", "Data", "Quantidade"],
-        data.map(c => [c.id, nomeDe(c.materia_prima_id), c.data, c.quantidade]));
+    html += tituloTabela("Consumos") + renderTable(["ID", "Materia-Prima", "Data", "Quantidade"],
+        data.map(c => [c.id, nomeDe(c.materia_prima_id), c.data, c.quantidade]),
+        null,
+        { chave: "consumo" }
+    );
     document.getElementById("content-body").innerHTML = html;
 
     /* Linha mensal: multiserie por materia-prima quando "Todas",
@@ -77,7 +80,6 @@ async function renderConsumo() {
     criarGraficoBarra("graf-consumo-total", {
         titulo: "Total consumido no periodo",
         categorias: itens.map(i => i.nome),
-        series: [{ name: "Total", data: itens.map(i => i.total), color: "#3b82f6" }],
-        altura: alturaGraficoBarra(Math.max(itens.length, 1))
+        series: [{ name: "Total", data: itens.map(i => i.total), color: "#3b82f6" }]
     });
 }

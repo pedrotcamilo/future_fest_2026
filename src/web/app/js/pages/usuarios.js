@@ -8,13 +8,14 @@ async function renderUsuarios() {
         html += `<button class="btn btn-primary btn-sm" onclick="usuarioForm(null)"><i class="bi bi-plus-lg"></i> Novo</button>`;
     }
     html += `</div>`;
-    html += renderTable(
+    html += tituloTabela("Usuarios") + renderTable(
         ["ID", "Nome", "Email", "Telefone", "Admin"],
         data.map(u => [u.id, u.nome, u.email, u.telefone || "-", u.admin ? "Sim" : "Nao"]),
         isAdmin
             ? r => `<button class="btn btn-sm btn-outline-info me-1" onclick="usuarioForm(${r[0]})"><i class="bi bi-pencil"></i></button>
                     <button class="btn btn-sm btn-outline-danger" onclick="usuarioDelete(${r[0]})"><i class="bi bi-trash"></i></button>`
-            : null
+            : null,
+        { chave: "usuarios" }
     );
     document.getElementById("content-body").innerHTML = html;
 }

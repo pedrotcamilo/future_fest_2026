@@ -22,7 +22,6 @@ window.atualizarGrafico = function () {
         titulo: "Consumo Mensal de Materias-Primas",
         categorias: dados.categories,
         series: dados.series,
-        altura: alturaGraficoLinha(dados.series.length),
         sufixo: "un",
         msgId: "msg-grafico"
     });
@@ -49,11 +48,12 @@ async function renderMateriasPrimas() {
             `<option value="${m.id}">${m.nome}</option>`
         ).join("");
 
-    const tabela = renderTable(
+    const tabela = tituloTabela("Materias-primas") + renderTable(
         ["ID", "Codigo", "Nome", "Unidade", "Estoque Min", "Estoque Max", "Ativo"],
         data.map(m => [m.id, m.codigo || "-", m.nome, m.unidade || "-", m.estoque_minimo || "-", m.estoque_maximo || "-", m.ativo ? "Sim" : "Nao"]),
         r => `<button class="btn btn-sm btn-outline-info me-1" onclick="mpForm(${r[0]})"><i class="bi bi-pencil"></i></button>
-              <button class="btn btn-sm btn-outline-danger" onclick="mpDelete(${r[0]})"><i class="bi bi-trash"></i></button>`
+              <button class="btn btn-sm btn-outline-danger" onclick="mpDelete(${r[0]})"><i class="bi bi-trash"></i></button>`,
+        { chave: "materias-primas" }
     );
 
     const html = `<div class="d-flex justify-content-between mb-3">

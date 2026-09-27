@@ -40,12 +40,13 @@ async function renderAlertas() {
         </select>
         <button class="btn btn-sm btn-outline-secondary" onclick="renderAlertas()">Filtrar</button>
     </div>`;
-    html += renderTable(
+    html += tituloTabela("Alertas") + renderTable(
         ["ID", "Tipo", "MP ID", "Lote ID", "Descricao", "Prioridade", "Resolvido", "Data"],
         data.map(a => [a.id, a.tipo, a.materia_prima_id || "-", a.lote_id || "-", a.descricao || "-",
             `<span class="badge ${a.prioridade == "ALTA" ? "bg-danger" : a.prioridade == "MEDIA" ? "bg-warning text-dark" : "bg-secondary"}">${a.prioridade}</span>`,
             a.resolvido ? "Sim" : "Nao", a.data_alerta]),
-        r => !r[6] || r[6] === "Nao" ? `<button class="btn btn-sm btn-outline-success" onclick="resolverAlerta(${r[0]})"><i class="bi bi-check-lg"></i> Resolver</button>` : ""
+        r => !r[6] || r[6] === "Nao" ? `<button class="btn btn-sm btn-outline-success" onclick="resolverAlerta(${r[0]})"><i class="bi bi-check-lg"></i> Resolver</button>` : "",
+        { chave: "alertas" }
     );
     document.getElementById("content-body").innerHTML = html;
 
@@ -63,7 +64,6 @@ async function renderAlertas() {
         series: [{ name: "Alertas", data: tipos.valores, color: "#3b82f6" }],
         distribuido: true,
         coresDistribuidas: coresCompletas(Math.max(tipos.rotulos.length, 1)).slice(0, tipos.rotulos.length),
-        altura: 300,
         rotacionar: false
     });
 }

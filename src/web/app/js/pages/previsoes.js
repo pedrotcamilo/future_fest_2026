@@ -56,12 +56,14 @@ async function renderPrevisoes() {
         const m = materias.find(x => x.id === id);
         return m ? m.nome : id;
     };
-    html += renderTable(
+    html += tituloTabela("Previsoes") + renderTable(
         ["ID", "Materia Prima", "Data Previsao", "Periodo", "Consumo Previsto", "Confianca", "Modelo"],
         visiveis.map(p => [p.id, mpNome(p.materia_prima_id), p.data_previsao,
             `${p.periodo_inicio} a ${p.periodo_fim}`,
             p.consumo_previsto, p.confianca ? p.confianca + "%" : "-", p.modelo_utilizado || "-"
-        ])
+        ]),
+        null,
+        { chave: "previsoes" }
     );
     document.getElementById("content-body").innerHTML = html;
 
@@ -82,8 +84,7 @@ async function renderPrevisoes() {
         series: [
             { name: "Previsto", data: itens.map(i => i.previsto), color: "#8b5cf6" },
             { name: "Realizado", data: itens.map(i => i.realizado), color: "#22c55e" }
-        ],
-        altura: alturaGraficoBarra(Math.max(itens.length, 1))
+        ]
     });
 
     /* Previsoes geradas por mes (ordem cronologica). */
@@ -97,7 +98,6 @@ async function renderPrevisoes() {
         titulo: "Previsoes geradas por mes",
         categorias: meses,
         series: [{ name: "Previsoes", data: meses.map(m => porMes.get(m)), color: "#3b82f6" }],
-        altura: 300,
         rotacionar: false
     });
 }

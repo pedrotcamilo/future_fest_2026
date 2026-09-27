@@ -5,12 +5,13 @@ async function renderSugestoes() {
         <p></p>
         <button class="btn btn-warning btn-sm" onclick="gerarSugestoes()"><i class="bi bi-magic"></i> Gerar Sugestoes</button>
     </div>`;
-    html += renderTable(
+    html += tituloTabela("Sugestoes") + renderTable(
         ["ID", "MP ID", "Data", "Qtd Sugerida", "Motivo", "Status"],
         data.map(s => [s.id, s.materia_prima_id, s.data_sugestao, s.quantidade_sugerida, s.motivo || "-",
             `<span class="badge ${statusBadge(s.status)}">${s.status}</span>`]),
         r => `<button class="btn btn-sm btn-outline-success me-1" onclick="aprovarSugestao(${r[0]})"><i class="bi bi-check-lg"></i></button>
-              <button class="btn btn-sm btn-outline-danger" onclick="rejeitarSugestao(${r[0]})"><i class="bi bi-x-lg"></i></button>`
+              <button class="btn btn-sm btn-outline-danger" onclick="rejeitarSugestao(${r[0]})"><i class="bi bi-x-lg"></i></button>`,
+        { chave: "sugestoes" }
     );
     document.getElementById("content-body").innerHTML = html;
 }
