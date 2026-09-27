@@ -36,6 +36,8 @@ async function navigateTo(page) {
 
     document.getElementById("page-title").textContent = PAGE_TITLES[page] || page;
 
+    if (typeof destruirGraficos === "function") destruirGraficos();
+
     document.getElementById("content-body").innerHTML =
         '<div class="text-center py-5"><div class="spinner-border"></div></div>';
 

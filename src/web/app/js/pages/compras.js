@@ -1,13 +1,35 @@
 async function renderCompras() {
+    destruirGraficos();
+    const fstatus = document.getElementById("filtro-compra-status")?.value || "";
     const res = await API.listarCompras();
     const data = res.ok ? res.data : [];
+    /* Opcoes do filtro geradas dos dados reais (nao dependem de enums fixos). */
+    const statuses = [...new Set(data.map(c => c.status).filter(Boolean))].sort();
+    const visiveis = fstatus ? data.filter(c => c.status === fstatus) : data;
+
     let html = `<div class="d-flex justify-content-between mb-3">
         <p></p>
         <button class="btn btn-primary btn-sm" onclick="compraForm(null)"><i class="bi bi-plus-lg"></i> Nova</button>
+    </div>
+    <div class="row g-3 mb-4">
+        <div class="col-lg-6">${cartaoGrafico({
+            id: "graf-compras-status", icone: "bi-cart-check", label: "Compras por status",
+            badge: `<span class="badge bg-body-secondary text-body-secondary small">${visiveis.length} compras</span>`
+        })}</div>
+        <div class="col-lg-6">${cartaoGrafico({
+            id: "graf-compras-mes", label: "Compras por mes", badge: ""
+        })}</div>
+    </div>
+    <div class="filters-bar">
+        <select class="form-select form-select-sm" style="max-width:200px" id="filtro-compra-status">
+            <option value="">Todos os status</option>
+            ${statuses.map(s => `<option value="${s}" ${fstatus == s ? "selected" : ""}>${s}</option>`).join("")}
+        </select>
+        <button class="btn btn-sm btn-outline-secondary" onclick="renderCompras()">Filtrar</button>
     </div>`;
     html += renderTable(
         ["ID", "Fornecedor ID", "Data", "Previsao Entrega", "Recebimento", "Status"],
-        data.map(c => [c.id, c.fornecedor_id, c.data_compra, c.previsao_entrega || "-", c.data_recebimento || "-",
+        visiveis.map(c => [c.id, c.fornecedor_id, c.data_compra, c.previsao_entrega || "-", c.data_recebimento || "-",
             `<span class="badge ${statusBadge(c.status)}">${c.status}</span>`]),
         r => `<button class="btn btn-sm btn-outline-info me-1" onclick="compraForm(${r[0]})"><i class="bi bi-pencil"></i></button>
               <button class="btn btn-sm btn-outline-success me-1" onclick="receberCompra(${r[0]})"><i class="bi bi-check-lg"></i></button>
@@ -15,6 +37,26 @@ async function renderCompras() {
               <button class="btn btn-sm btn-outline-danger" onclick="compraDelete(${r[0]})"><i class="bi bi-trash"></i></button>`
     );
     document.getElementById("content-body").innerHTML = html;
+
+    const agrupado = agruparPorCampo(visiveis, "status");
+    criarGraficoDonut("graf-compras-status", {
+        titulo: "Compras por status",
+        rotulos: agrupado.rotulos,
+        valores: agrupado.valores
+    });
+
+    const porMes = new Map();
+    visiveis.forEach(c => {
+        const m = String(c.data_compra || "").slice(0, 7);
+        if (/^\d{4}-\d{2}$/.test(m)) porMes.set(m, (porMes.get(m) || 0) + 1);
+    });
+    const meses = [...porMes.keys()].sort();
+    criarGraficoLinha("graf-compras-mes", {
+        titulo: "Compras por mes",
+        categorias: meses,
+        series: [{ name: "Compras", data: meses.map(m => porMes.get(m)), color: "#3b82f6" }],
+        altura: 320
+    });
 }
 
 window.compraForm = async function (id) {

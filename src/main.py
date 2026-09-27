@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from api.routes import (
     usuarios, diagnosticos, auth,
@@ -7,9 +9,17 @@ from api.routes import (
     sugestoes, alertas, dashboard, relatorios,
     graficos
 )
+from api.services import views
 from fastapi.staticfiles import StaticFiles
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    views.criar_views()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(diagnosticos.router, prefix="/diagnosticos", tags=["Diagnostico"])
 app.include_router(auth.router, prefix="/auth", tags=["Autenticacao"])
