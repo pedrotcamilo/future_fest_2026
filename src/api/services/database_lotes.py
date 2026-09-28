@@ -32,9 +32,9 @@ def listar_lotes(
                 "numero_lote": c.numero_lote,
                 "quantidade_inicial": c.quantidade_inicial,
                 "quantidade_atual": c.quantidade_atual,
-                "data_fabricacao": str(c.data_fabricacao),
-                "data_validade": str(c.data_validade),
-                "data_recebimento": str(c.data_recebimento),
+                "data_fabricacao": str(c.data_fabricacao) if c.data_fabricacao else None,
+                "data_validade": str(c.data_validade) if c.data_validade else None,
+                "data_recebimento": str(c.data_recebimento) if c.data_recebimento else None,
                 "valor_unitario": c.valor_unitario
             }
             for c in lotes
@@ -56,9 +56,9 @@ def listar_lote_id(id: int):
             "numero_lote": lote.numero_lote,
             "quantidade_inicial": lote.quantidade_inicial,
             "quantidade_atual": lote.quantidade_atual,
-            "data_fabricacao": str(lote.data_fabricacao),
-            "data_validade": str(lote.data_validade),
-            "data_recebimento": str(lote.data_recebimento),
+            "data_fabricacao": str(lote.data_fabricacao) if lote.data_fabricacao else None,
+            "data_validade": str(lote.data_validade) if lote.data_validade else None,
+            "data_recebimento": str(lote.data_recebimento) if lote.data_recebimento else None,
             "valor_unitario": lote.valor_unitario
         }
 
@@ -81,7 +81,7 @@ def criar_lote(
                 fornecedor_id=fornecedor_id,
                 numero_lote=numero_lote,
                 quantidade_inicial=quantidade_inicial,
-                quantidade_atual=quantidade_atual or quantidade_inicial,
+                quantidade_atual=quantidade_inicial if quantidade_atual is None else quantidade_atual,
                 data_fabricacao=data_fabricacao,
                 data_validade=data_validade,
                 data_recebimento=data_recebimento,

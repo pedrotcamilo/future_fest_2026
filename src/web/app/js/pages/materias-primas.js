@@ -68,7 +68,7 @@ async function renderMateriasPrimas() {
         badge: `<span class="badge bg-body-secondary text-body-secondary small" id="chart-count">${data.length} materiais</span>`
     })}
     <div class="filters-bar">
-        <input class="form-control form-control-sm" placeholder="Nome" id="filtro-mp-nome" value="${fnome || ""}">
+        <input class="form-control form-control-sm" placeholder="Nome" id="filtro-mp-nome" value="${escaparHtml(fnome)}">
         <select class="form-select form-select-sm" id="filtro-mp-baixo"><option value="">Todos</option>
             <option value="true" ${fbaixo == "true" ? "selected" : ""}>Estoque Baixo</option></select>
         <select class="form-select form-select-sm" id="filtro-mp-venc"><option value="">Todos</option>

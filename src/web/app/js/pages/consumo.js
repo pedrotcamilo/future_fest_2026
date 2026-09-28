@@ -42,8 +42,8 @@ async function renderConsumo() {
         })}</div>
     </div>
     <div class="filters-bar">
-        <input class="form-control form-control-sm" type="date" id="filtro-cons-inicio" value="${finicio||""}">
-        <input class="form-control form-control-sm" type="date" id="filtro-cons-fim" value="${ffim||""}">
+        <input class="form-control form-control-sm" type="date" id="filtro-cons-inicio" value="${escaparHtml(finicio)}">
+        <input class="form-control form-control-sm" type="date" id="filtro-cons-fim" value="${escaparHtml(ffim)}">
         <select class="form-select form-select-sm" style="max-width:240px" id="filtro-cons-mp">${opcoesMp}</select>
         <button class="btn btn-sm btn-outline-secondary" onclick="renderConsumo()">Filtrar</button>
     </div>`;

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, responses
 from pydantic import BaseModel
-from datetime import date, datetime
+from datetime import date
 from api.services import database_pedidos, respostas_padrao
 
 router = APIRouter()
