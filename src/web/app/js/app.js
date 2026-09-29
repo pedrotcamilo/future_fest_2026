@@ -70,12 +70,16 @@ async function initApp() {
     if (!API.getToken()) { window.location.href = "/web/login"; return; }
 
     const me = await API.me();
-    if (me.ok) {
-        currentUser = me.data;
-        const greeting = document.getElementById("header-greeting");
-        if (greeting) greeting.textContent = "Olá, " + currentUser.nome;
+    if (!me.ok) {
+        /* Token expirado (ex.: servidor reiniciado): volta para o login. */
+        localStorage.removeItem("token");
+        window.location.href = "/web/login";
+        return;
     }
-    if (me.ok && !currentUser.admin) {
+    currentUser = me.data;
+    const greeting = document.getElementById("header-greeting");
+    if (greeting) greeting.textContent = "Olá, " + currentUser.nome;
+    if (!currentUser.admin) {
         const navUsuarios = document.getElementById("nav-usuarios");
         if (navUsuarios) navUsuarios.style.display = "none";
     }

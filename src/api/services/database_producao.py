@@ -3,7 +3,7 @@ from sqlalchemy import insert
 from datetime import datetime
 
 from api.services.database_manager import get_session
-from api.services.models import OrdensProducao, ConsumoProducao, Lotes
+from api.services.models import OrdensProducao, ConsumoProducao, Lotes, MovimentacoesEstoque
 
 def listar_ordens():
     with get_session() as session:
@@ -148,14 +148,21 @@ def registrar_consumo(
     lote_id: int,
     quantidade: float
 ):
+    if quantidade is None or quantidade <= 0:
+        return "Quantidade deve ser maior que zero"
+
     with get_session() as session:
+        stmt_ordem = select(OrdensProducao).where(OrdensProducao.id == ordem_producao_id)
+        if session.execute(stmt_ordem).scalars().first() is None:
+            return "Ordem nao encontrada"
+
         stmt_lote = select(Lotes).where(Lotes.id == lote_id)
         lote = session.execute(stmt_lote).scalars().first()
 
         if lote is None:
             return "Lote nao encontrado"
 
-        if lote.quantidade_atual < quantidade:
+        if (lote.quantidade_atual or 0) < quantidade:
             return "Saldo insuficiente no lote"
 
         stmt_consumo = (
@@ -175,21 +182,14 @@ def registrar_consumo(
         )
         session.execute(stmt_upd_lote)
 
-        stmt_mov = (
-            "INSERT INTO movimentacoes_estoque "
-            "(lote_id, tipo, quantidade, data_movimento, observacao) "
-            "VALUES (:lote_id, 'SAIDA', :qtd, NOW(), :obs)"
+        stmt_mov = insert(MovimentacoesEstoque).values(
+            lote_id=lote_id,
+            tipo="SAIDA",
+            quantidade=quantidade,
+            data_movimento=datetime.now(),
+            observacao=f"Consumo na ordem de producao #{ordem_producao_id}"
         )
-        session.execute(
-            stmt_mov,
-            {
-                "lote_id": lote_id,
-                "qtd": quantidade,
-                "obs": f"Consumo na ordem de producao #{ordem_producao_id}"
-            }
-        )
+        session.execute(stmt_mov)
 
         session.commit()
         return "Ok"
-
-

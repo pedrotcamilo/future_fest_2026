@@ -1,7 +1,11 @@
 from sqlalchemy import select, func
 
+from api.services.database_estoque import consultar_estoque
 from api.services.database_manager import get_session
-from api.services.models import MateriasPrimas, Lotes, Compras, OrdensProducao, Alertas, PrevisoesConsumo, HistoricoConsumo, MovimentacoesEstoque
+from api.services.models import MateriasPrimas, Compras, OrdensProducao, Alertas, PrevisoesConsumo
+
+# O seed usa "EM_ANDAMENTO" e o formulario/iniciar_ordem usam "EM_PRODUCAO".
+STATUS_EM_PRODUCAO = ["EM_PRODUCAO", "EM_ANDAMENTO"]
 
 def resumo_geral():
     with get_session() as session:
@@ -13,11 +17,9 @@ def resumo_geral():
             select(func.count(Compras.id)).where(Compras.status == "PENDENTE")
         ) or 0
 
-        # O seed usa "EM_ANDAMENTO" (e o formulario usa "EM_PRODUCAO");
-        # considera as duas para o KPI refletir as ordens reais em andamento.
         ordens_em_producao = session.scalar(
             select(func.count(OrdensProducao.id)).where(
-                OrdensProducao.status.in_(["EM_PRODUCAO", "EM_ANDAMENTO"])
+                OrdensProducao.status.in_(STATUS_EM_PRODUCAO)
             )
         ) or 0
 
@@ -33,28 +35,7 @@ def resumo_geral():
         }
 
 def dashboard_estoque():
-    with get_session() as session:
-        r_mp = session.scalars(select(MateriasPrimas)).all()
-        materias = {}
-        for row in r_mp:
-            materias[row.id] = row.nome
-
-        r_lotes = session.scalars(select(Lotes)).all()
-        estoque_map = {}
-        for row in r_lotes:
-            mp_id = row.materia_prima_id
-            qtd = float(row.quantidade_atual) if row.quantidade_atual else 0
-            estoque_map[mp_id] = estoque_map.get(mp_id, 0) + qtd
-
-        estoque = []
-        for mp_id, nome in materias.items():
-            estoque.append({
-                "materia_prima_id": mp_id,
-                "nome": nome,
-                "estoque": estoque_map.get(mp_id, 0)
-            })
-
-        return estoque
+    return consultar_estoque()
 
 def dashboard_compras():
     with get_session() as session:
@@ -86,7 +67,7 @@ def dashboard_producao():
 
         em_producao = session.scalar(
             select(func.count(OrdensProducao.id)).where(
-                OrdensProducao.status == "EM_PRODUCAO"
+                OrdensProducao.status.in_(STATUS_EM_PRODUCAO)
             )
         ) or 0
 

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AxionPhare Desktop</title>
+
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body data-bs-theme="dark">
+
+
+    <img src="../assets/logo_app.png" id="logo-app" class="mt-5 ms-5">
+
+    <div class="d-flex align-items-center mx-5 px-2 mt-5">
+        <p role="status">Conectando ao servidor...</p>
+        <div class="spinner-border ms-auto" aria-hidden="true"></div>
+    </div>
+
+
+    <div class="fixed-bottom m-5 align-items-center d-flex">
+        <button class="btn" id="config-conexao">Configurações</button>
+    </div>
+
+    <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="renderer.js" type="module"></script>
+</body>
+</html>

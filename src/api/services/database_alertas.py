@@ -1,5 +1,4 @@
 from sqlalchemy import select, update
-from sqlalchemy import insert
 
 from api.services.database_manager import get_session
 from api.services.models import Alertas
@@ -33,7 +32,7 @@ def listar_alertas(
                 "descricao": a.descricao,
                 "prioridade": a.prioridade,
                 "resolvido": a.resolvido,
-                "data_alerta": str(a.data_alerta)
+                "data_alerta": str(a.data_alerta) if a.data_alerta else None
             }
             for a in alertas
         ]

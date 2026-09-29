@@ -1,4 +1,4 @@
-from sqlalchemy import select, func
+from sqlalchemy import select, update, insert, func
 from datetime import datetime
 
 from api.services.database_manager import get_session
@@ -51,53 +51,40 @@ def registrar_movimentacao(
     quantidade: float,
     observacao: str = None
 ):
-    from sqlalchemy import update
+    if tipo not in ("ENTRADA", "SAIDA"):
+        return "Tipo de movimentacao invalido"
+    if quantidade is None or quantidade <= 0:
+        return "Quantidade deve ser maior que zero"
 
     with get_session() as session:
-        dados = {
-            "lote_id": lote_id,
-            "tipo": tipo,
-            "quantidade": quantidade,
-            "data_movimento": datetime.now(),
-            "observacao": observacao
-        }
+        stmt_lote = select(Lotes).where(Lotes.id == lote_id)
+        lote = session.execute(stmt_lote).scalars().first()
+        if lote is None:
+            return "Lote nao encontrado"
 
         if tipo == "SAIDA":
-            stmt_lote = select(Lotes).where(Lotes.id == lote_id)
-            lote = session.execute(stmt_lote).scalars().first()
-            if lote is None:
-                return "Lote nao encontrado"
-            if lote.quantidade_atual < quantidade:
+            if (lote.quantidade_atual or 0) < quantidade:
                 return "Saldo insuficiente no lote"
+            novo_saldo = Lotes.quantidade_atual - quantidade
+        else:
+            # COALESCE: lote cadastrado sem saldo (NULL) + entrada seguiria NULL.
+            novo_saldo = func.coalesce(Lotes.quantidade_atual, 0) + quantidade
 
-            stmt_upd = (
-                update(Lotes)
-                .where(Lotes.id == lote_id)
-                .values(
-                    quantidade_atual=Lotes.quantidade_atual - quantidade
-                )
-            )
-            session.execute(stmt_upd)
-
-        elif tipo == "ENTRADA":
-            stmt_upd = (
-                update(Lotes)
-                .where(Lotes.id == lote_id)
-                .values(
-                    quantidade_atual=Lotes.quantidade_atual + quantidade
-                )
-            )
-            session.execute(stmt_upd)
-
-        stmt_insert = (
-            "INSERT INTO movimentacoes_estoque "
-            "(lote_id, tipo, quantidade, data_movimento, observacao) "
-            "VALUES (:lote_id, :tipo, :quantidade, :data_movimento, :observacao)"
+        stmt_upd = (
+            update(Lotes)
+            .where(Lotes.id == lote_id)
+            .values(quantidade_atual=novo_saldo)
         )
-        session.execute(
-            stmt_insert,
-            dados
+        session.execute(stmt_upd)
+
+        stmt_mov = insert(MovimentacoesEstoque).values(
+            lote_id=lote_id,
+            tipo=tipo,
+            quantidade=quantidade,
+            data_movimento=datetime.now(),
+            observacao=observacao
         )
+        session.execute(stmt_mov)
 
         session.commit()
         return "Ok"
@@ -116,7 +103,7 @@ def listar_movimentacoes():
                 "lote_id": m.lote_id,
                 "tipo": m.tipo,
                 "quantidade": m.quantidade,
-                "data_movimento": str(m.data_movimento),
+                "data_movimento": str(m.data_movimento) if m.data_movimento else None,
                 "observacao": m.observacao
             }
             for m in movs

@@ -11,7 +11,7 @@ async function renderFornecedores() {
         <button class="btn btn-primary btn-sm" onclick="fornForm(null)"><i class="bi bi-plus-lg"></i> Novo</button>
     </div>
     <div class="filters-bar">
-        <input class="form-control form-control-sm" placeholder="Nome" id="filtro-nome" value="${fnome||""}">
+        <input class="form-control form-control-sm" placeholder="Nome" id="filtro-nome" value="${escaparHtml(fnome)}">
         <select class="form-select form-select-sm" id="filtro-ativo">
             <option value="">Todos</option><option value="true" ${fativo=="true"?"selected":""}>Ativo</option>
             <option value="false" ${fativo=="false"?"selected":""}>Inativo</option>

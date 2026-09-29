@@ -3,7 +3,7 @@ from sqlalchemy import select, text
 from uuid import uuid4
 from pwdlib import PasswordHash
 
-from api.services.database_manager import get_session, get_primary_engine, get_supabase_engine
+from api.services.database_manager import get_session
 from api.services.models import Usuarios
 
 hash_senha = PasswordHash.recommended()
@@ -48,20 +48,24 @@ def buscar_usuario_por_email(email: str):
             "admin": usuario.admin
         }
 
-def obter_tokens():
-    return tokens_dict
-
 def remover_token(email: str):
     if email in tokens_dict:
         del tokens_dict[email]
 
-def buscar_usuario_por_token(token: str):
-    tokens = obter_tokens()
-    email = None
-    for em, tk in tokens.items():
+def email_por_token(token: str):
+    for email, tk in list(tokens_dict.items()):
         if tk == token:
-            email = em
-            break
+            return email
+    return None
+
+def token_do_header(authorization: str | None):
+    """Extrai o token de um header "Authorization: Bearer <token>"."""
+    if not authorization or not authorization.startswith("Bearer "):
+        return None
+    return authorization[7:]
+
+def buscar_usuario_por_token(token: str):
+    email = email_por_token(token)
     if email is None:
         return None
     return buscar_usuario_por_email(email)

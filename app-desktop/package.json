@@ -1,0 +1,73 @@
+{
+  "name": "axionphare-desktop",
+  "productName": "AxionPhare Desktop",
+  "version": "1.0.0",
+  "description": "Cliente desktop AxionPhare",
+  "homepage": "https://github.com/pedrotcamilo/future_fest_2026",
+  "license": "ISC",
+  "author": {
+    "name": "Pedro",
+    "email": "mail@ptc0.cloudns.nz"
+  },
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:linux": "electron-builder --linux",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac"
+  },
+  "build": {
+    "appId": "com.axionphare.desktop",
+  "productName": "AxionPhare Desktop",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "index.js",
+      "preload.js",
+      "ui/**/*",
+      "assets/**/*"
+    ],
+    "asar": true,
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Utility",
+      "icon": "assets/logo_desktop.png",
+      "maintainer": "Pedro <mail@ptc0.cloudns.nz>",
+      "syncDesktopName": true
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "assets/logo_desktop.png"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.productivity",
+      "icon": "assets/logo_desktop.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "AxionPhare Desktop"
+    }
+  },
+  "devDependencies": {
+    "electron": "^44.4.5",
+    "electron-builder": "^26.0.12"
+  },
+  "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "bootstrap": "^5.3.8",
+    "electron-store": "^11.0.2"
+  }
+}

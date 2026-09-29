@@ -1,5 +1,5 @@
 from sqlalchemy import select
-from datetime import date
+from datetime import date, timedelta
 
 from api.services.database_manager import get_session
 from api.services.models import HistoricoConsumo, MateriasPrimas, Lotes, Compras, OrdensProducao, PrevisoesConsumo
@@ -33,7 +33,7 @@ def relatorio_consumo(inicio: date = None, fim: date = None):
                     "unidade": mp.unidade,
                     "total_consumido": total
                 })
-        rows.sort(key=lambda r: r["nome"])
+        rows.sort(key=lambda r: r["nome"] or "")
         return rows
 
 def relatorio_estoque():
@@ -47,7 +47,7 @@ def relatorio_estoque():
         estoque_por_mp = {}
         for lote in lotes:
             estoque_por_mp.setdefault(lote.materia_prima_id, 0.0)
-            estoque_por_mp[lote.materia_prima_id] += float(lote.quantidade_atual)
+            estoque_por_mp[lote.materia_prima_id] += float(lote.quantidade_atual or 0)
 
         return [
             {
@@ -56,7 +56,7 @@ def relatorio_estoque():
                 "unidade": mp.unidade,
                 "estoque_atual": estoque_por_mp.get(mp.id, 0.0)
             }
-            for mp in sorted(materias, key=lambda x: x.nome)
+            for mp in sorted(materias, key=lambda x: x.nome or "")
         ]
 
 def relatorio_vencimentos():
@@ -76,10 +76,10 @@ def relatorio_vencimentos():
                 rows.append({
                     "nome": mp.nome,
                     "numero_lote": lote.numero_lote,
-                    "data_validade": str(lote.data_validade),
+                    "data_validade": str(lote.data_validade) if lote.data_validade else None,
                     "quantidade_atual": float(lote.quantidade_atual)
                 })
-        rows.sort(key=lambda r: r["data_validade"])
+        rows.sort(key=lambda r: r["data_validade"] or "9999-12-31")
         return rows
 
 def relatorio_compras(inicio: date = None, fim: date = None):
@@ -100,7 +100,7 @@ def relatorio_compras(inicio: date = None, fim: date = None):
             {
                 "id": c.id,
                 "fornecedor_id": c.fornecedor_id,
-                "data_compra": str(c.data_compra),
+                "data_compra": str(c.data_compra) if c.data_compra else None,
                 "status": c.status
             }
             for c in compras
@@ -113,7 +113,7 @@ def relatorio_producao(inicio: date = None, fim: date = None):
         if inicio is not None:
             stmt = stmt.where(OrdensProducao.data_inicio >= inicio)
         if fim is not None:
-            stmt = stmt.where(OrdensProducao.data_inicio <= fim)
+            stmt = stmt.where(OrdensProducao.data_inicio < fim + timedelta(days=1))
 
         stmt = stmt.order_by(OrdensProducao.data_inicio.desc())
 
@@ -145,10 +145,10 @@ def relatorio_previsoes():
             rows.append({
                 "materia_prima_id": p.materia_prima_id,
                 "nome": mp.nome if mp else "",
-                "periodo_inicio": str(p.periodo_inicio),
-                "periodo_fim": str(p.periodo_fim),
+                "periodo_inicio": str(p.periodo_inicio) if p.periodo_inicio else None,
+                "periodo_fim": str(p.periodo_fim) if p.periodo_fim else None,
                 "consumo_previsto": float(p.consumo_previsto),
-                "confianca": float(p.confianca) if p.confianca else None
+                "confianca": float(p.confianca) if p.confianca is not None else None
             })
-        rows.sort(key=lambda r: r["periodo_inicio"], reverse=True)
+        rows.sort(key=lambda r: r["periodo_inicio"] or "", reverse=True)
         return rows

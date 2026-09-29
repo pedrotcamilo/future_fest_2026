@@ -76,7 +76,7 @@ function desenharEstoque() {
     <div class="tab-content">
         <div class="tab-pane fade show active" id="tab-estq">
             <div class="filters-bar">
-                <input class="form-control form-control-sm" placeholder="Nome" id="filtro-est-nome" value="${fnome}">
+                <input class="form-control form-control-sm" placeholder="Nome" id="filtro-est-nome" value="${escaparHtml(fnome)}">
                 <select class="form-select form-select-sm" id="filtro-est-baixo">
                     <option value="">Todos</option>
                     <option value="true" ${fbaixo === "true" ? "selected" : ""}>Abaixo do minimo</option>
@@ -158,6 +158,6 @@ function desenharEstoque() {
 window.registrarMov = async function () {
     const d = { loteId: Number(val("f-lote")), tipo: val("f-tipo"), quantidade: Number(val("f-qtd")), observacao: val("f-obs") };
     const res = await API.registrarMovimentacao(d);
-    document.getElementById("mov-msg").textContent = res.ok ? "Movimentacao registrada!" : "Erro: " + res.data;
+    document.getElementById("mov-msg").textContent = res.ok ? "Movimentacao registrada!" : "Erro: " + API.mensagemErro(res.data);
     if (res.ok) setTimeout(renderEstoque, 1000);
 };

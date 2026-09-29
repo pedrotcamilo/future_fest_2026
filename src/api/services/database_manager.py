@@ -1,10 +1,8 @@
-import json
 import logging
 import re
 import threading
 import time
 from contextlib import contextmanager
-from datetime import datetime, date
 from os import getenv
 
 from sqlalchemy import create_engine, text
@@ -66,17 +64,9 @@ class _AttrDict(dict):
 class _SupabaseResult:
     def __init__(self, rows):
         self._rows = [_AttrDict(r) if isinstance(r, dict) else r for r in (rows or [])]
-        self._idx = 0
 
     def __iter__(self):
         return iter(self._rows)
-
-    def __next__(self):
-        if self._idx >= len(self._rows):
-            raise StopNext
-        row = self._rows[self._idx]
-        self._idx += 1
-        return row
 
     def scalars(self):
         return _ScalarResult(self._rows)
@@ -89,6 +79,16 @@ class _SupabaseResult:
             vals = list(row.values())
             return vals[0] if vals else None
         return row
+
+    def scalar_one(self):
+        """Espelha Result.scalar_one(): usado nos INSERT ... RETURNING id
+        (criar compra/pedido/formula/ordem) durante o failover."""
+        if len(self._rows) != 1:
+            from sqlalchemy.exc import NoResultFound, MultipleResultsFound
+            if not self._rows:
+                raise NoResultFound("Nenhuma linha retornada")
+            raise MultipleResultsFound(f"{len(self._rows)} linhas retornadas")
+        return self.scalar()
 
     def scalar_one_or_none(self):
         """Espelha Session.scalar_one_or_none() do SQLAlchemy.
@@ -127,16 +127,6 @@ class _ScalarResult:
         return self._rows[0] if self._rows else None
 
 
-class StopNext(Exception):
-    pass
-
-
-def _parse_value(v):
-    if isinstance(v, (datetime, date)):
-        return v.isoformat()
-    return v
-
-
 def _cast_value(val: str):
     if val.upper() == "TRUE":
         return True
@@ -158,7 +148,6 @@ class SupabaseSession:
         self._client = client
 
     def execute(self, stmt):
-        from sqlalchemy import select, insert, update, delete
         from sqlalchemy.sql.elements import TextClause
         from sqlalchemy.sql.dml import Delete, Insert, Update
         from sqlalchemy.sql.selectable import Select
@@ -524,48 +513,49 @@ def _ensure_health_thread():
 
 # ── Context manager principal ───────────────────────────────────────────
 
+def _abrir_sessao_primaria():
+    """Abre uma sessao no primario ja testada; None se ele estiver fora do ar."""
+    session = Session(_primary_engine)
+    try:
+        session.execute(text("SELECT 1"))
+        return session
+    except Exception:
+        session.close()
+        return None
+
+
 @contextmanager
 def get_session():
     global _last_primary_check
     _ensure_health_thread()
 
+    # A escolha do banco acontece ANTES do yield: um erro dentro do "with"
+    # de quem chamou (ex.: violacao de FK) precisa subir intacto. Antes o
+    # yield ficava dentro do try/except, entao qualquer erro de negocio era
+    # tratado como queda do primario (failover falso) e o contextmanager
+    # ainda quebrava com "generator didn't stop after throw()".
+    session = None
     now = time.time()
-    should_try_primary = (
-        get_active_db() == "primary"
-        or (now - _last_primary_check) > PRIMARY_CHECK_COOLDOWN
-    )
-
-    if should_try_primary:
-        try:
-            with Session(_primary_engine) as session:
-                session.execute(text("SELECT 1"))
-                _last_primary_check = now
-                yield session
-                return
-        except Exception:
-            _last_primary_check = now
+    if get_active_db() == "primary" or (now - _last_primary_check) > PRIMARY_CHECK_COOLDOWN:
+        _last_primary_check = now
+        session = _abrir_sessao_primaria()
+        if session is not None:
+            _set_active_db("primary")
+        elif _supabase is not None:
             _set_active_db("supabase")
 
-    if _supabase is None:
-        logger.warning("Supabase indisponivel, tentando banco primario")
-        try:
-            with Session(_primary_engine) as session:
-                yield session
-                return
-        except Exception as e:
-            logger.error("Banco primario e Supabase indisponiveis: %s", e)
-            raise
+    if session is None:
+        if _supabase is not None:
+            session = SupabaseSession(_supabase)
+        else:
+            # Sem Supabase nao ha para onde ir: tenta o primario e deixa o
+            # erro real de conexao aparecer.
+            logger.warning("Supabase indisponivel, tentando banco primario")
+            session = Session(_primary_engine)
 
-    session = SupabaseSession(_supabase)
-    try:
+    with session:
         yield session
-    finally:
-        session.close()
 
 
 def get_primary_engine():
     return _primary_engine
-
-
-def get_supabase_engine():
-    return _supabase

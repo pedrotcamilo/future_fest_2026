@@ -139,7 +139,7 @@
 /* ── System ── */
 .system-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: clamp(0.8rem, 2vh, 1.8rem);
 }
 
@@ -191,6 +191,33 @@
   background: linear-gradient(90deg, rgba(255,255,255,0.6), #fff);
   border-radius: 3px;
   transition: width 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.system-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: clamp(0.8rem, 2.5vw, 2.5rem);
+  margin-top: clamp(1rem, 2.5vh, 2rem);
+  padding: clamp(0.6rem, 1.2vh, 1rem) clamp(1rem, 2vw, 2rem);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: clamp(8px, 1vw, 14px);
+}
+
+.system-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(0.4rem, 0.8vw, 0.8rem);
+  color: #ddd;
+  font-size: clamp(0.75rem, 1vw, 1.05rem);
+  font-weight: 300;
+}
+
+.system-meta i {
+  color: #fff;
+  font-size: clamp(0.9rem, 1.2vw, 1.2rem);
 }
 
 /* ── Database ── */
@@ -250,11 +277,116 @@
   font-weight: 300;
 }
 
+/* ── Supabase ── */
+.supabase-layout {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: clamp(1rem, 2.5vw, 3rem);
+  align-items: start;
+}
+
+.supabase-info .about-highlight {
+  font-size: clamp(0.95rem, 1.6vw, 1.4rem);
+}
+
+.supabase-info .about-list li {
+  font-size: clamp(0.8rem, 1.1vw, 1.15rem);
+}
+
+.supabase-info .about-list li i {
+  font-size: inherit;
+}
+
+.supabase-info code {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 0.9em;
+  color: #fff;
+}
+
+.supabase-error {
+  margin-top: clamp(0.6rem, 1.5vh, 1.2rem);
+  color: #ffb3b3;
+  font-size: clamp(0.72rem, 0.95vw, 1rem);
+  font-weight: 300;
+  word-break: break-word;
+}
+
+.supabase-panel {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.8rem, 2vh, 1.6rem);
+}
+
+.supabase-status {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.6rem, 1vw, 1rem);
+  padding: clamp(0.7rem, 1.5vh, 1.2rem) clamp(1rem, 1.8vw, 1.8rem);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: clamp(8px, 1vw, 14px);
+}
+
+.status-dot {
+  width: clamp(10px, 1vw, 14px);
+  height: clamp(10px, 1vw, 14px);
+  border-radius: 50%;
+  background: #888;
+  flex-shrink: 0;
+}
+
+.supabase-status.is-ok .status-dot { background: #3ddc84; box-shadow: 0 0 10px rgba(61, 220, 132, 0.7); }
+.supabase-status.is-down .status-dot { background: #ff5f56; box-shadow: 0 0 10px rgba(255, 95, 86, 0.7); }
+.supabase-status.is-warn .status-dot { background: #ffc857; box-shadow: 0 0 10px rgba(255, 200, 87, 0.7); }
+
+.status-label {
+  color: #fff;
+  font-size: clamp(0.9rem, 1.3vw, 1.3rem);
+  font-weight: 400;
+}
+
+.status-endpoint {
+  margin-left: auto;
+  color: #999;
+  font-size: clamp(0.7rem, 0.9vw, 0.95rem);
+  font-weight: 300;
+}
+
+.supabase-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(0.6rem, 1.5vh, 1.2rem);
+}
+
+.supabase-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: clamp(8px, 1vw, 14px);
+  padding: clamp(0.7rem, 1.5vh, 1.3rem) clamp(0.6rem, 1vw, 1.1rem);
+  text-align: center;
+}
+
+.supabase-value {
+  font-size: clamp(1rem, 1.7vw, 1.7rem);
+  font-weight: 300;
+  color: #fff;
+  word-break: break-word;
+}
+
+.supabase-label {
+  font-size: clamp(0.62rem, 0.8vw, 0.9rem);
+  color: #ccc;
+  margin-top: 0.3vh;
+  font-weight: 300;
+}
+
 /* ── About ── */
 .about-content {
   display: flex;
   flex-direction: column;
-  gap: clamp(1rem, 2.5vh, 2rem);
+  gap: clamp(0.8rem, 2vh, 1.6rem);
 }
 
 .about-highlight {
@@ -287,6 +419,75 @@
   font-size: clamp(0.9rem, 1.3vw, 1.3rem);
 }
 
+.about-columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(0.8rem, 1.8vw, 1.8rem);
+}
+
+.about-col {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: clamp(8px, 1vw, 14px);
+  padding: clamp(0.8rem, 1.8vh, 1.5rem) clamp(0.8rem, 1.4vw, 1.4rem);
+  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.about-col h3 {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.4rem, 0.8vw, 0.8rem);
+  font-size: clamp(0.85rem, 1.2vw, 1.2rem);
+  font-weight: 400;
+  color: #fff;
+  margin-bottom: clamp(0.5rem, 1.2vh, 1rem);
+}
+
+.about-col h3 i {
+  font-size: clamp(0.95rem, 1.4vw, 1.4rem);
+}
+
+.about-col .about-list {
+  gap: clamp(0.35rem, 0.9vh, 0.7rem);
+}
+
+.about-col .about-list li {
+  font-size: clamp(0.72rem, 1vw, 1.05rem);
+  color: #ddd;
+  line-height: 1.45;
+}
+
+.about-col .about-list li i {
+  font-size: clamp(0.72rem, 1vw, 1.05rem);
+}
+
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: clamp(0.5rem, 1.2vw, 1.1rem);
+}
+
+.about-stat {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: clamp(8px, 1vw, 14px);
+  padding: clamp(0.5rem, 1.2vh, 1rem) clamp(0.4rem, 0.8vw, 0.8rem);
+  text-align: center;
+}
+
+.about-stat-value {
+  font-size: clamp(1.1rem, 2vw, 1.9rem);
+  font-weight: 300;
+  color: #fff;
+}
+
+.about-stat-label {
+  font-size: clamp(0.6rem, 0.8vw, 0.85rem);
+  color: #bbb;
+  margin-top: 0.2vh;
+  font-weight: 300;
+}
+
 .about-footer {
   text-align: center;
   padding-top: 0.5vh;
@@ -311,7 +512,7 @@
 /* ── Technologies ── */
 .tech-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: clamp(0.8rem, 2vh, 1.8rem);
 }
 
@@ -362,6 +563,22 @@
   .counts-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .supabase-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .supabase-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .about-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .about-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @media (max-width: 550px) {
@@ -370,5 +587,13 @@
   .system-grid,
   .counts-grid {
     grid-template-columns: 1fr;
+  }
+
+  .supabase-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .about-stats {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

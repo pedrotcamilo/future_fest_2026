@@ -128,8 +128,7 @@ window.consumirOrdem = async function (id) {
         async function () {
             const d = { lote_id: Number(val("f-lote")), quantidade: Number(val("f-qtd")) };
             const res = await API.registrarConsumo(id, d);
-            if (!res.ok) alert("Erro: " + res.data);
-            else { closeModal(); renderProducao(); }
+            if (res.ok) { closeModal(); renderProducao(); }
         }
     );
 };
