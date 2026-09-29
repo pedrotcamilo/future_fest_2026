@@ -30,7 +30,7 @@ def listar_consumos(
             {
                 "id": c.id,
                 "materia_prima_id": c.materia_prima_id,
-                "data": str(c.data) if c.data else None,
+                "data": str(c.data),
                 "quantidade": c.quantidade
             }
             for c in consumos

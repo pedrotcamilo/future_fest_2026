@@ -2,7 +2,7 @@ from os import getenv
 from fastapi import APIRouter, responses
 import platform
 
-from api.services.database_manager import get_stats, _check_primary_alive
+from api.services.database_manager import get_active_db, get_stats, _check_primary_alive
 
 from dotenv import load_dotenv
 from pathlib import Path

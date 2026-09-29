@@ -586,9 +586,7 @@ function serieMensal(registros, opcoes) {
     let meses = [...new Set(pares.map(p => p.mes))].sort();
     if (opcoes.ultimos && meses.length > opcoes.ultimos) meses = meses.slice(-opcoes.ultimos);
     if (opcoes.marcarParcial) {
-        /* Mes local: toISOString() e UTC e virava o mes antes da hora no Brasil. */
-        const hoje = new Date();
-        const atual = hoje.getFullYear() + "-" + String(hoje.getMonth() + 1).padStart(2, "0");
+        const atual = new Date().toISOString().slice(0, 7);
         meses = meses.map(m => (m === atual ? m + " (parcial)" : m));
     }
 

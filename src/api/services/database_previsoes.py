@@ -18,9 +18,9 @@ def listar_previsoes():
             {
                 "id": p.id,
                 "materia_prima_id": p.materia_prima_id,
-                "data_previsao": str(p.data_previsao) if p.data_previsao else None,
-                "periodo_inicio": str(p.periodo_inicio) if p.periodo_inicio else None,
-                "periodo_fim": str(p.periodo_fim) if p.periodo_fim else None,
+                "data_previsao": str(p.data_previsao),
+                "periodo_inicio": str(p.periodo_inicio),
+                "periodo_fim": str(p.periodo_fim),
                 "consumo_previsto": p.consumo_previsto,
                 "confianca": p.confianca,
                 "modelo_utilizado": p.modelo_utilizado
@@ -41,9 +41,9 @@ def listar_previsoes_por_materia_prima(materia_prima_id: int):
         return [
             {
                 "id": p.id,
-                "data_previsao": str(p.data_previsao) if p.data_previsao else None,
-                "periodo_inicio": str(p.periodo_inicio) if p.periodo_inicio else None,
-                "periodo_fim": str(p.periodo_fim) if p.periodo_fim else None,
+                "data_previsao": str(p.data_previsao),
+                "periodo_inicio": str(p.periodo_inicio),
+                "periodo_fim": str(p.periodo_fim),
                 "consumo_previsto": p.consumo_previsto,
                 "confianca": p.confianca,
                 "modelo_utilizado": p.modelo_utilizado
@@ -126,4 +126,4 @@ def gerar_previsao_automatica(periodo_inicio: date = None, periodo_fim: date = N
             geradas += 1
 
         session.commit()
-        return f"Ok - {geradas} previsao(oes) gerada(s)"
+        return f"Ok - {geradas} previao(oes) gerada(s)"

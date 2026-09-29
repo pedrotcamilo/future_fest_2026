@@ -48,7 +48,7 @@ def criar_usuario(
     nome: str,
     telefone: str,
     email: str,
-    senha: str
+    senha: str = "SenhaPadrao"
 ):
     with get_session() as session:
         stmt = (
