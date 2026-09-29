@@ -1,9 +1,16 @@
+from os import getenv
 from fastapi import APIRouter, responses
 import platform
 
 from api.services.database_manager import get_stats, _check_primary_alive
 
+from dotenv import load_dotenv
+from pathlib import Path
+
 router = APIRouter()
+
+_env_path = Path(__file__).resolve().parent.parent.parent / ".env"
+load_dotenv(verbose=True, dotenv_path=_env_path)
 
 @router.get("/informacao_servidor")
 async def informacao_servidor():
@@ -27,4 +34,11 @@ async def status_banco():
         "primario_disponivel": primario_ok,
         "total_failovers": stats["total_failovers"],
         "total_recuperacoes": stats["total_recuperacoes"],
+    }
+
+@router.get("/axionphare_desktop")
+async def axionphare_desktop():
+    return {
+        "intendidade": getenv("INDENTIDADE"),
+        "empresa": getenv("EMPRESA")
     }

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AxionPhare Desktop</title>
+
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body data-bs-theme="dark">
+
+    <img src="../assets/logo_app.png" id="logo-app" class="mt-5 ms-5">
+
+    
+    <div class="pt-5 px-5 m-1">
+        <p class="text-light" style="font-size: 4vh;">Configurações de Conexão</p>
+
+        <div>
+            <div class="input-group flex-nowrap" style="width: 35vw;">
+                <input type="text" id="field-endereco-servidor" class="form-control" placeholder="Endereço do Servidor" aria-label="Endereço do Servidor" aria-describedby="addon-wrapping">
+            </div>
+        
+            <div class="input-group flex-nowrap pt-2" style="width: 35vw;">
+                <input type="number" id="field-porta-servidor" class="form-control" placeholder="Porta do Servidor" aria-label="Porta do Servidor" aria-describedby="addon-wrapping">
+            </div>
+    
+            <button class="btn btn-primary mt-4" id="btn-salvar">Salvar</button>
+            <button class="btn btn-outline-danger mt-4 ms-2" id="btn-resetar">Resetar</button>
+        </div>
+
+        <p class="text-danger mt-5" id="msg-aviso">Servidor AxionPhare não detectado...</p>
+    </div>
+
+    <div class="fixed-bottom m-5 align-items-center d-flex">
+        <button class="btn" id="config-retornar">Voltar</button>
+    </div>
+
+    <script src="renderer.js" type="module"></script>
+    <script src="js/config.js"></script>
+</body>
+</html>

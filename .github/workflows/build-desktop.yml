@@ -1,0 +1,50 @@
+name: Build AxionPhare Desktop
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "app-desktop/**"
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            script: build:linux
+          - os: windows-latest
+            script: build:win
+          - os: macos-latest
+            script: build:mac
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: app-desktop
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app-desktop/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Empacotar
+        run: npm run ${{ matrix.script }}
+
+      - name: Enviar artefatos
+        uses: actions/upload-artifact@v4
+        with:
+          name: axionphare-desktop-${{ matrix.os }}
+          path: |
+            app-desktop/dist/*.AppImage
+            app-desktop/dist/*.deb
+            app-desktop/dist/*.exe
+            app-desktop/dist/*.dmg
+            app-desktop/dist/*.zip
+          if-no-files-found: error
