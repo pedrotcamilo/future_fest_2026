@@ -13,21 +13,14 @@ function showModal(title, bodyHtml, saveCallback) {
 
 function closeModal() { if (modalInstance) modalInstance.hide(); }
 
-/* Dados do banco entram em atributos/opcoes: sem escapar, um nome com aspas
-   quebrava o campo (e o valor era truncado ao salvar). */
-function escaparHtml(valor) {
-    return String(valor ?? "").replace(/[&<>"']/g, c =>
-        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-}
-
 function formGroup(label, id, type = "text", value = "", extra = "") {
     return `<div class="mb-3"><label class="form-label">${label}</label>
-        <input type="${type}" class="form-control" id="${id}" value="${escaparHtml(value)}" ${extra}></div>`;
+        <input type="${type}" class="form-control" id="${id}" value="${value}" ${extra}></div>`;
 }
 
 function selGroup(label, id, options, selected = "") {
     let opts = options.map(o =>
-        `<option value="${escaparHtml(o.value)}" ${o.value == selected ? "selected" : ""}>${escaparHtml(o.label)}</option>`
+        `<option value="${o.value}" ${o.value == selected ? "selected" : ""}>${o.label}</option>`
     ).join("");
     return `<div class="mb-3"><label class="form-label">${label}</label>
         <select class="form-select" id="${id}">${opts}</select></div>`;

@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import func
 from datetime import date, datetime
 
 from api.services.database import Base

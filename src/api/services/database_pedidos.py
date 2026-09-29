@@ -15,7 +15,7 @@ def listar_pedidos():
             {
                 "id": p.id,
                 "cliente_id": p.cliente_id,
-                "data_pedido": str(p.data_pedido) if p.data_pedido else None,
+                "data_pedido": str(p.data_pedido),
                 "status": p.status,
                 "data_entrega": str(p.data_entrega) if p.data_entrega else None
             }
@@ -37,7 +37,7 @@ def listar_pedido_id(id: int):
         return {
             "id": pedido.id,
             "cliente_id": pedido.cliente_id,
-            "data_pedido": str(pedido.data_pedido) if pedido.data_pedido else None,
+            "data_pedido": str(pedido.data_pedido),
             "status": pedido.status,
             "data_entrega": str(pedido.data_entrega) if pedido.data_entrega else None,
             "itens": [

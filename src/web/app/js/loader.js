@@ -28,11 +28,8 @@
         "app/js/app.js"
     ];
 
-    /* Suba a versao sempre que os scripts mudarem: o cache e servido primeiro
-       e so atualizado em segundo plano. Versoes antigas sao apagadas abaixo. */
-    const CACHE_PREFIX = "axionphare-assets-";
-    const CACHE_NAME = CACHE_PREFIX + "v14";
-    const LS_PREFIX = CACHE_NAME + ":";
+    const CACHE_NAME = "axionphare-assets-v13";
+    const LS_PREFIX = "axionphare-assets-v13:";
 
     const splash = document.getElementById("app-splash");
     const statusEl = document.getElementById("app-splash-status");
@@ -41,17 +38,26 @@
     let loadFailed = false;
 
     if (typeof caches !== "undefined") {
-        caches.keys()
-            .then(nomes => nomes
-                .filter(n => n.startsWith(CACHE_PREFIX) && n !== CACHE_NAME)
-                .forEach(n => caches.delete(n)))
-            .catch(() => {});
+        try {
+            caches.delete("axionphare-assets-v1");
+            caches.delete("axionphare-assets-v2");
+            caches.delete("axionphare-assets-v3");
+            caches.delete("axionphare-assets-v4");
+            caches.delete("axionphare-assets-v5");
+            caches.delete("axionphare-assets-v6");
+            caches.delete("axionphare-assets-v7");
+            caches.delete("axionphare-assets-v8");
+            caches.delete("axionphare-assets-v9");
+            caches.delete("axionphare-assets-v10");
+            caches.delete("axionphare-assets-v11");
+            caches.delete("axionphare-assets-v12");
+        } catch (e) { }
     }
-    try {
+    ["axionphare-assets-v1:", "axionphare-assets-v2:", "axionphare-assets-v3:", "axionphare-assets-v4:", "axionphare-assets-v5:", "axionphare-assets-v6:", "axionphare-assets-v7:", "axionphare-assets-v8:", "axionphare-assets-v9:", "axionphare-assets-v10:", "axionphare-assets-v11:", "axionphare-assets-v12:"].forEach(prefix => {
         Object.keys(localStorage)
-            .filter(k => k.startsWith(CACHE_PREFIX) && !k.startsWith(LS_PREFIX))
+            .filter(k => k.startsWith(prefix))
             .forEach(k => localStorage.removeItem(k));
-    } catch (e) { }
+    });
 
     function setStatus(text) {
         if (statusEl) statusEl.textContent = text;

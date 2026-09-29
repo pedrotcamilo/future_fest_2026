@@ -1,9 +1,9 @@
 from sqlalchemy import select, update, delete
 from sqlalchemy import insert
-from datetime import date, datetime
+from datetime import date
 
 from api.services.database_manager import get_session
-from api.services.models import Compras, CompraItens, Lotes, MovimentacoesEstoque
+from api.services.models import Compras, CompraItens, Lotes
 
 def listar_compras():
     with get_session() as session:
@@ -15,8 +15,8 @@ def listar_compras():
             {
                 "id": c.id,
                 "fornecedor_id": c.fornecedor_id,
-                "data_compra": str(c.data_compra) if c.data_compra else None,
-                "previsao_entrega": str(c.previsao_entrega) if c.previsao_entrega else None,
+                "data_compra": str(c.data_compra),
+                "previsao_entrega": str(c.previsao_entrega),
                 "data_recebimento": str(c.data_recebimento) if c.data_recebimento else None,
                 "status": c.status
             }
@@ -38,8 +38,8 @@ def listar_compra_id(id: int):
         return {
             "id": compra.id,
             "fornecedor_id": compra.fornecedor_id,
-            "data_compra": str(compra.data_compra) if compra.data_compra else None,
-            "previsao_entrega": str(compra.previsao_entrega) if compra.previsao_entrega else None,
+            "data_compra": str(compra.data_compra),
+            "previsao_entrega": str(compra.previsao_entrega),
             "data_recebimento": str(compra.data_recebimento) if compra.data_recebimento else None,
             "status": compra.status,
             "itens": [
@@ -113,9 +113,6 @@ def receber_compra(id: int):
         if compra.status == "RECEBIDA":
             return "Compra ja recebida"
 
-        if compra.status == "CANCELADA":
-            return "Compra cancelada nao pode ser recebida"
-
         stmt_itens = select(CompraItens).where(CompraItens.compra_id == id)
         itens = session.execute(stmt_itens).scalars().all()
 
@@ -131,18 +128,18 @@ def receber_compra(id: int):
                     data_recebimento=date.today(),
                     valor_unitario=item.valor_unitario
                 )
-                .returning(Lotes.id)
             )
-            lote_id = session.execute(stmt_lote).scalar_one()
+            session.execute(stmt_lote)
 
-            stmt_mov = insert(MovimentacoesEstoque).values(
-                lote_id=lote_id,
-                tipo="ENTRADA",
-                quantidade=item.quantidade,
-                data_movimento=datetime.now(),
-                observacao=f"Recebimento da compra #{id}"
+            stmt_mov = (
+                "INSERT INTO movimentacoes_estoque "
+                "(lote_id, tipo, quantidade, data_movimento, observacao) "
+                "VALUES (currval('lotes_id_seq'), 'ENTRADA', :qtd, NOW(), :obs)"
             )
-            session.execute(stmt_mov)
+            session.execute(
+                stmt_mov,
+                {"qtd": item.quantidade, "obs": f"Recebimento da compra #{id}"}
+            )
 
         stmt_upd = (
             update(Compras)
@@ -163,9 +160,6 @@ def cancelar_compra(id: int):
 
         if compra is None:
             return "Compra nao encontrada"
-
-        if compra.status == "RECEBIDA":
-            return "Compra ja recebida nao pode ser cancelada"
 
         stmt_upd = (
             update(Compras)

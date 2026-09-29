@@ -38,7 +38,7 @@ async function renderLotes() {
         })}</div>
     </div>
     <div class="filters-bar">
-        <input class="form-control form-control-sm" style="width:140px" placeholder="Dias vencimento" id="filtro-lote-venc" value="${escaparHtml(fvenc)}">
+        <input class="form-control form-control-sm" style="width:140px" placeholder="Dias vencimento" id="filtro-lote-venc" value="${fvenc||""}">
         <select class="form-select form-select-sm" style="max-width:220px" id="filtro-lote-mp">
             <option value="">Todas as materias-primas</option>
             ${materias.map(m => `<option value="${m.id}" ${fmp == m.id ? "selected" : ""}>${m.nome}</option>`).join("")}
