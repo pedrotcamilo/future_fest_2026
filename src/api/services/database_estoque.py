@@ -1,8 +1,16 @@
 from sqlalchemy import select, func
 from datetime import datetime
+from collections import defaultdict
+import json
 
+from api.services.ai_request import perguntar
 from api.services.database_manager import get_session
-from api.services.models import Lotes, MovimentacoesEstoque, MateriasPrimas
+from api.services.models import (
+    Lotes,
+    MovimentacoesEstoque,
+    MateriasPrimas,
+    HistoricoConsumo,
+)
 
 def consultar_estoque():
     with get_session() as session:
@@ -121,3 +129,78 @@ def listar_movimentacoes():
             }
             for m in movs
         ]
+
+def _to_float(valor, padrao=None):
+    if valor is None:
+        return padrao
+    try:
+        return float(valor)
+    except (TypeError, ValueError):
+        return padrao
+
+
+def gerar_predicacao_compra(meses_historico: int = 12):
+
+    with get_session() as session:
+        materias = session.scalars(select(MateriasPrimas)).all()
+        lotes = session.scalars(select(Lotes)).all()
+        historicos = session.scalars(select(HistoricoConsumo)).all()
+
+    if not materias:
+        return {"erro": "Nenhuma materia-prima cadastrada para analise."}
+
+    # Estoque atual = soma de quantidade_atual dos lotes por materia-prima.
+    estoque_map = defaultdict(float)
+    for lote in lotes:
+        mp_id = getattr(lote, "materia_prima_id", None)
+        if mp_id is None:
+            continue
+        estoque_map[mp_id] += _to_float(
+            getattr(lote, "quantidade_atual", 0), 0.0
+        ) or 0.0
+
+    # Historico agregado por materia-prima + mes (AAAA-MM).
+    consumo_map = defaultdict(lambda: defaultdict(float))
+    for h in historicos:
+        mp_id = getattr(h, "materia_prima_id", None)
+        data = getattr(h, "data", None)
+        qtd = _to_float(getattr(h, "quantidade", None), None)
+        if mp_id is None or data is None or qtd is None:
+            continue
+        # `data` pode vir como date/datetime ou string (failover Supabase).
+        if isinstance(data, str):
+            mes = data[:7]  # "AAAA-MM-DD" -> "AAAA-MM"
+        else:
+            mes = f"{data.year:04d}-{data.month:02d}"
+        consumo_map[mp_id][mes] += qtd
+
+    payload = []
+    for mp in materias:
+        mp_id = getattr(mp, "id", None)
+        meses = sorted(consumo_map.get(mp_id, {}).items())
+        # Envia os N meses mais recentes em ordem cronologica.
+        meses = meses[-meses_historico:] if meses_historico else meses
+        payload.append({
+            "id": mp_id,
+            "codigo": getattr(mp, "codigo", None),
+            "nome": getattr(mp, "nome", None),
+            "unidade": getattr(mp, "unidade", None),
+            "estoque_minimo": _to_float(
+                getattr(mp, "estoque_minimo", None), None
+            ),
+            "estoque_maximo": _to_float(
+                getattr(mp, "estoque_maximo", None), None
+            ),
+            "consumo_medio_mensal": _to_float(
+                getattr(mp, "consumo_medio_mensal", None), None
+            ),
+            "estoque_atual": estoque_map.get(mp_id, 0.0),
+            "consumo_mensal": [
+                {"mes": mes, "consumo": round(qtd, 3)}
+                for mes, qtd in meses
+            ],
+            "ativo": getattr(mp, "ativo", True),
+        })
+
+    conteudo = json.dumps(payload, ensure_ascii=False, default=str)
+    return perguntar("predicacao_compra", conteudo)

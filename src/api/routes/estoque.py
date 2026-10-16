@@ -15,6 +15,11 @@ async def consultar_estoque():
     resultado = database_estoque.consultar_estoque()
     return responses.JSONResponse(content=resultado, status_code=200)
 
+@router.get("/gerar_predicacao_compra")
+async def gerar_predicacao_compra():
+    resultado = database_estoque.gerar_predicacao_compra()
+    return responses.JSONResponse(content=resultado, status_code=200)
+
 # ATENCAO: a rota estatica "/movimentacoes" precisa ser declarada ANTES da
 # rota dinamica "/{materia_prima_id}". Caso contrario o FastAPI casa a rota
 # dinamica primeiro, falha na validacao do inteiro e retorna 422.
