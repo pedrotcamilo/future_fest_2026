@@ -1,0 +1,4702 @@
+type: spec.insomnia.rest/5.0
+schema_version: "5.1"
+name: AxionPhare
+meta:
+  id: wrk_e7bc00c005624c928a847ba4349787b7
+  created: 1792865432770
+  modified: 1792865432770
+  description: ""
+collection:
+  - name: Autenticacao
+    meta:
+      id: fld_048e5f41c82048b0b1614337ad631791
+      created: 1792865432774
+      modified: 1792865432774
+      sortKey: -1792865432774
+      description: Autenticação e sessão de usuários (login, logout, refresh e usuário
+        atual).
+    children:
+      - url: "{{ _.base_url }}/auth/login"
+        name: Realizar Login
+        meta:
+          id: req_da05da5eb01e4141a2c88c8abfac8f90
+          created: 1792865432779
+          modified: 1792865432779
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432779
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "string",
+              "senha": "string"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/auth/refresh"
+        name: Refresh Token
+        meta:
+          id: req_113261dba52e4812b67d858468e781fd
+          created: 1792865432780
+          modified: 1792865432780
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432780
+        method: POST
+        headers:
+          - name: authorization
+            value: string
+            disabled: true
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/auth/logout"
+        name: Realizar Logout
+        meta:
+          id: req_58d73cc6f3c94008ad297cf7323e0ae2
+          created: 1792865432780
+          modified: 1792865432780
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432780
+        method: POST
+        headers:
+          - name: authorization
+            value: string
+            disabled: true
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/auth/me"
+        name: Usuario Atual
+        meta:
+          id: req_9c7d8bf3d9f94389881c9777cb641795
+          created: 1792865432780
+          modified: 1792865432780
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432780
+        method: GET
+        headers:
+          - name: authorization
+            value: string
+            disabled: true
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Usuarios
+    meta:
+      id: fld_1729fb842b074379aee31988bbdcd093
+      created: 1792865432775
+      modified: 1792865432775
+      sortKey: -1792865432775
+      description: Cadastro e manutenção de usuários do sistema.
+    children:
+      - url: "{{ _.base_url }}/usuarios/"
+        name: Listar Usuarios
+        meta:
+          id: req_6583216a31604d9a86b45967be63bab6
+          created: 1792865432782
+          modified: 1792865432782
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432782
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/usuarios/"
+        name: Criar Usuario
+        meta:
+          id: req_3129d0029fd84561a164c154a71009be
+          created: 1792865432783
+          modified: 1792865432783
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432783
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "nome": "string",
+              "telefone": "string",
+              "email": "string",
+              "senha": "string"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+          - name: authorization
+            value: string
+            disabled: true
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/usuarios/:id"
+        name: Listar Usuarios Id
+        meta:
+          id: req_70b4502ed6e64deab9badefbc7fdb6d1
+          created: 1792865432784
+          modified: 1792865432784
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432784
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/usuarios/:id"
+        name: Deletar Usuario
+        meta:
+          id: req_593b88f09fe0450492245786a9cee8d7
+          created: 1792865432785
+          modified: 1792865432785
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432785
+        method: DELETE
+        headers:
+          - name: authorization
+            value: string
+            disabled: true
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/usuarios/:id"
+        name: Atualizar Usuario
+        meta:
+          id: req_7979141de78c4c4d9543159881a7d105
+          created: 1792865432785
+          modified: 1792865432785
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432785
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "nome": "string",
+              "telefone": "string",
+              "email": "string"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+          - name: authorization
+            value: string
+            disabled: true
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Diagnostico
+    meta:
+      id: fld_4ff35ed6925a468dad4421ee53605a89
+      created: 1792865432775
+      modified: 1792865432775
+      sortKey: -1792865432775
+      description: Endpoints de diagnóstico e saúde do servidor, banco de dados e desktop.
+    children:
+      - url: "{{ _.base_url }}/diagnosticos/axionphare_desktop"
+        name: Axionphare Desktop
+        meta:
+          id: req_5676e6b8f74d45a5ae809c5afddb4f2b
+          created: 1792865432781
+          modified: 1792865432781
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432781
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/diagnosticos/informacao_servidor"
+        name: Informacao Servidor
+        meta:
+          id: req_58ac2cadf0104416a33762dd3b13c003
+          created: 1792865432781
+          modified: 1792865432781
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432781
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/diagnosticos/status_banco"
+        name: Status Banco
+        meta:
+          id: req_5dbccfd3e6164f65a7a47185c48af2f3
+          created: 1792865432782
+          modified: 1792865432782
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432782
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Fornecedores
+    meta:
+      id: fld_74116c02e0294174ba0464f0ffe8913c
+      created: 1792865432775
+      modified: 1792865432775
+      sortKey: -1792865432775
+      description: Cadastro e manutenção de fornecedores.
+    children:
+      - url: "{{ _.base_url }}/fornecedores/"
+        name: Criar Fornecedor
+        meta:
+          id: req_2cf60266d63749148cf77e78c1b99858
+          created: 1792865432786
+          modified: 1792865432786
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432786
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "razao_social": "string",
+              "nome_fantasia": "string",
+              "cnpj": "string",
+              "telefone": "string",
+              "email": "string",
+              "prazo_entrega_dias": 0,
+              "ativo": true
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/fornecedores/"
+        name: Listar Fornecedores
+        meta:
+          id: req_5141f8066de64824a615bd2a90ab6d51
+          created: 1792865432786
+          modified: 1792865432786
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432786
+        method: GET
+        parameters:
+          - name: nome
+            value: string
+            disabled: true
+          - name: ativo
+            value: "true"
+            disabled: true
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/fornecedores/:id"
+        name: Atualizar Fornecedor
+        meta:
+          id: req_1e2f4210237442048570a14b56ee1e98
+          created: 1792865432787
+          modified: 1792865432787
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432787
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "razao_social": "string",
+              "nome_fantasia": "string",
+              "cnpj": "string",
+              "telefone": "string",
+              "email": "string",
+              "prazo_entrega_dias": 0,
+              "ativo": true
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/fornecedores/:id"
+        name: Listar Fornecedor Id
+        meta:
+          id: req_d7a539d8be134bffbd0691611c9d5819
+          created: 1792865432787
+          modified: 1792865432787
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432787
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/fornecedores/:id"
+        name: Deletar Fornecedor
+        meta:
+          id: req_42de29d3cb8c41d8aa3d6413f5720c7c
+          created: 1792865432788
+          modified: 1792865432788
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432788
+        method: DELETE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Materias Primas
+    meta:
+      id: fld_90fc1a29ad204288ba86ea6081a2f6f6
+      created: 1792865432775
+      modified: 1792865432775
+      sortKey: -1792865432775
+      description: Cadastro e manutenção de matérias-primas.
+    children:
+      - url: "{{ _.base_url }}/materias-primas/"
+        name: Listar Materias Primas
+        meta:
+          id: req_b1de36660de94a3bb31d7fe6b03c4747
+          created: 1792865432788
+          modified: 1792865432788
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432788
+        method: GET
+        parameters:
+          - name: nome
+            value: string
+            disabled: true
+          - name: estoqueBaixo
+            value: "true"
+            disabled: true
+          - name: vencendo
+            value: "true"
+            disabled: true
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/materias-primas/"
+        name: Criar Materia Prima
+        meta:
+          id: req_817a71a6ad8d402691a75e4115cee660
+          created: 1792865432789
+          modified: 1792865432789
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432789
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "codigo": "string",
+              "nome": "string",
+              "unidade": "string",
+              "estoque_minimo": 0,
+              "estoque_maximo": 0,
+              "consumo_medio_mensal": 0,
+              "ativo": true
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/materias-primas/:id"
+        name: Listar Materia Prima Id
+        meta:
+          id: req_9a0cf5bf56ac45d2b011764af4d5c434
+          created: 1792865432789
+          modified: 1792865432789
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432789
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/materias-primas/:id"
+        name: Atualizar Materia Prima
+        meta:
+          id: req_a620bb0c653c48b6acc03c0aefdd6769
+          created: 1792865432790
+          modified: 1792865432790
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432790
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "codigo": "string",
+              "nome": "string",
+              "unidade": "string",
+              "estoque_minimo": 0,
+              "estoque_maximo": 0,
+              "consumo_medio_mensal": 0,
+              "ativo": true
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/materias-primas/:id"
+        name: Deletar Materia Prima
+        meta:
+          id: req_abc3ec0a07fd4870b72e9eb858ec3c88
+          created: 1792865432790
+          modified: 1792865432790
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432790
+        method: DELETE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Estoque
+    meta:
+      id: fld_43230bf9c5e14341a25d4d07702348ff
+      created: 1792865432776
+      modified: 1792865432776
+      sortKey: -1792865432776
+      description: Consulta de estoque e registro de movimentações.
+    children:
+      - url: "{{ _.base_url }}/estoque/movimentacoes"
+        name: Listar Movimentacoes
+        meta:
+          id: req_60355b994fc54021b5af6c0feb455b60
+          created: 1792865432794
+          modified: 1792865432794
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432794
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/estoque/"
+        name: Consultar Estoque
+        meta:
+          id: req_7d1e081ca88a4e5ea7b70fdd3c657757
+          created: 1792865432794
+          modified: 1792865432794
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432794
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/estoque/:materia_prima_id"
+        name: Consultar Estoque Materia Prima
+        meta:
+          id: req_8fadf11cfc4f404f828c95240a4c1517
+          created: 1792865432795
+          modified: 1792865432795
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432795
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/estoque/movimentacoes"
+        name: Registrar Movimentacao
+        meta:
+          id: req_f4ca3272fd314cddacf972ec20f7d64a
+          created: 1792865432795
+          modified: 1792865432795
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432795
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "loteId": 0,
+              "tipo": "string",
+              "quantidade": 0,
+              "observacao": "string"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Lotes
+    meta:
+      id: fld_a403b9db7f0b4ab687c4225fc32b5782
+      created: 1792865432776
+      modified: 1792865432776
+      sortKey: -1792865432776
+      description: Cadastro e manutenção de lotes de matérias-primas.
+    children:
+      - url: "{{ _.base_url }}/lotes/"
+        name: Listar Lotes
+        meta:
+          id: req_792ab5c714fc4823951c9fb46d233496
+          created: 1792865432791
+          modified: 1792865432791
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432791
+        method: GET
+        parameters:
+          - name: vencimento
+            value: "0"
+            disabled: true
+          - name: materiaPrima
+            value: "0"
+            disabled: true
+          - name: fornecedor
+            value: "0"
+            disabled: true
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/lotes/"
+        name: Criar Lote
+        meta:
+          id: req_a5f7022dd93044b89d5cdddc9d20ea97
+          created: 1792865432791
+          modified: 1792865432791
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432791
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "materia_prima_id": 0,
+              "fornecedor_id": 0,
+              "numero_lote": "string",
+              "quantidade_inicial": 0,
+              "quantidade_atual": 0,
+              "data_fabricacao": "string",
+              "data_validade": "string",
+              "data_recebimento": "string",
+              "valor_unitario": 0
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/lotes/:id"
+        name: Listar Lote Id
+        meta:
+          id: req_9ee55bb265c344c29f8828c84e5b5312
+          created: 1792865432792
+          modified: 1792865432792
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432792
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/lotes/:id"
+        name: Deletar Lote
+        meta:
+          id: req_db60e830dec2414daaa618567e67ff59
+          created: 1792865432793
+          modified: 1792865432793
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432793
+        method: DELETE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/lotes/:id"
+        name: Atualizar Lote
+        meta:
+          id: req_dce752f9131149548abee4357a17db73
+          created: 1792865432793
+          modified: 1792865432793
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432793
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "materia_prima_id": 0,
+              "fornecedor_id": 0,
+              "numero_lote": "string",
+              "quantidade_inicial": 0,
+              "quantidade_atual": 0,
+              "data_fabricacao": "string",
+              "data_validade": "string",
+              "data_recebimento": "string",
+              "valor_unitario": 0
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Compras
+    meta:
+      id: fld_beea6d5bd4d04817a332613295f5a011
+      created: 1792865432776
+      modified: 1792865432776
+      sortKey: -1792865432776
+      description: Pedidos de compra, recebimento, cancelamento e itens.
+    children:
+      - url: "{{ _.base_url }}/compras/"
+        name: Listar Compras
+        meta:
+          id: req_058b676669d143d897d213e36b1ffe0a
+          created: 1792865432795
+          modified: 1792865432795
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432795
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/compras/:id"
+        name: Listar Compra Id
+        meta:
+          id: req_4a2b7cae78414a898b18cf562e1ad8b8
+          created: 1792865432796
+          modified: 1792865432796
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432796
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/compras/"
+        name: Criar Compra
+        meta:
+          id: req_9fafcf02b0af4b07a7bfd701600c62e7
+          created: 1792865432796
+          modified: 1792865432796
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432796
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "fornecedor_id": 0,
+              "data_compra": "string",
+              "previsao_entrega": "string",
+              "status": "PENDENTE"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/compras/:id"
+        name: Atualizar Compra
+        meta:
+          id: req_29bde11b65554f39837736e1222158ec
+          created: 1792865432797
+          modified: 1792865432797
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432797
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "fornecedor_id": 0,
+              "data_compra": "string",
+              "previsao_entrega": "string",
+              "status": "PENDENTE"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/compras/:id"
+        name: Deletar Compra
+        meta:
+          id: req_a0a42e52696b4330b71e0d05040cf39d
+          created: 1792865432797
+          modified: 1792865432797
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432797
+        method: DELETE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/compras/:id/itens"
+        name: Adicionar Item Compra
+        meta:
+          id: req_9a4e2523b25b41c0af27c108bf1bfbd4
+          created: 1792865432798
+          modified: 1792865432798
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432798
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "materia_prima_id": 0,
+              "quantidade": 0,
+              "valor_unitario": 0
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/compras/:id/cancelar"
+        name: Cancelar Compra
+        meta:
+          id: req_d03ca3572f2b462da3d11259f5f93c3c
+          created: 1792865432798
+          modified: 1792865432798
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432798
+        method: POST
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/compras/:id/receber"
+        name: Receber Compra
+        meta:
+          id: req_27b2f0aa12484ac2bab2a8022c3743a6
+          created: 1792865432799
+          modified: 1792865432799
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432799
+        method: POST
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Consumo
+    meta:
+      id: fld_051421e813b44ab4835a7f9db6c7d592
+      created: 1792865432777
+      modified: 1792865432777
+      sortKey: -1792865432777
+      description: Consulta de consumos de matérias-primas na produção.
+    children:
+      - url: "{{ _.base_url }}/consumos/"
+        name: Listar Consumos
+        meta:
+          id: req_c78152af371d40459f6816e197ca98dd
+          created: 1792865432813
+          modified: 1792865432813
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432813
+        method: GET
+        parameters:
+          - name: inicio
+            value: string
+            disabled: true
+          - name: fim
+            value: string
+            disabled: true
+          - name: materiaPrima
+            value: "0"
+            disabled: true
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Formulas
+    meta:
+      id: fld_2a5284e8fb0a4350bef509cc11cfff80
+      created: 1792865432777
+      modified: 1792865432777
+      sortKey: -1792865432777
+      description: Fórmulas de produção e seus itens/componentes.
+    children:
+      - url: "{{ _.base_url }}/formulas/"
+        name: Listar Formulas
+        meta:
+          id: req_ed066b5a5af248d1b1feff797cbf52f3
+          created: 1792865432799
+          modified: 1792865432799
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432799
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/formulas/:id"
+        name: Listar Formula Id
+        meta:
+          id: req_b77f6dc0e91d45d682d3c38f4ff4e3e8
+          created: 1792865432800
+          modified: 1792865432800
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432800
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/formulas/"
+        name: Criar Formula
+        meta:
+          id: req_fe13a6110c654f4c9f449e88d0297f14
+          created: 1792865432800
+          modified: 1792865432800
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432800
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "codigo": "string",
+              "descricao": "string",
+              "categoria": "string",
+              "ativa": true
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/formulas/:id"
+        name: Deletar Formula
+        meta:
+          id: req_0fded5f710a2431fb40d3f4143264c34
+          created: 1792865432801
+          modified: 1792865432801
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432801
+        method: DELETE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/formulas/:id"
+        name: Atualizar Formula
+        meta:
+          id: req_3a0f1c2c1024489c98c18b54aa80c0da
+          created: 1792865432801
+          modified: 1792865432801
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432801
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "codigo": "string",
+              "descricao": "string",
+              "categoria": "string",
+              "ativa": true
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/formulas/:id/itens"
+        name: Listar Itens Formula
+        meta:
+          id: req_256edf04dffe4de39376118071320472
+          created: 1792865432802
+          modified: 1792865432802
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432802
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/formulas/:id/itens"
+        name: Adicionar Item Formula
+        meta:
+          id: req_73ea1bbb26b349d3ab8b74ca03cefa16
+          created: 1792865432802
+          modified: 1792865432802
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432802
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "materia_prima_id": 0,
+              "quantidade": 0,
+              "unidade": "string"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/formulas/:id/itens/:item_id"
+        name: Atualizar Item Formula
+        meta:
+          id: req_36a129eb51134755a4544227dd9a2300
+          created: 1792865432803
+          modified: 1792865432803
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432803
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "quantidade": 0,
+              "unidade": "string"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/formulas/:id/itens/:item_id"
+        name: Deletar Item Formula
+        meta:
+          id: req_493c638d538845579210f0f11a1b0482
+          created: 1792865432804
+          modified: 1792865432804
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432804
+        method: DELETE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Clientes
+    meta:
+      id: fld_60c2a213e6174b16a7893264a63bc5a1
+      created: 1792865432777
+      modified: 1792865432777
+      sortKey: -1792865432777
+      description: Cadastro e manutenção de clientes.
+    children:
+      - url: "{{ _.base_url }}/clientes/"
+        name: Criar Cliente
+        meta:
+          id: req_c76456d80a1f46cd85922a0ba70ffb75
+          created: 1792865432804
+          modified: 1792865432804
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432804
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "nome": "string",
+              "telefone": "string",
+              "email": "string",
+              "cnpj": "string"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/clientes/"
+        name: Listar Clientes
+        meta:
+          id: req_eb1654a4d20c4ff983bd86ea1143c9e4
+          created: 1792865432804
+          modified: 1792865432804
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432804
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/clientes/:id"
+        name: Listar Cliente Id
+        meta:
+          id: req_403ea97227bb4d26946746900cab322e
+          created: 1792865432805
+          modified: 1792865432805
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432805
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/clientes/:id"
+        name: Atualizar Cliente
+        meta:
+          id: req_e302f38fd1e1466695004ec43371bdc0
+          created: 1792865432805
+          modified: 1792865432805
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432805
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "nome": "string",
+              "telefone": "string",
+              "email": "string",
+              "cnpj": "string"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/clientes/:id"
+        name: Deletar Cliente
+        meta:
+          id: req_863a6638087240abb755ef0ecb95f86f
+          created: 1792865432806
+          modified: 1792865432806
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432806
+        method: DELETE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Producao
+    meta:
+      id: fld_bcb048911dc6497a865ea619c163e594
+      created: 1792865432777
+      modified: 1792865432777
+      sortKey: -1792865432777
+      description: Ordens de produção, início, finalização, cancelamento e consumos.
+    children:
+      - url: "{{ _.base_url }}/ordens-producao/"
+        name: Listar Ordens
+        meta:
+          id: req_df3669e482c244e8811d7602b979e2bc
+          created: 1792865432809
+          modified: 1792865432809
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432809
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/ordens-producao/:id"
+        name: Listar Ordem Id
+        meta:
+          id: req_ba2313acee804a52aaf75cabdc33304d
+          created: 1792865432810
+          modified: 1792865432810
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432810
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/ordens-producao/"
+        name: Criar Ordem
+        meta:
+          id: req_efdf08b103b14013af9a5880f4280b2d
+          created: 1792865432810
+          modified: 1792865432810
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432810
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "pedido_id": 0,
+              "status": "PENDENTE"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/ordens-producao/:id"
+        name: Deletar Ordem
+        meta:
+          id: req_44bb32d5f4564c70b8fa9b73f88e79af
+          created: 1792865432811
+          modified: 1792865432811
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432811
+        method: DELETE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/ordens-producao/:id"
+        name: Atualizar Ordem
+        meta:
+          id: req_7a1c414236de4a12adc104252b7a394d
+          created: 1792865432811
+          modified: 1792865432811
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432811
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "pedido_id": 0,
+              "status": "PENDENTE"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/ordens-producao/:id/cancelar"
+        name: Cancelar Ordem
+        meta:
+          id: req_281545879fb6402997dd666886601427
+          created: 1792865432812
+          modified: 1792865432812
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432812
+        method: POST
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/ordens-producao/:id/consumos"
+        name: Registrar Consumo
+        meta:
+          id: req_4720118bb84643b39be863ec1fc36558
+          created: 1792865432812
+          modified: 1792865432812
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432812
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "lote_id": 0,
+              "quantidade": 0
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/ordens-producao/:id/iniciar"
+        name: Iniciar Ordem
+        meta:
+          id: req_549c56e490dd4a1bada5e6075dafac1d
+          created: 1792865432813
+          modified: 1792865432813
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432813
+        method: POST
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/ordens-producao/:id/finalizar"
+        name: Finalizar Ordem
+        meta:
+          id: req_67f56db997c74252bd55e3c9f4574245
+          created: 1792865432813
+          modified: 1792865432813
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432813
+        method: POST
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Pedidos
+    meta:
+      id: fld_fdda43a912194fab87c54e0418a1b2af
+      created: 1792865432777
+      modified: 1792865432777
+      sortKey: -1792865432777
+      description: Pedidos de venda e seus itens.
+    children:
+      - url: "{{ _.base_url }}/pedidos/"
+        name: Listar Pedidos
+        meta:
+          id: req_cc1f29ec977846cda49a22700839858e
+          created: 1792865432806
+          modified: 1792865432806
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432806
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/pedidos/:id"
+        name: Listar Pedido Id
+        meta:
+          id: req_c9b20e624de1418ca7208be44e08c5d7
+          created: 1792865432807
+          modified: 1792865432807
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432807
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/pedidos/"
+        name: Criar Pedido
+        meta:
+          id: req_f612c0d2866e4414ba06c8059c3520a6
+          created: 1792865432807
+          modified: 1792865432807
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432807
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "cliente_id": 0,
+              "status": "PENDENTE",
+              "data_entrega": "string"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/pedidos/:id"
+        name: Deletar Pedido
+        meta:
+          id: req_3992c05cdf6e47b1a541a7115ba0147f
+          created: 1792865432808
+          modified: 1792865432808
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432808
+        method: DELETE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/pedidos/:id"
+        name: Atualizar Pedido
+        meta:
+          id: req_97078cdecb8b4de6a5d1728237746cb8
+          created: 1792865432808
+          modified: 1792865432808
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432808
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "cliente_id": 0,
+              "status": "PENDENTE",
+              "data_entrega": "string"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/pedidos/:id/itens"
+        name: Listar Itens Pedido
+        meta:
+          id: req_9b3a8891c1884dcc8c90c148d3445a3a
+          created: 1792865432808
+          modified: 1792865432808
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432808
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/pedidos/:id/itens"
+        name: Adicionar Item Pedido
+        meta:
+          id: req_cf336851a3914d6e918f9efbf08b5e30
+          created: 1792865432809
+          modified: 1792865432809
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432809
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "formula_id": 0,
+              "quantidade": 0
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Previsoes
+    meta:
+      id: fld_11b098aa205c45d4a257fc18b4c11ab4
+      created: 1792865432778
+      modified: 1792865432778
+      sortKey: -1792865432778
+      description: Geração e consulta de previsões de demanda.
+    children:
+      - url: "{{ _.base_url }}/previsoes/gerar-automatica"
+        name: Gerar Previsao Automatica
+        meta:
+          id: req_5daabb884e154ded9190e6337986a4d8
+          created: 1792865432814
+          modified: 1792865432814
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432814
+        method: POST
+        parameters:
+          - name: inicio
+            value: string
+            disabled: true
+          - name: fim
+            value: string
+            disabled: true
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/previsoes/gerar"
+        name: Gerar Previsao
+        meta:
+          id: req_b2db8757abf14a08b02de1b3411d0c73
+          created: 1792865432814
+          modified: 1792865432814
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432814
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "materia_prima_id": 0,
+              "periodo_inicio": "string",
+              "periodo_fim": "string",
+              "consumo_previsto": 0,
+              "confianca": 0,
+              "modelo_utilizado": "MEDIA_MOVEL"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/previsoes/"
+        name: Listar Previsoes
+        meta:
+          id: req_dafb7037a5ff45e19e874b5fc86f8639
+          created: 1792865432814
+          modified: 1792865432814
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432814
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/previsoes/materia-prima/:id"
+        name: Listar Previsoes Materia Prima
+        meta:
+          id: req_baed2af4782249fa9086cf389892f10b
+          created: 1792865432815
+          modified: 1792865432815
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432815
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Dashboard
+    meta:
+      id: fld_27e34c2e3950483a93ae5547942c13af
+      created: 1792865432778
+      modified: 1792865432778
+      sortKey: -1792865432778
+      description: Indicadores e resumos gerais e por área.
+    children:
+      - url: "{{ _.base_url }}/dashboard/alertas"
+        name: Dashboard Alertas
+        meta:
+          id: req_12300fe6c1794b81a0a2d4d348bf9f03
+          created: 1792865432818
+          modified: 1792865432818
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432818
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/dashboard/"
+        name: Resumo Geral
+        meta:
+          id: req_99ac12e5ce3e4e75942451ba2725bf17
+          created: 1792865432818
+          modified: 1792865432818
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432818
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/dashboard/compras"
+        name: Dashboard Compras
+        meta:
+          id: req_1289984508fe4735860f25c71a107fa3
+          created: 1792865432819
+          modified: 1792865432819
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432819
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/dashboard/estoque"
+        name: Dashboard Estoque
+        meta:
+          id: req_d97ae0f8fc68487eb5ac7f2a0a6b3008
+          created: 1792865432819
+          modified: 1792865432819
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432819
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/dashboard/previsoes"
+        name: Dashboard Previsoes
+        meta:
+          id: req_de818047dc514cefb536549833abf8c8
+          created: 1792865432819
+          modified: 1792865432819
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432819
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/dashboard/producao"
+        name: Dashboard Producao
+        meta:
+          id: req_dae4b08c2c7e44efa9a867fbd813065d
+          created: 1792865432820
+          modified: 1792865432820
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432820
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Relatorios
+    meta:
+      id: fld_630d26cd2ece4321aeba836d6769c88d
+      created: 1792865432778
+      modified: 1792865432778
+      sortKey: -1792865432778
+      description: Relatórios operacionais de consumo, estoque, vencimentos, compras,
+        produção e previsões.
+    children:
+      - url: "{{ _.base_url }}/relatorios/compras"
+        name: Relatorio Compras
+        meta:
+          id: req_bb2459a2d4c142deb9c5eb01ed832e97
+          created: 1792865432820
+          modified: 1792865432820
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432820
+        method: GET
+        parameters:
+          - name: inicio
+            value: string
+            disabled: true
+          - name: fim
+            value: string
+            disabled: true
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/relatorios/vencimentos"
+        name: Relatorio Vencimentos
+        meta:
+          id: req_56d17581436146ad9e8423540af71c3e
+          created: 1792865432821
+          modified: 1792865432821
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432821
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/relatorios/estoque"
+        name: Relatorio Estoque
+        meta:
+          id: req_7ae0c0b1077d410fa7b36f59dab9d438
+          created: 1792865432821
+          modified: 1792865432821
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432821
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/relatorios/producao"
+        name: Relatorio Producao
+        meta:
+          id: req_da308d24856b4137a32b0e14d16f92ec
+          created: 1792865432821
+          modified: 1792865432821
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432821
+        method: GET
+        parameters:
+          - name: inicio
+            value: string
+            disabled: true
+          - name: fim
+            value: string
+            disabled: true
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/relatorios/previsoes"
+        name: Relatorio Previsoes
+        meta:
+          id: req_f58e31b94ae34aeaa35efe6b697f8da4
+          created: 1792865432821
+          modified: 1792865432821
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432821
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/relatorios/consumo"
+        name: Relatorio Consumo
+        meta:
+          id: req_fbff666d56cd4309a0adc1d471b73db5
+          created: 1792865432821
+          modified: 1792865432821
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432821
+        method: GET
+        parameters:
+          - name: inicio
+            value: string
+            disabled: true
+          - name: fim
+            value: string
+            disabled: true
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Alertas
+    meta:
+      id: fld_95d4099866bf4fd7a5c82d92c3bd6762
+      created: 1792865432778
+      modified: 1792865432778
+      sortKey: -1792865432778
+      description: Listagem e resolução de alertas.
+    children:
+      - url: "{{ _.base_url }}/alertas/"
+        name: Listar Alertas
+        meta:
+          id: req_69f7d0ddf8e642f08dee18ab4e51aa3d
+          created: 1792865432817
+          modified: 1792865432817
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432817
+        method: GET
+        parameters:
+          - name: tipo
+            value: string
+            disabled: true
+          - name: prioridade
+            value: string
+            disabled: true
+          - name: resolvido
+            value: "true"
+            disabled: true
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/alertas/:id/resolver"
+        name: Resolver Alerta
+        meta:
+          id: req_fafbeb77ce34425788a48efad67fed21
+          created: 1792865432817
+          modified: 1792865432817
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432817
+        method: POST
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Sugestoes de Compra
+    meta:
+      id: fld_c83f42de4f9a449eb84272ae7f84b487
+      created: 1792865432778
+      modified: 1792865432778
+      sortKey: -1792865432778
+      description: Geração, aprovação e rejeição de sugestões de compra.
+    children:
+      - url: "{{ _.base_url }}/sugestoes-compra/"
+        name: Listar Sugestoes
+        meta:
+          id: req_ec315f54cf194f51ad56b92c5cc34fd7
+          created: 1792865432815
+          modified: 1792865432815
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432815
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/sugestoes-compra/:id/rejeitar"
+        name: Rejeitar Sugestao
+        meta:
+          id: req_06a82d35ed8948c1a560e3b7de0ae6c2
+          created: 1792865432816
+          modified: 1792865432816
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432816
+        method: POST
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/sugestoes-compra/:id/aprovar"
+        name: Aprovar Sugestao
+        meta:
+          id: req_902302c2f35c4aac8404c0aa3f46112a
+          created: 1792865432816
+          modified: 1792865432816
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432816
+        method: POST
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/sugestoes-compra/gerar"
+        name: Gerar Sugestoes
+        meta:
+          id: req_e431927a2b2b44638f20884b7adfc60c
+          created: 1792865432816
+          modified: 1792865432816
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432816
+        method: POST
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Graficos
+    meta:
+      id: fld_ede1481a46784387a94f1f8b50caf83d
+      created: 1792865432779
+      modified: 1792865432779
+      sortKey: -1792865432779
+      description: Dados para gráficos.
+    children:
+      - url: "{{ _.base_url }}/graficos/consumo"
+        name: Consumo
+        meta:
+          id: req_bcd76889a7a34e018da0d131369b60d8
+          created: 1792865432822
+          modified: 1792865432822
+          isPrivate: false
+          description: ""
+          sortKey: -1792865432822
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_d546deb293d339a1fa20e35c0ca14c796a455a03
+    created: 1792865432945
+    modified: 1792865432945
+environments:
+  name: Base environment
+  meta:
+    id: env_65557babe2eb4f4a86d4e9854008e539
+    created: 1792865432773
+    modified: 1792865432773
+    isPrivate: false
+  data:
+    base_url: "{{ _.scheme }}://{{ _.host }}{{ _.base_path }}"
+  subEnvironments:
+    - name: OpenAPI env example.com
+      meta:
+        id: env_5dbc1e2b1f2f4491bba7501b5f70a3af
+        created: 1792865432773
+        modified: 1792865457584
+        isPrivate: false
+        sortKey: 1792865432773
+      data:
+        scheme: http
+        base_path: ""
+        host: axionphare.pedrotiritan.qd.je
+spec:
+  contents:
+    openapi: 3.1.0
+    info:
+      title: FastAPI
+      version: 0.1.0
+    tags:
+      - name: Autenticacao
+        description: Autenticação e sessão de usuários (login, logout, refresh e usuário
+          atual).
+      - name: Diagnostico
+        description: Endpoints de diagnóstico e saúde do servidor, banco de dados e desktop.
+      - name: Usuarios
+        description: Cadastro e manutenção de usuários do sistema.
+      - name: Fornecedores
+        description: Cadastro e manutenção de fornecedores.
+      - name: Materias Primas
+        description: Cadastro e manutenção de matérias-primas.
+      - name: Lotes
+        description: Cadastro e manutenção de lotes de matérias-primas.
+      - name: Estoque
+        description: Consulta de estoque e registro de movimentações.
+      - name: Compras
+        description: Pedidos de compra, recebimento, cancelamento e itens.
+      - name: Formulas
+        description: Fórmulas de produção e seus itens/componentes.
+      - name: Clientes
+        description: Cadastro e manutenção de clientes.
+      - name: Pedidos
+        description: Pedidos de venda e seus itens.
+      - name: Producao
+        description: Ordens de produção, início, finalização, cancelamento e consumos.
+      - name: Consumo
+        description: Consulta de consumos de matérias-primas na produção.
+      - name: Previsoes
+        description: Geração e consulta de previsões de demanda.
+      - name: Sugestoes de Compra
+        description: Geração, aprovação e rejeição de sugestões de compra.
+      - name: Alertas
+        description: Listagem e resolução de alertas.
+      - name: Dashboard
+        description: Indicadores e resumos gerais e por área.
+      - name: Relatorios
+        description: Relatórios operacionais de consumo, estoque, vencimentos, compras,
+          produção e previsões.
+      - name: Graficos
+        description: Dados para gráficos.
+    paths:
+      /auth/login:
+        post:
+          tags:
+            - Autenticacao
+          summary: Realizar Login
+          operationId: realizar_login_auth_login_post
+          requestBody:
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/PromptLogin"
+            required: true
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /auth/logout:
+        post:
+          tags:
+            - Autenticacao
+          summary: Realizar Logout
+          operationId: realizar_logout_auth_logout_post
+          parameters:
+            - name: authorization
+              in: header
+              required: false
+              schema:
+                type: string
+                title: Authorization
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /auth/me:
+        get:
+          tags:
+            - Autenticacao
+          summary: Usuario Atual
+          operationId: usuario_atual_auth_me_get
+          parameters:
+            - name: authorization
+              in: header
+              required: false
+              schema:
+                type: string
+                title: Authorization
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /auth/refresh:
+        post:
+          tags:
+            - Autenticacao
+          summary: Refresh Token
+          operationId: refresh_token_auth_refresh_post
+          parameters:
+            - name: authorization
+              in: header
+              required: false
+              schema:
+                type: string
+                title: Authorization
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /diagnosticos/axionphare_desktop:
+        get:
+          tags:
+            - Diagnostico
+          summary: Axionphare Desktop
+          operationId: axionphare_desktop_diagnosticos_axionphare_desktop_get
+          responses:
+            "200":
+              description: Successful Response
+      /diagnosticos/informacao_servidor:
+        get:
+          tags:
+            - Diagnostico
+          summary: Informacao Servidor
+          operationId: informacao_servidor_diagnosticos_informacao_servidor_get
+          responses:
+            "200":
+              description: Successful Response
+      /diagnosticos/status_banco:
+        get:
+          tags:
+            - Diagnostico
+          summary: Status Banco
+          operationId: status_banco_diagnosticos_status_banco_get
+          responses:
+            "200":
+              description: Successful Response
+      /usuarios/:
+        get:
+          tags:
+            - Usuarios
+          summary: Listar Usuarios
+          operationId: listar_usuarios_usuarios__get
+          responses:
+            "200":
+              description: Successful Response
+        post:
+          tags:
+            - Usuarios
+          summary: Criar Usuario
+          operationId: criar_usuario_usuarios__post
+          parameters:
+            - name: authorization
+              in: header
+              required: false
+              schema:
+                type: string
+                title: Authorization
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/BaseCriacaoUsuario"
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /usuarios/{id}:
+        get:
+          tags:
+            - Usuarios
+          summary: Listar Usuarios Id
+          operationId: listar_usuarios_id_usuarios__id__get
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        put:
+          tags:
+            - Usuarios
+          summary: Atualizar Usuario
+          operationId: atualizar_usuario_usuarios__id__put
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+            - name: authorization
+              in: header
+              required: false
+              schema:
+                type: string
+                title: Authorization
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/BaseUsuarios"
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        delete:
+          tags:
+            - Usuarios
+          summary: Deletar Usuario
+          operationId: deletar_usuario_usuarios__id__delete
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+            - name: authorization
+              in: header
+              required: false
+              schema:
+                type: string
+                title: Authorization
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /fornecedores/:
+        get:
+          tags:
+            - Fornecedores
+          summary: Listar Fornecedores
+          operationId: listar_fornecedores_fornecedores__get
+          parameters:
+            - name: nome
+              in: query
+              required: false
+              schema:
+                type: string
+                title: Nome
+            - name: ativo
+              in: query
+              required: false
+              schema:
+                type: boolean
+                title: Ativo
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        post:
+          tags:
+            - Fornecedores
+          summary: Criar Fornecedor
+          operationId: criar_fornecedor_fornecedores__post
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/BaseFornecedor"
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /fornecedores/{id}:
+        get:
+          tags:
+            - Fornecedores
+          summary: Listar Fornecedor Id
+          operationId: listar_fornecedor_id_fornecedores__id__get
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        put:
+          tags:
+            - Fornecedores
+          summary: Atualizar Fornecedor
+          operationId: atualizar_fornecedor_fornecedores__id__put
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/BaseFornecedor"
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        delete:
+          tags:
+            - Fornecedores
+          summary: Deletar Fornecedor
+          operationId: deletar_fornecedor_fornecedores__id__delete
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /materias-primas/:
+        get:
+          tags:
+            - Materias Primas
+          summary: Listar Materias Primas
+          operationId: listar_materias_primas_materias_primas__get
+          parameters:
+            - name: nome
+              in: query
+              required: false
+              schema:
+                type: string
+                title: Nome
+            - name: estoqueBaixo
+              in: query
+              required: false
+              schema:
+                type: boolean
+                title: Estoquebaixo
+            - name: vencendo
+              in: query
+              required: false
+              schema:
+                type: boolean
+                title: Vencendo
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        post:
+          tags:
+            - Materias Primas
+          summary: Criar Materia Prima
+          operationId: criar_materia_prima_materias_primas__post
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/BaseMateriaPrima"
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /materias-primas/{id}:
+        get:
+          tags:
+            - Materias Primas
+          summary: Listar Materia Prima Id
+          operationId: listar_materia_prima_id_materias_primas__id__get
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        put:
+          tags:
+            - Materias Primas
+          summary: Atualizar Materia Prima
+          operationId: atualizar_materia_prima_materias_primas__id__put
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/BaseMateriaPrima"
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        delete:
+          tags:
+            - Materias Primas
+          summary: Deletar Materia Prima
+          operationId: deletar_materia_prima_materias_primas__id__delete
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /lotes/:
+        get:
+          tags:
+            - Lotes
+          summary: Listar Lotes
+          operationId: listar_lotes_lotes__get
+          parameters:
+            - name: vencimento
+              in: query
+              required: false
+              schema:
+                type: integer
+                title: Vencimento
+            - name: materiaPrima
+              in: query
+              required: false
+              schema:
+                type: integer
+                title: Materiaprima
+            - name: fornecedor
+              in: query
+              required: false
+              schema:
+                type: integer
+                title: Fornecedor
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        post:
+          tags:
+            - Lotes
+          summary: Criar Lote
+          operationId: criar_lote_lotes__post
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/BaseLote"
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /lotes/{id}:
+        get:
+          tags:
+            - Lotes
+          summary: Listar Lote Id
+          operationId: listar_lote_id_lotes__id__get
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        put:
+          tags:
+            - Lotes
+          summary: Atualizar Lote
+          operationId: atualizar_lote_lotes__id__put
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/BaseLote"
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        delete:
+          tags:
+            - Lotes
+          summary: Deletar Lote
+          operationId: deletar_lote_lotes__id__delete
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /estoque/:
+        get:
+          tags:
+            - Estoque
+          summary: Consultar Estoque
+          operationId: consultar_estoque_estoque__get
+          responses:
+            "200":
+              description: Successful Response
+      /estoque/movimentacoes:
+        get:
+          tags:
+            - Estoque
+          summary: Listar Movimentacoes
+          operationId: listar_movimentacoes_estoque_movimentacoes_get
+          responses:
+            "200":
+              description: Successful Response
+        post:
+          tags:
+            - Estoque
+          summary: Registrar Movimentacao
+          operationId: registrar_movimentacao_estoque_movimentacoes_post
+          requestBody:
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/MovimentacaoEntrada"
+            required: true
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /estoque/{materia_prima_id}:
+        get:
+          tags:
+            - Estoque
+          summary: Consultar Estoque Materia Prima
+          operationId: consultar_estoque_materia_prima_estoque__materia_prima_id__get
+          parameters:
+            - name: materia_prima_id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Materia Prima Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /compras/:
+        get:
+          tags:
+            - Compras
+          summary: Listar Compras
+          operationId: listar_compras_compras__get
+          responses:
+            "200":
+              description: Successful Response
+        post:
+          tags:
+            - Compras
+          summary: Criar Compra
+          operationId: criar_compra_compras__post
+          requestBody:
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/BaseCompra"
+            required: true
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /compras/{id}:
+        get:
+          tags:
+            - Compras
+          summary: Listar Compra Id
+          operationId: listar_compra_id_compras__id__get
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        put:
+          tags:
+            - Compras
+          summary: Atualizar Compra
+          operationId: atualizar_compra_compras__id__put
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/BaseCompra"
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        delete:
+          tags:
+            - Compras
+          summary: Deletar Compra
+          operationId: deletar_compra_compras__id__delete
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /compras/{id}/cancelar:
+        post:
+          tags:
+            - Compras
+          summary: Cancelar Compra
+          operationId: cancelar_compra_compras__id__cancelar_post
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /compras/{id}/itens:
+        post:
+          tags:
+            - Compras
+          summary: Adicionar Item Compra
+          operationId: adicionar_item_compra_compras__id__itens_post
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ItemCompraInput"
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /compras/{id}/receber:
+        post:
+          tags:
+            - Compras
+          summary: Receber Compra
+          operationId: receber_compra_compras__id__receber_post
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /formulas/:
+        get:
+          tags:
+            - Formulas
+          summary: Listar Formulas
+          operationId: listar_formulas_formulas__get
+          responses:
+            "200":
+              description: Successful Response
+        post:
+          tags:
+            - Formulas
+          summary: Criar Formula
+          operationId: criar_formula_formulas__post
+          requestBody:
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/BaseFormula"
+            required: true
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /formulas/{id}:
+        get:
+          tags:
+            - Formulas
+          summary: Listar Formula Id
+          operationId: listar_formula_id_formulas__id__get
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        put:
+          tags:
+            - Formulas
+          summary: Atualizar Formula
+          operationId: atualizar_formula_formulas__id__put
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/BaseFormula"
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        delete:
+          tags:
+            - Formulas
+          summary: Deletar Formula
+          operationId: deletar_formula_formulas__id__delete
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /formulas/{id}/itens:
+        get:
+          tags:
+            - Formulas
+          summary: Listar Itens Formula
+          operationId: listar_itens_formula_formulas__id__itens_get
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        post:
+          tags:
+            - Formulas
+          summary: Adicionar Item Formula
+          operationId: adicionar_item_formula_formulas__id__itens_post
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ItemFormulaInput"
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /formulas/{id}/itens/{item_id}:
+        put:
+          tags:
+            - Formulas
+          summary: Atualizar Item Formula
+          operationId: atualizar_item_formula_formulas__id__itens__item_id__put
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+            - name: item_id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Item Id
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ItemFormulaUpdate"
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        delete:
+          tags:
+            - Formulas
+          summary: Deletar Item Formula
+          operationId: deletar_item_formula_formulas__id__itens__item_id__delete
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+            - name: item_id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Item Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /clientes/:
+        get:
+          tags:
+            - Clientes
+          summary: Listar Clientes
+          operationId: listar_clientes_clientes__get
+          responses:
+            "200":
+              description: Successful Response
+        post:
+          tags:
+            - Clientes
+          summary: Criar Cliente
+          operationId: criar_cliente_clientes__post
+          requestBody:
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/BaseCliente"
+            required: true
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /clientes/{id}:
+        get:
+          tags:
+            - Clientes
+          summary: Listar Cliente Id
+          operationId: listar_cliente_id_clientes__id__get
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        put:
+          tags:
+            - Clientes
+          summary: Atualizar Cliente
+          operationId: atualizar_cliente_clientes__id__put
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/BaseCliente"
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        delete:
+          tags:
+            - Clientes
+          summary: Deletar Cliente
+          operationId: deletar_cliente_clientes__id__delete
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /pedidos/:
+        get:
+          tags:
+            - Pedidos
+          summary: Listar Pedidos
+          operationId: listar_pedidos_pedidos__get
+          responses:
+            "200":
+              description: Successful Response
+        post:
+          tags:
+            - Pedidos
+          summary: Criar Pedido
+          operationId: criar_pedido_pedidos__post
+          requestBody:
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/BasePedido"
+            required: true
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /pedidos/{id}:
+        get:
+          tags:
+            - Pedidos
+          summary: Listar Pedido Id
+          operationId: listar_pedido_id_pedidos__id__get
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        put:
+          tags:
+            - Pedidos
+          summary: Atualizar Pedido
+          operationId: atualizar_pedido_pedidos__id__put
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/BasePedido"
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        delete:
+          tags:
+            - Pedidos
+          summary: Deletar Pedido
+          operationId: deletar_pedido_pedidos__id__delete
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /pedidos/{id}/itens:
+        get:
+          tags:
+            - Pedidos
+          summary: Listar Itens Pedido
+          operationId: listar_itens_pedido_pedidos__id__itens_get
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        post:
+          tags:
+            - Pedidos
+          summary: Adicionar Item Pedido
+          operationId: adicionar_item_pedido_pedidos__id__itens_post
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ItemPedidoInput"
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /ordens-producao/:
+        get:
+          tags:
+            - Producao
+          summary: Listar Ordens
+          operationId: listar_ordens_ordens_producao__get
+          responses:
+            "200":
+              description: Successful Response
+        post:
+          tags:
+            - Producao
+          summary: Criar Ordem
+          operationId: criar_ordem_ordens_producao__post
+          requestBody:
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/BaseOrdem"
+            required: true
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /ordens-producao/{id}:
+        get:
+          tags:
+            - Producao
+          summary: Listar Ordem Id
+          operationId: listar_ordem_id_ordens_producao__id__get
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        put:
+          tags:
+            - Producao
+          summary: Atualizar Ordem
+          operationId: atualizar_ordem_ordens_producao__id__put
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/BaseOrdem"
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+        delete:
+          tags:
+            - Producao
+          summary: Deletar Ordem
+          operationId: deletar_ordem_ordens_producao__id__delete
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /ordens-producao/{id}/cancelar:
+        post:
+          tags:
+            - Producao
+          summary: Cancelar Ordem
+          operationId: cancelar_ordem_ordens_producao__id__cancelar_post
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /ordens-producao/{id}/consumos:
+        post:
+          tags:
+            - Producao
+          summary: Registrar Consumo
+          operationId: registrar_consumo_ordens_producao__id__consumos_post
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ConsumoInput"
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /ordens-producao/{id}/finalizar:
+        post:
+          tags:
+            - Producao
+          summary: Finalizar Ordem
+          operationId: finalizar_ordem_ordens_producao__id__finalizar_post
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /ordens-producao/{id}/iniciar:
+        post:
+          tags:
+            - Producao
+          summary: Iniciar Ordem
+          operationId: iniciar_ordem_ordens_producao__id__iniciar_post
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /consumos/:
+        get:
+          tags:
+            - Consumo
+          summary: Listar Consumos
+          operationId: listar_consumos_consumos__get
+          parameters:
+            - name: inicio
+              in: query
+              required: false
+              schema:
+                type: string
+                format: date
+                title: Inicio
+            - name: fim
+              in: query
+              required: false
+              schema:
+                type: string
+                format: date
+                title: Fim
+            - name: materiaPrima
+              in: query
+              required: false
+              schema:
+                type: integer
+                title: Materiaprima
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /previsoes/:
+        get:
+          tags:
+            - Previsoes
+          summary: Listar Previsoes
+          operationId: listar_previsoes_previsoes__get
+          responses:
+            "200":
+              description: Successful Response
+      /previsoes/gerar:
+        post:
+          tags:
+            - Previsoes
+          summary: Gerar Previsao
+          operationId: gerar_previsao_previsoes_gerar_post
+          requestBody:
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/PrevisaoInput"
+            required: true
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /previsoes/gerar-automatica:
+        post:
+          tags:
+            - Previsoes
+          summary: Gerar Previsao Automatica
+          operationId: gerar_previsao_automatica_previsoes_gerar_automatica_post
+          parameters:
+            - name: inicio
+              in: query
+              required: false
+              schema:
+                type: string
+                format: date
+                title: Inicio
+            - name: fim
+              in: query
+              required: false
+              schema:
+                type: string
+                format: date
+                title: Fim
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /previsoes/materia-prima/{id}:
+        get:
+          tags:
+            - Previsoes
+          summary: Listar Previsoes Materia Prima
+          operationId: listar_previsoes_materia_prima_previsoes_materia_prima__id__get
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /sugestoes-compra/:
+        get:
+          tags:
+            - Sugestoes de Compra
+          summary: Listar Sugestoes
+          operationId: listar_sugestoes_sugestoes_compra__get
+          responses:
+            "200":
+              description: Successful Response
+      /sugestoes-compra/gerar:
+        post:
+          tags:
+            - Sugestoes de Compra
+          summary: Gerar Sugestoes
+          operationId: gerar_sugestoes_sugestoes_compra_gerar_post
+          responses:
+            "200":
+              description: Successful Response
+      /sugestoes-compra/{id}/aprovar:
+        post:
+          tags:
+            - Sugestoes de Compra
+          summary: Aprovar Sugestao
+          operationId: aprovar_sugestao_sugestoes_compra__id__aprovar_post
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /sugestoes-compra/{id}/rejeitar:
+        post:
+          tags:
+            - Sugestoes de Compra
+          summary: Rejeitar Sugestao
+          operationId: rejeitar_sugestao_sugestoes_compra__id__rejeitar_post
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /alertas/:
+        get:
+          tags:
+            - Alertas
+          summary: Listar Alertas
+          operationId: listar_alertas_alertas__get
+          parameters:
+            - name: tipo
+              in: query
+              required: false
+              schema:
+                type: string
+                title: Tipo
+            - name: prioridade
+              in: query
+              required: false
+              schema:
+                type: string
+                title: Prioridade
+            - name: resolvido
+              in: query
+              required: false
+              schema:
+                type: boolean
+                title: Resolvido
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /alertas/{id}/resolver:
+        post:
+          tags:
+            - Alertas
+          summary: Resolver Alerta
+          operationId: resolver_alerta_alertas__id__resolver_post
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                title: Id
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /dashboard/:
+        get:
+          tags:
+            - Dashboard
+          summary: Resumo Geral
+          operationId: resumo_geral_dashboard__get
+          responses:
+            "200":
+              description: Successful Response
+      /dashboard/alertas:
+        get:
+          tags:
+            - Dashboard
+          summary: Dashboard Alertas
+          operationId: dashboard_alertas_dashboard_alertas_get
+          responses:
+            "200":
+              description: Successful Response
+      /dashboard/compras:
+        get:
+          tags:
+            - Dashboard
+          summary: Dashboard Compras
+          operationId: dashboard_compras_dashboard_compras_get
+          responses:
+            "200":
+              description: Successful Response
+      /dashboard/estoque:
+        get:
+          tags:
+            - Dashboard
+          summary: Dashboard Estoque
+          operationId: dashboard_estoque_dashboard_estoque_get
+          responses:
+            "200":
+              description: Successful Response
+      /dashboard/previsoes:
+        get:
+          tags:
+            - Dashboard
+          summary: Dashboard Previsoes
+          operationId: dashboard_previsoes_dashboard_previsoes_get
+          responses:
+            "200":
+              description: Successful Response
+      /dashboard/producao:
+        get:
+          tags:
+            - Dashboard
+          summary: Dashboard Producao
+          operationId: dashboard_producao_dashboard_producao_get
+          responses:
+            "200":
+              description: Successful Response
+      /relatorios/compras:
+        get:
+          tags:
+            - Relatorios
+          summary: Relatorio Compras
+          operationId: relatorio_compras_relatorios_compras_get
+          parameters:
+            - name: inicio
+              in: query
+              required: false
+              schema:
+                type: string
+                format: date
+                title: Inicio
+            - name: fim
+              in: query
+              required: false
+              schema:
+                type: string
+                format: date
+                title: Fim
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /relatorios/consumo:
+        get:
+          tags:
+            - Relatorios
+          summary: Relatorio Consumo
+          operationId: relatorio_consumo_relatorios_consumo_get
+          parameters:
+            - name: inicio
+              in: query
+              required: false
+              schema:
+                type: string
+                format: date
+                title: Inicio
+            - name: fim
+              in: query
+              required: false
+              schema:
+                type: string
+                format: date
+                title: Fim
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /relatorios/estoque:
+        get:
+          tags:
+            - Relatorios
+          summary: Relatorio Estoque
+          operationId: relatorio_estoque_relatorios_estoque_get
+          responses:
+            "200":
+              description: Successful Response
+      /relatorios/previsoes:
+        get:
+          tags:
+            - Relatorios
+          summary: Relatorio Previsoes
+          operationId: relatorio_previsoes_relatorios_previsoes_get
+          responses:
+            "200":
+              description: Successful Response
+      /relatorios/producao:
+        get:
+          tags:
+            - Relatorios
+          summary: Relatorio Producao
+          operationId: relatorio_producao_relatorios_producao_get
+          parameters:
+            - name: inicio
+              in: query
+              required: false
+              schema:
+                type: string
+                format: date
+                title: Inicio
+            - name: fim
+              in: query
+              required: false
+              schema:
+                type: string
+                format: date
+                title: Fim
+          responses:
+            "200":
+              description: Successful Response
+            "422":
+              description: Validation Error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/HTTPValidationError"
+      /relatorios/vencimentos:
+        get:
+          tags:
+            - Relatorios
+          summary: Relatorio Vencimentos
+          operationId: relatorio_vencimentos_relatorios_vencimentos_get
+          responses:
+            "200":
+              description: Successful Response
+      /graficos/consumo:
+        get:
+          tags:
+            - Graficos
+          summary: Consumo
+          operationId: consumo_graficos_consumo_get
+          responses:
+            "200":
+              description: Successful Response
+    components:
+      schemas:
+        BaseCliente:
+          properties:
+            nome:
+              type: string
+              title: Nome
+            telefone:
+              anyOf:
+                - type: string
+                - type: "null"
+              title: Telefone
+            email:
+              anyOf:
+                - type: string
+                - type: "null"
+              title: Email
+            cnpj:
+              anyOf:
+                - type: string
+                - type: "null"
+              title: Cnpj
+          type: object
+          required:
+            - nome
+          title: BaseCliente
+        BaseCompra:
+          properties:
+            fornecedor_id:
+              type: integer
+              title: Fornecedor Id
+            data_compra:
+              anyOf:
+                - type: string
+                  format: date
+                - type: "null"
+              title: Data Compra
+            previsao_entrega:
+              anyOf:
+                - type: string
+                  format: date
+                - type: "null"
+              title: Previsao Entrega
+            status:
+              type: string
+              title: Status
+              default: PENDENTE
+          type: object
+          required:
+            - fornecedor_id
+          title: BaseCompra
+        BaseCriacaoUsuario:
+          properties:
+            nome:
+              type: string
+              title: Nome
+            telefone:
+              type: string
+              title: Telefone
+            email:
+              type: string
+              title: Email
+            senha:
+              type: string
+              title: Senha
+          type: object
+          required:
+            - nome
+            - telefone
+            - email
+            - senha
+          title: BaseCriacaoUsuario
+        BaseFormula:
+          properties:
+            codigo:
+              anyOf:
+                - type: string
+                - type: "null"
+              title: Codigo
+            descricao:
+              anyOf:
+                - type: string
+                - type: "null"
+              title: Descricao
+            categoria:
+              anyOf:
+                - type: string
+                - type: "null"
+              title: Categoria
+            ativa:
+              type: boolean
+              title: Ativa
+              default: true
+          type: object
+          title: BaseFormula
+        BaseFornecedor:
+          properties:
+            razao_social:
+              type: string
+              title: Razao Social
+            nome_fantasia:
+              anyOf:
+                - type: string
+                - type: "null"
+              title: Nome Fantasia
+            cnpj:
+              anyOf:
+                - type: string
+                - type: "null"
+              title: Cnpj
+            telefone:
+              anyOf:
+                - type: string
+                - type: "null"
+              title: Telefone
+            email:
+              anyOf:
+                - type: string
+                - type: "null"
+              title: Email
+            prazo_entrega_dias:
+              anyOf:
+                - type: integer
+                - type: "null"
+              title: Prazo Entrega Dias
+            ativo:
+              type: boolean
+              title: Ativo
+              default: true
+          type: object
+          required:
+            - razao_social
+          title: BaseFornecedor
+        BaseLote:
+          properties:
+            materia_prima_id:
+              type: integer
+              title: Materia Prima Id
+            fornecedor_id:
+              anyOf:
+                - type: integer
+                - type: "null"
+              title: Fornecedor Id
+            numero_lote:
+              anyOf:
+                - type: string
+                - type: "null"
+              title: Numero Lote
+            quantidade_inicial:
+              anyOf:
+                - type: number
+                - type: "null"
+              title: Quantidade Inicial
+            quantidade_atual:
+              anyOf:
+                - type: number
+                - type: "null"
+              title: Quantidade Atual
+            data_fabricacao:
+              anyOf:
+                - type: string
+                  format: date
+                - type: "null"
+              title: Data Fabricacao
+            data_validade:
+              anyOf:
+                - type: string
+                  format: date
+                - type: "null"
+              title: Data Validade
+            data_recebimento:
+              anyOf:
+                - type: string
+                  format: date
+                - type: "null"
+              title: Data Recebimento
+            valor_unitario:
+              anyOf:
+                - type: number
+                - type: "null"
+              title: Valor Unitario
+          type: object
+          required:
+            - materia_prima_id
+          title: BaseLote
+        BaseMateriaPrima:
+          properties:
+            codigo:
+              anyOf:
+                - type: string
+                - type: "null"
+              title: Codigo
+            nome:
+              anyOf:
+                - type: string
+                - type: "null"
+              title: Nome
+            unidade:
+              anyOf:
+                - type: string
+                - type: "null"
+              title: Unidade
+            estoque_minimo:
+              anyOf:
+                - type: number
+                - type: "null"
+              title: Estoque Minimo
+            estoque_maximo:
+              anyOf:
+                - type: number
+                - type: "null"
+              title: Estoque Maximo
+            consumo_medio_mensal:
+              anyOf:
+                - type: number
+                - type: "null"
+              title: Consumo Medio Mensal
+            ativo:
+              type: boolean
+              title: Ativo
+              default: true
+          type: object
+          title: BaseMateriaPrima
+        BaseOrdem:
+          properties:
+            pedido_id:
+              anyOf:
+                - type: integer
+                - type: "null"
+              title: Pedido Id
+            status:
+              type: string
+              title: Status
+              default: PENDENTE
+          type: object
+          title: BaseOrdem
+        BasePedido:
+          properties:
+            cliente_id:
+              type: integer
+              title: Cliente Id
+            status:
+              type: string
+              title: Status
+              default: PENDENTE
+            data_entrega:
+              anyOf:
+                - type: string
+                  format: date
+                - type: "null"
+              title: Data Entrega
+          type: object
+          required:
+            - cliente_id
+          title: BasePedido
+        BaseUsuarios:
+          properties:
+            nome:
+              type: string
+              title: Nome
+            telefone:
+              type: string
+              title: Telefone
+            email:
+              type: string
+              title: Email
+          type: object
+          required:
+            - nome
+            - telefone
+            - email
+          title: BaseUsuarios
+        ConsumoInput:
+          properties:
+            lote_id:
+              type: integer
+              title: Lote Id
+            quantidade:
+              type: number
+              title: Quantidade
+          type: object
+          required:
+            - lote_id
+            - quantidade
+          title: ConsumoInput
+        HTTPValidationError:
+          properties:
+            detail:
+              items:
+                $ref: "#/components/schemas/ValidationError"
+              type: array
+              title: Detail
+          type: object
+          title: HTTPValidationError
+        ItemCompraInput:
+          properties:
+            materia_prima_id:
+              type: integer
+              title: Materia Prima Id
+            quantidade:
+              type: number
+              title: Quantidade
+            valor_unitario:
+              anyOf:
+                - type: number
+                - type: "null"
+              title: Valor Unitario
+          type: object
+          required:
+            - materia_prima_id
+            - quantidade
+          title: ItemCompraInput
+        ItemFormulaInput:
+          properties:
+            materia_prima_id:
+              type: integer
+              title: Materia Prima Id
+            quantidade:
+              type: number
+              title: Quantidade
+            unidade:
+              anyOf:
+                - type: string
+                - type: "null"
+              title: Unidade
+          type: object
+          required:
+            - materia_prima_id
+            - quantidade
+          title: ItemFormulaInput
+        ItemFormulaUpdate:
+          properties:
+            quantidade:
+              anyOf:
+                - type: number
+                - type: "null"
+              title: Quantidade
+            unidade:
+              anyOf:
+                - type: string
+                - type: "null"
+              title: Unidade
+          type: object
+          title: ItemFormulaUpdate
+        ItemPedidoInput:
+          properties:
+            formula_id:
+              type: integer
+              title: Formula Id
+            quantidade:
+              type: integer
+              title: Quantidade
+          type: object
+          required:
+            - formula_id
+            - quantidade
+          title: ItemPedidoInput
+        MovimentacaoEntrada:
+          properties:
+            loteId:
+              type: integer
+              title: Loteid
+            tipo:
+              type: string
+              title: Tipo
+            quantidade:
+              type: number
+              title: Quantidade
+            observacao:
+              anyOf:
+                - type: string
+                - type: "null"
+              title: Observacao
+          type: object
+          required:
+            - loteId
+            - tipo
+            - quantidade
+          title: MovimentacaoEntrada
+        PrevisaoInput:
+          properties:
+            materia_prima_id:
+              type: integer
+              title: Materia Prima Id
+            periodo_inicio:
+              type: string
+              format: date
+              title: Periodo Inicio
+            periodo_fim:
+              type: string
+              format: date
+              title: Periodo Fim
+            consumo_previsto:
+              type: number
+              title: Consumo Previsto
+            confianca:
+              anyOf:
+                - type: number
+                - type: "null"
+              title: Confianca
+            modelo_utilizado:
+              type: string
+              title: Modelo Utilizado
+              default: MEDIA_MOVEL
+          type: object
+          required:
+            - materia_prima_id
+            - periodo_inicio
+            - periodo_fim
+            - consumo_previsto
+          title: PrevisaoInput
+        PromptLogin:
+          properties:
+            email:
+              type: string
+              title: Email
+            senha:
+              type: string
+              title: Senha
+          type: object
+          required:
+            - email
+            - senha
+          title: PromptLogin
+        ValidationError:
+          properties:
+            loc:
+              items:
+                anyOf:
+                  - type: string
+                  - type: integer
+              type: array
+              title: Location
+            msg:
+              type: string
+              title: Message
+            type:
+              type: string
+              title: Error Type
+            input:
+              title: Input
+            ctx:
+              type: object
+              title: Context
+          type: object
+          required:
+            - loc
+            - msg
+            - type
+          title: ValidationError
+  meta:
+    id: spc_17faf640663549bba036fed1f49b9e28
+    created: 1792865432771
+    modified: 1792865432771
