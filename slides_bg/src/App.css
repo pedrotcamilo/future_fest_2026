@@ -597,3 +597,787 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   AuraFarma — projeto adicionado ao final da apresentação.
+   Regras exclusivas dos novos slides; nada acima foi alterado.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.slideshow--aura {
+  background-image: url('../bg_aurafarma.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.slideshow--aura::before {
+  background: linear-gradient(
+    100deg,
+    rgba(10, 7, 6, 0.93) 0%,
+    rgba(11, 8, 6, 0.87) 34%,
+    rgba(18, 10, 6, 0.64) 63%,
+    rgba(38, 18, 6, 0.34) 100%
+  );
+}
+
+.aura-slide {
+  --aura-accent: #f26a21;
+  --aura-accent-soft: #f7a05a;
+  --aura-line: rgba(255, 255, 255, 0.14);
+  --aura-card: rgba(20, 13, 9, 0.52);
+  --aura-text: #f5efe9;
+  --aura-muted: #d3c4ba;
+
+  display: flex;
+  flex-direction: column;
+  min-height: min(84vh, 900px);
+  color: var(--aura-text);
+}
+
+.aura-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: clamp(0.6rem, 2vh, 1.6rem);
+}
+
+.aura-logo {
+  height: clamp(28px, 4.2vh, 44px);
+  width: auto;
+  display: block;
+}
+
+
+.aura-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+  padding: clamp(0.4rem, 1.6vh, 1.2rem) 0;
+}
+
+.aura-kicker {
+  font-size: clamp(0.6rem, 0.82vw, 0.78rem);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--aura-accent);
+  font-weight: 500;
+  margin-bottom: clamp(0.4rem, 1vh, 0.7rem);
+}
+
+.aura-title {
+  margin-bottom: clamp(0.9rem, 2.2vh, 1.6rem);
+}
+
+.aura-title-sub {
+  display: inline-block;
+  margin-left: clamp(0.6rem, 1vw, 1rem);
+  font-size: 0.52em;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  color: var(--aura-accent-soft);
+}
+
+.aura-lead {
+  font-size: clamp(1rem, 1.55vw, 1.38rem);
+  line-height: 1.55;
+  color: var(--aura-text);
+  font-weight: 300;
+  max-width: 62ch;
+  margin-bottom: clamp(0.8rem, 1.8vh, 1.4rem);
+}
+
+.aura-lead--tight {
+  margin-bottom: clamp(0.7rem, 1.6vh, 1.2rem);
+}
+
+.aura-eyebrow {
+  font-size: clamp(0.66rem, 0.9vw, 0.86rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--aura-accent-soft);
+  font-weight: 400;
+  margin-bottom: clamp(0.35rem, 0.9vh, 0.6rem);
+}
+
+.aura-note {
+  margin-top: clamp(0.6rem, 1.6vh, 1.2rem);
+  font-size: clamp(0.6rem, 0.78vw, 0.74rem);
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 300;
+}
+
+.aura-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(0.4rem, 0.8vw, 0.7rem);
+}
+
+.aura-tags--center {
+  justify-content: center;
+}
+
+.aura-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: clamp(0.24rem, 0.6vh, 0.4rem) clamp(0.55rem, 1vw, 0.95rem);
+  border-radius: 999px;
+  border: 1px solid var(--aura-line);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--aura-muted);
+  font-size: clamp(0.66rem, 0.9vw, 0.85rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.aura-tag--accent {
+  background: var(--aura-accent);
+  border-color: var(--aura-accent);
+  color: #1c0f07;
+  font-weight: 500;
+}
+
+.aura-tag--light {
+  background: var(--aura-accent-soft);
+  border-color: var(--aura-accent-soft);
+}
+
+.aura-divider {
+  width: clamp(80px, 9vw, 130px);
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--aura-accent), rgba(242, 106, 33, 0.15));
+  margin: clamp(0.7rem, 1.8vh, 1.2rem) 0;
+}
+
+/* ── Clientes / mercado ───────────────────────────────────── */
+.aura-clients-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr);
+  gap: clamp(1.4rem, 3vw, 3.2rem);
+  align-items: center;
+}
+
+.aura-clients-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(0.6rem, 1.4vh, 1rem);
+}
+
+.aura-statement {
+  font-size: clamp(1.25rem, 2.3vw, 2.15rem);
+  line-height: 1.45;
+  font-weight: 300;
+  color: #fff;
+  max-width: 26ch;
+}
+
+.aura-market {
+  background: var(--aura-card);
+  border: 1px solid var(--aura-line);
+  border-radius: clamp(10px, 1.2vw, 16px);
+  padding: clamp(1.1rem, 2.6vh, 2rem) clamp(1rem, 1.8vw, 1.8rem);
+}
+
+.aura-market-grid {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 2vw, 2rem);
+}
+
+.aura-donut {
+  position: relative;
+  width: clamp(155px, 25vh, 275px);
+  aspect-ratio: 1;
+  flex: none;
+  border-radius: 50%;
+  background: conic-gradient(
+    from -90deg,
+    #f26a21 0 42.9%,
+    #d9541c 42.9% 71.5%,
+    #b34318 71.5% 85.8%,
+    #f7a05a 85.8% 100%
+  );
+  animation: fadeInUp 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.aura-donut-hole {
+  position: absolute;
+  inset: 27%;
+  border-radius: 50%;
+  background: rgba(12, 8, 6, 0.94);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.aura-legend {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.45rem, 1.2vh, 0.85rem);
+  min-width: 0;
+}
+
+.aura-legend-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: clamp(0.75rem, 1.02vw, 1rem);
+  color: var(--aura-muted);
+  font-weight: 300;
+}
+
+.aura-legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.aura-legend-label {
+  line-height: 1.3;
+}
+
+.aura-legend-value {
+  color: #fff;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+/* ── Dores ────────────────────────────────────────────────── */
+.aura-pain-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.7rem, 1.6vh, 1.2rem);
+}
+
+.aura-pain-card {
+  position: relative;
+  background: var(--aura-card);
+  border: 1px solid var(--aura-line);
+  border-radius: clamp(10px, 1.2vw, 16px);
+  padding: clamp(1.1rem, 2.6vh, 2rem) clamp(1rem, 1.7vw, 1.7rem);
+  min-height: clamp(125px, 20vh, 215px);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.4rem 0.8rem;
+  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.aura-pain-index {
+  grid-column: 1 / -1;
+  font-size: clamp(0.58rem, 0.72vw, 0.72rem);
+  letter-spacing: 0.2em;
+  color: var(--aura-accent);
+  font-weight: 500;
+}
+
+.aura-pain-name {
+  font-size: clamp(1.05rem, 1.55vw, 1.42rem);
+  color: #fff;
+  font-weight: 300;
+  line-height: 1.35;
+}
+
+.aura-pain-arrow {
+  color: var(--aura-accent);
+  font-size: clamp(0.9rem, 1.2vw, 1.15rem);
+}
+
+.aura-pain-gain {
+  grid-column: 1 / -1;
+  font-size: clamp(1.1rem, 1.7vw, 1.55rem);
+  color: var(--aura-accent-soft);
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+/* ── Proposta de valor ────────────────────────────────────── */
+.aura-value-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: 1.15fr 0.85fr;
+  gap: clamp(0.7rem, 1.8vh, 1.3rem);
+  min-height: clamp(300px, 40vh, 420px);
+}
+
+.aura-value-card {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.7rem, 1.3vw, 1.2rem);
+  background: var(--aura-card);
+  border: 1px solid var(--aura-line);
+  border-radius: clamp(10px, 1.2vw, 16px);
+  padding: clamp(1.1rem, 2.8vh, 2.1rem) clamp(1rem, 1.7vw, 1.8rem);
+  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.aura-value-icon {
+  flex: none;
+  font-size: clamp(1.5rem, 2.4vw, 2.4rem);
+  color: var(--aura-accent);
+  margin-top: 2px;
+}
+
+.aura-value-text {
+  font-size: clamp(1.15rem, 2vw, 1.9rem);
+  line-height: 1.35;
+  color: #fff;
+  font-weight: 300;
+}
+
+/* ── Plataforma ───────────────────────────────────────────── */
+.aura-platform-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.7rem, 1.7vh, 1.2rem);
+}
+
+.aura-platform-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: clamp(0.6rem, 1vw, 1rem);
+  background: var(--aura-card);
+  border: 1px solid var(--aura-line);
+  border-radius: clamp(10px, 1.2vw, 16px);
+  padding: clamp(1.1rem, 2.6vh, 1.9rem) clamp(0.9rem, 1.5vw, 1.5rem);
+  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.aura-platform-icon {
+  flex: none;
+  font-size: clamp(1.3rem, 2vw, 2rem);
+  color: var(--aura-accent);
+}
+
+.aura-platform-name {
+  font-size: clamp(1rem, 1.42vw, 1.32rem);
+  color: #fff;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.aura-status {
+  position: absolute;
+  top: clamp(0.5rem, 1vh, 0.8rem);
+  right: clamp(0.5rem, 0.9vw, 0.9rem);
+  font-size: clamp(0.5rem, 0.65vw, 0.62rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #f2c9b0;
+  border: 1px solid rgba(242, 106, 33, 0.55);
+  border-radius: 999px;
+  padding: 2px 8px;
+  background: rgba(242, 106, 33, 0.12);
+}
+
+/* ── Modelo operacional ───────────────────────────────────── */
+.aura-op-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: clamp(0.9rem, 2vw, 1.9rem);
+  align-items: stretch;
+}
+
+.aura-op-group {
+  display: flex;
+  flex-direction: column;
+  background: var(--aura-card);
+  border: 1px solid var(--aura-line);
+  border-radius: clamp(10px, 1.2vw, 16px);
+  padding: clamp(1rem, 2.4vh, 1.8rem) clamp(0.9rem, 1.5vw, 1.4rem);
+}
+
+.aura-op-items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.5rem, 1.2vh, 0.85rem);
+}
+
+.aura-op-items li {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(0.55rem, 0.9vw, 0.85rem);
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: clamp(8px, 0.9vw, 12px);
+  padding: clamp(0.8rem, 2.1vh, 1.5rem) clamp(0.7rem, 1.1vw, 1.1rem);
+  font-size: clamp(0.85rem, 1.18vw, 1.1rem);
+  line-height: 1.45;
+  color: var(--aura-text);
+  font-weight: 300;
+}
+
+.aura-op-items li i {
+  flex: none;
+  color: var(--aura-accent);
+  font-size: 1.15em;
+  margin-top: 0.08em;
+}
+
+.aura-op-bracket {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  gap: clamp(0.45rem, 0.8vw, 0.75rem);
+  padding-left: clamp(0.3rem, 0.7vw, 0.8rem);
+}
+
+.aura-bracket-mark {
+  align-self: stretch;
+  flex: none;
+  width: clamp(12px, 1.1vw, 20px);
+  border: 1.5px solid var(--aura-accent);
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+}
+
+.aura-bracket-stem {
+  flex: none;
+  width: clamp(16px, 1.8vw, 38px);
+  height: 1.5px;
+  background: var(--aura-accent);
+}
+
+.aura-bracket-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--aura-accent);
+  flex: none;
+}
+
+.aura-bracket-label {
+  font-size: clamp(0.95rem, 1.4vw, 1.3rem);
+  color: var(--aura-accent-soft);
+  font-weight: 400;
+  line-height: 1.3;
+  max-width: 9ch;
+}
+
+/* ── Fontes de receita ────────────────────────────────────── */
+.aura-revenue-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.6rem, 1.4vh, 1rem);
+}
+
+.aura-revenue-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: clamp(0.6rem, 1.4vw, 1.4rem);
+  background: var(--aura-card);
+  border: 1px solid var(--aura-line);
+  border-radius: clamp(10px, 1.2vw, 16px);
+  padding: clamp(0.9rem, 2.3vh, 1.7rem) clamp(1rem, 1.7vw, 1.7rem);
+  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.aura-revenue-index {
+  font-size: clamp(0.58rem, 0.75vw, 0.72rem);
+  letter-spacing: 0.16em;
+  color: var(--aura-accent);
+  font-weight: 500;
+}
+
+.aura-revenue-text {
+  font-size: clamp(1rem, 1.45vw, 1.32rem);
+  color: #fff;
+  font-weight: 300;
+  line-height: 1.4;
+}
+
+.aura-revenue-arrow {
+  color: var(--aura-accent);
+  font-size: clamp(0.85rem, 1.1vw, 1.05rem);
+}
+
+/* ── Comparativo ──────────────────────────────────────────── */
+.aura-table-wrap {
+  overflow: hidden;
+  border: 1px solid var(--aura-line);
+  border-radius: clamp(10px, 1.1vw, 14px);
+  background: rgba(14, 9, 7, 0.55);
+}
+
+.aura-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.aura-table th {
+  text-align: left;
+  padding: clamp(0.5rem, 1.4vh, 0.95rem) clamp(0.5rem, 1.1vw, 1rem);
+  font-size: clamp(0.62rem, 0.84vw, 0.82rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--aura-muted);
+  font-weight: 500;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.aura-table th:nth-child(1) { width: 13%; }
+.aura-table th:nth-child(2) { width: 20%; }
+.aura-table th:nth-child(3) { width: 19%; }
+.aura-table th:nth-child(4) { width: 29%; }
+.aura-table th:nth-child(5) { width: 19%; }
+
+.aura-table td {
+  padding: clamp(0.65rem, 1.9vh, 1.3rem) clamp(0.5rem, 1.1vw, 1rem);
+  font-size: clamp(0.72rem, 0.95vw, 1rem);
+  line-height: 1.4;
+  color: var(--aura-text);
+  font-weight: 300;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.aura-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.aura-company {
+  color: #fff;
+  font-weight: 500;
+  font-size: 1.06em;
+}
+
+.aura-table tr.is-highlight td {
+  background: #e95c1d;
+  color: #1d1008;
+  font-weight: 500;
+  border-bottom: none;
+}
+
+.aura-table tr.is-highlight .aura-company {
+  color: #1d1008;
+}
+
+/* ── MVP (telas) ──────────────────────────────────────────── */
+.aura-mvp-grid {
+  display: grid;
+  grid-template-columns: minmax(270px, 0.86fr) minmax(0, 1.5fr);
+  gap: clamp(1.2rem, 2.6vw, 2.6rem);
+  align-items: center;
+}
+
+.aura-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.45rem, 1.1vh, 0.85rem);
+}
+
+.aura-list li {
+  position: relative;
+  padding-left: clamp(1.3rem, 1.9vw, 1.8rem);
+  font-size: clamp(0.78rem, 1.05vw, 1rem);
+  line-height: 1.5;
+  color: var(--aura-muted);
+  font-weight: 300;
+}
+
+.aura-list li i {
+  position: absolute;
+  left: 0;
+  top: 0.08em;
+  color: var(--aura-accent);
+  font-size: 0.95em;
+}
+
+.aura-list--compact li {
+  font-size: clamp(0.78rem, 1vw, 0.98rem);
+}
+
+.aura-shot {
+  position: relative;
+  margin: 0;
+  animation: fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.aura-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: clamp(8px, 1vw, 12px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+.aura-shot img {
+  -webkit-mask-image: linear-gradient(90deg, #000 86%, rgba(0, 0, 0, 0.55) 95%, transparent 100%);
+  mask-image: linear-gradient(90deg, #000 86%, rgba(0, 0, 0, 0.55) 95%, transparent 100%);
+}
+
+/* ── MVP no ar ────────────────────────────────────────────── */
+.aura-live-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: clamp(0.5rem, 1.2vh, 0.9rem);
+  background: var(--aura-card);
+  border: 1px solid var(--aura-line);
+  border-radius: clamp(12px, 1.4vw, 20px);
+  padding: clamp(1.4rem, 4vh, 3rem) clamp(1rem, 3vw, 3rem);
+}
+
+.aura-live-icon {
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  color: var(--aura-accent);
+}
+
+.aura-live-text {
+  font-size: clamp(0.95rem, 1.35vw, 1.2rem);
+  color: var(--aura-muted);
+  font-weight: 300;
+}
+
+.aura-live-link {
+  font-size: clamp(1.3rem, 2.6vw, 2.4rem);
+  color: #fff;
+  font-weight: 300;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(242, 106, 33, 0.7);
+  padding-bottom: 2px;
+  transition: color 0.25s ease, border-color 0.25s ease;
+  word-break: break-word;
+}
+
+.aura-live-link:hover {
+  color: var(--aura-accent-soft);
+  border-color: var(--aura-accent-soft);
+}
+
+.aura-live-panel .aura-tags {
+  margin-top: clamp(0.6rem, 1.6vh, 1.1rem);
+}
+
+/* ── A sigla ──────────────────────────────────────────────── */
+.aura-acronym {
+  min-height: min(84vh, 900px);
+  align-items: flex-start;
+}
+
+.aura-acronym-logo {
+  margin-bottom: clamp(1rem, 4vh, 3rem);
+}
+
+.aura-acronym-grid {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.5rem, 1.4vh, 1rem);
+  padding-left: clamp(0px, 3vw, 60px);
+}
+
+.aura-acronym-row {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(0.5rem, 1.2vw, 1rem);
+  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.aura-acronym-letter {
+  font-size: clamp(1.9rem, 3.2vw, 3.2rem);
+  line-height: 1;
+  color: #fff;
+  font-weight: 300;
+  width: 1.2em;
+  flex: none;
+}
+
+.aura-acronym-word {
+  font-size: clamp(1rem, 1.8vw, 1.7rem);
+  color: var(--aura-muted);
+  font-weight: 300;
+}
+
+.aura-acronym-wordmark {
+  margin-top: clamp(0.6rem, 2vh, 1.4rem);
+  font-size: clamp(2rem, 4.4vw, 4.2rem);
+  line-height: 1;
+  color: #fff;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+}
+
+.aura-acronym-f {
+  color: var(--aura-accent);
+}
+
+/* ── Responsivo (novos slides) ────────────────────────────── */
+@media (max-width: 1100px) {
+  .aura-clients-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .aura-statement {
+    max-width: none;
+  }
+
+  .aura-op-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .aura-op-bracket {
+    align-self: start;
+    padding-left: 0;
+  }
+
+  .aura-bracket-mark {
+    display: none;
+  }
+
+  .aura-bracket-label {
+    max-width: none;
+  }
+
+  .aura-mvp-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .aura-pain-grid,
+  .aura-value-grid,
+  .aura-platform-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .aura-value-grid {
+    grid-template-rows: none;
+  }
+
+  .aura-table-wrap {
+    overflow-x: auto;
+  }
+
+  .aura-table {
+    min-width: 720px;
+  }
+}
+
+/* Ajustes de composição dos slides AuraFarma */
+
+.aura-live .aura-body {
+  justify-content: center;
+}
+
+.aura-clients-grid,
+.aura-pain-grid,
+.aura-value-grid,
+.aura-platform-grid,
+.aura-op-layout,
+.aura-revenue-list,
+.aura-table-wrap {
+  margin-top: clamp(0.3rem, 1.2vh, 0.9rem);
+}

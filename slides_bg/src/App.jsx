@@ -3,9 +3,11 @@ import 'bootstrap-icons/font/bootstrap-icons.css'
 import './App.css'
 import bgImage from '../bg.png'
 import logoImage from '../logo.png'
+import { AURA_SLIDES } from './Aura'
 
 const SLIDE_DURATION = 8000
-const SLIDE_COUNT = 7
+const AURA_START = 7
+const SLIDE_COUNT = AURA_START + AURA_SLIDES.length
 
 const features = [
   { icon: 'bi-box-seam', title: 'Estoque em Tempo Real', desc: 'Controle completo de matérias-primas, lotes e validades.' },
@@ -28,7 +30,10 @@ const technologies = [
 ]
 
 export default function App() {
-  const [current, setCurrent] = useState(0)
+  const [current, setCurrent] = useState(() => {
+    const param = Number(new URLSearchParams(window.location.search).get('slide'))
+    return Number.isInteger(param) && param > 0 && param <= SLIDE_COUNT ? param - 1 : 0
+  })
   const [system, setSystem] = useState(null)
   const [database, setDatabase] = useState(null)
   const [supabase, setSupabase] = useState(null)
@@ -71,12 +76,20 @@ export default function App() {
       case 4: return <SlideDatabase database={database} />
       case 5: return <SlideSupabase supabase={supabase} />
       case 6: return <SlideAbout />
-      default: return <SlideIntro />
+      default: {
+        const AuraSlide = AURA_SLIDES[current - AURA_START]
+        return AuraSlide ? <AuraSlide /> : <SlideIntro />
+      }
     }
   }
 
+  const isAura = current >= AURA_START
+
   return (
-    <div className="slideshow" style={{ backgroundImage: `url(${bgImage})` }}>
+    <div
+      className={`slideshow ${isAura ? 'slideshow--aura' : ''}`}
+      style={isAura ? undefined : { backgroundImage: `url(${bgImage})` }}
+    >
       <div className={`slide-wrapper ${isTransitioning ? 'fade-out' : 'fade-in'}`}>
         {renderSlide()}
       </div>
